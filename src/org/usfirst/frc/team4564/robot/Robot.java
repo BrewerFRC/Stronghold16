@@ -8,11 +8,11 @@ public class Robot extends SampleRobot {
     public Robot() {
         
     }
-    
+    /* Autonomous */
     public void autonomous() {
         
     }
-    
+    /* Teleop */
     public void operatorControl() {
         
     }
