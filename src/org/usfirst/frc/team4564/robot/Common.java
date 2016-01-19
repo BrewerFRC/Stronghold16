@@ -1,4 +1,6 @@
 package org.usfirst.frc.team4564.robot;
+import java.util.Calendar;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Common {
@@ -16,5 +18,9 @@ public class Common {
 	}
 	public static void dashNum(String title, double a) {
 		SmartDashboard.putNumber(title + ": ", a);
+	}
+	
+	public static long time() {
+		return Calendar.getInstance().getTimeInMillis();
 	}
 }
