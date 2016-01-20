@@ -3,12 +3,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Common {
 
-	public static void debug(String a) {
-		System.out.println(System.currentTimeMillis()+": " + a);
+	public static void debug(String title, String a) {
+		System.out.println(System.currentTimeMillis() + title + ": " + a);
 	}
 	
 	public static void dashStr(String title, String a) {
-		SmartDashboard.putString(title + ": ",a);
+		SmartDashboard.putString(title + ": ", a);
 	}
 	
 	public static void dashNum(String title, int a) {
