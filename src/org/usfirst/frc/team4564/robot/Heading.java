@@ -47,7 +47,7 @@ public class Heading {
 			resetPID();
 			headingHold = true;
 			//Set target angle to current heading.
-			targetHeading = gyro.getAngle();
+			targetHeading = getHeading();
 		}
 	}
 	public boolean isHeadingHold() {
