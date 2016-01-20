@@ -33,6 +33,9 @@ public class PID {
 	public void setMax(double max) {
 		this.max = max;
 	}
+	public double getTarget() {
+		return this.target;
+	}
 	public void setTarget(double target) {
 		this.target = target;
 	}
