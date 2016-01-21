@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4564.robot;
 
-import edu.wpi.first.wpilibj.Gyro;
+import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 public class Heading {
 	private Gyro gyro;
@@ -13,7 +14,7 @@ public class Heading {
 		//PID is dealing with error; an error of 0 is always desired.
 		pid.setTarget(0.0);
 		targetHeading = 0.0;
-		gyro = new Gyro(pin);
+		gyro = new AnalogGyro(pin);
 	}
 	
 	public void reset() {
