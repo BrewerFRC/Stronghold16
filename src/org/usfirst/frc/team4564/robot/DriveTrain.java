@@ -31,10 +31,11 @@ public class DriveTrain extends RobotDrive {
 	//DriveTrain constructor
 	public DriveTrain() {
 		super(FrontR, FrontL, BackR, BackL);
-        setInvertedMotor(RobotDrive.MotorType.kFrontRight,true);
         setInvertedMotor(RobotDrive.MotorType.kFrontLeft,true);
-        setInvertedMotor(RobotDrive.MotorType.kRearRight,true);
         setInvertedMotor(RobotDrive.MotorType.kRearLeft,true);
+        setInvertedMotor(RobotDrive.MotorType.kFrontRight,true);
+        setInvertedMotor(RobotDrive.MotorType.kRearRight,true);
+        
 	}
 	
 	public void init() {
@@ -78,7 +79,4 @@ public class DriveTrain extends RobotDrive {
 		setDrive(drive, turn);
 	}
 	
-	
-	
-
 }
