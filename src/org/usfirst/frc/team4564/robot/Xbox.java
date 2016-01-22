@@ -4,20 +4,20 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class Xbox extends Joystick {
 	
-	private boolean prevA = false;
-	private boolean prevB = false;
-	private boolean prevX = false;
-	private boolean prevY = false;
-	private boolean prevRightBumper = false;
-	private boolean prevLeftBumper = false;
-	private boolean prevSelect = false;
-	private boolean prevStart = false;
-	private boolean prevLeftClick = false;
-	private boolean prevRightClick = false;
-	private boolean prevDpadUp = false;
-	private boolean prevDpadDown = false;
-	private boolean prevDpadRight = false;
-	private boolean prevDpadLeft = false;
+	public boolean prevA = false;
+	public boolean prevB = false;
+	public boolean prevX = false;
+	public boolean prevY = false;
+	public boolean prevRightBumper = false;
+	public boolean prevLeftBumper = false;
+	public boolean prevSelect = false;
+	public boolean prevStart = false;
+	public boolean prevLeftClick = false;
+	public boolean prevRightClick = false;
+	public boolean prevDpadUp = false;
+	public boolean prevDpadDown = false;
+	public boolean prevDpadRight = false;
+	public boolean prevDpadLeft = false;
 	
 	public Xbox(int port) {
 		super(port);
@@ -33,6 +33,7 @@ public class Xbox extends Joystick {
 		}
 	public boolean A() {
 		return getRawButton(1);
+		Common.dashBool("A", prevA);
 	}
 	
 	public boolean whenA() {
@@ -117,7 +118,7 @@ public class Xbox extends Joystick {
 				return true;
 			}
 		} else {
-			prevLeftBumper = true;
+			prevRightBumper = true;
 			return true;
 		}
 	}
@@ -134,6 +135,9 @@ public class Xbox extends Joystick {
 				prevLeftBumper = true;
 				return true;
 			}
+		} else {
+			prevLeftBumper = true;
+			return true;
 		}
 		
 	}

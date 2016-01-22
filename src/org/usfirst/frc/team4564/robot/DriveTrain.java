@@ -71,11 +71,7 @@ public class DriveTrain extends RobotDrive {
 		arcadeDrive(drive, turn);
 		
 	}
-	
-	public void arcadeDriver(double drive, double turn) {
-		driveBase(drive, turn);
-	}
-	
+
 	public void driveBase(double drive, double turn) {
 		drive = driveAccelCurve(drive, driveAccel );
 		turn = turnAccelCurve(turn, turnAccel);
