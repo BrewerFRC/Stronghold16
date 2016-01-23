@@ -23,7 +23,7 @@ public class Xbox extends Joystick {
 		super(port);
 	}
 	
-	private double deadzone(double input) {
+	public double deadzone(double input) {
 		if (Math.abs(input) < .2) {
 			return (0);
 		} else {
@@ -51,6 +51,7 @@ public class Xbox extends Joystick {
 
 	}
 	public boolean B() {
+		Common.dashBool("B", getRawButton(2));
 		return getRawButton(2);
 		}
 	
@@ -70,6 +71,7 @@ public class Xbox extends Joystick {
 	}
 		
 	public boolean X() {
+		Common.dashBool("X", getRawButton(3));
 		return getRawButton(3);
 	}
 	
@@ -88,6 +90,7 @@ public class Xbox extends Joystick {
 	}
 	
 	public boolean Y() {
+		Common.dashBool("Y", getRawButton(4));
 		return getRawButton(4);
 	}
 	
@@ -106,6 +109,7 @@ public class Xbox extends Joystick {
 	}
 	
 	public boolean rightBumper() {
+		Common.dashBool("RBump", getRawButton(6));
 		return getRawButton(6);
 	}
 	
@@ -124,6 +128,7 @@ public class Xbox extends Joystick {
 	}
 	
 	public boolean leftBumper() {
+		Common.dashBool("LBump", getRawButton(5));
 		return getRawButton(5);
 	}
 	
@@ -139,7 +144,187 @@ public class Xbox extends Joystick {
 			prevLeftBumper = true;
 			return true;
 		}
+	}
+	
+	public boolean select () {
+		Common.dashBool("Select", getRawButton(7));
+		return getRawButton(7);
+	}
+	
+	public boolean whenSelect () {
+		if (select()) {
+			if (prevSelect) {
+				return false;
+			} else {
+				prevSelect = true;
+				return true;
+			}	
+		} else {
+			prevSelect = false;
+			return false;
+		}
+	}
+	
+	public boolean start () {
+		Common.dashBool("Start", getRawButton(8));
+		return getRawButton(8);
+	}
+	
+	public boolean whenStart () {
+		if (start()) {
+			if (prevStart) {
+				return false;
+			} else {
+				prevStart = true;
+				return true;
+			}
+		} else {
+			prevStart = false;
+			return false;			
+			}
+		}
+	
+	public boolean leftClick() {
+		Common.dashBool("leftClick", getRawButton(9));
+		return getRawButton(9);
+	}
+	
+	public boolean whenLeftClick() {
+		if (leftClick()) {
+			if (prevLeftClick) {
+				return false;
+			} else {
+				prevLeftClick = true;
+				return true;
+			}
+		} else {
+			prevLeftClick = false;
+			return false;
+		}
+	}
+	
+	public boolean rightClick() {
+		Common.dashBool("rightClick", getRawButton(10));
+		return getRawButton(10);
+	}
+	
+	public boolean whenRightClick() {
+		if (rightClick()) {
+			if (prevRightClick) {
+				return false;
+			} else {
+				prevRightClick = true;
+				return true;
+			}
+		} else {
+			prevRightClick = false;
+			return false;
+		}
+	}
+
+	public boolean dpadUp() {
+		Common.dashNum("dpadUp", getPOV(0));
+		return getPOV(0) == 0;
+	}
+	
+	public boolean whenDpadUp() {
+		if (dpadUp()) {
+			if (prevDpadUp) {
+				return false;
+			} else {
+				prevDpadUp = true;
+				return true;
+			}
+		} else {
+			prevDpadUp = false;
+			return false;
+		}
+	}
+	
+	public boolean dpadRight() {
+		Common.dashNum("dpadRight", getPOV(0));
+		return getPOV(0) == 90;
+	}
+	
+	public boolean whenDpadRight() {
+		if (dpadRight()) {
+			if (prevDpadRight) {
+				return false;
+			} else {
+				prevDpadRight = true;
+				return true;
+			}
+		} else {
+			prevDpadRight = false;
+			return false;
+		}
+	}
+	public boolean dpadDown() {
+		Common.dashNum("dpadDown", getPOV(0));
+		return getPOV(0) == 180;
+	}
+	
+	public boolean whenDpadDown() {
+		if (dpadDown()) {
+			if (prevDpadDown) {
+				return false;
+			} else {
+				prevDpadDown = true;
+				return true;
+			}
+		} else {
+			prevDpadDown = false;
+			return false;
+		}
+	}
+	
+	public boolean dpadLeft() {
+		Common.dashNum("dpadLeft", getPOV(0));
+		return getPOV(0) == 270;
+	}
+
+	public boolean whenDpadLeft() {
+		if (dpadLeft()) {
+			if (prevDpadLeft) {
+				return false;
+			} else {
+				prevDpadLeft = true;
+				return true;
+			}
+		} else {
+			prevDpadLeft = false;
+			return false;
+		}
+	}
 		
+	public double rightX () {
+		Common.dashNum("rightX", getRawAxis(4));
+		return deadzone(getRawAxis(4));
+	}
+	
+	public double rightY () {
+		Common.dashNum("rightY", getRawAxis(5));
+		return deadzone(getRawAxis(5));
+	}
+	
+	public double leftX () {
+		Common.dashNum("leftX", getRawAxis(0));
+		return deadzone(getRawAxis(0));
+	}
+	
+	public double leftY () {
+		Common.dashNum("leftY", getRawAxis(1));
+		return deadzone(getRawAxis(1));
+	}
+	
+	public double rightTrigger () {
+		Common.dashNum("rightTrigger", getRawAxis(3));
+		return deadzone(getRawAxis(3));
+	}
+	
+	public double leftTrigger () { 
+		Common.dashNum("leftTrigger", getRawAxis(2));
+		return deadzone(getRawAxis(2));
 	}
 }
 	

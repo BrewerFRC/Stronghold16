@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Common {
 
-	public static void debug(String title, String a) {
-		System.out.println(System.currentTimeMillis() + title + ": " + a);
+	public static void debug(String text) {
+		System.out.println(System.currentTimeMillis() + text);
 	}
 	
 	public static void dashStr(String title, String a) {

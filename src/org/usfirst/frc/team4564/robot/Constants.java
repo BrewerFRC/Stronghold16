@@ -4,17 +4,16 @@ public class Constants {
 
 	// PWM Constants
 	public static final int PWM_DRIVE_FR = 1;
-	public static final int PWM_DRIVE_FL = 3;
+	public static final int PWM_DRIVE_FL = 4;
 	public static final int PWM_DRIVE_RR = 2;
-	public static final int PWM_DRIVE_RL = 4;
+	public static final int PWM_DRIVE_RL = 3;
 	
-	//DIO Ports
+	//DIO Port
+	//*
 	public static final int DIO_DRIVE_FR_ENCODER_A = 0;
-	public static final int DIO_DRIVE_FR_ENCODER_B = 0;
-	public static final int DIO_DRIVE_FL_ENCODER_A = 0;
-	public static final int DIO_DRIVE_FL_ENCODER_B = 0;
-	public static final int DIO_DRIVE_RR_ENCODER_A = 0;
-	public static final int DIO_DRIVE_RR_ENCODER_B = 0;
-	public static final int DIO_DRIVE_RL_ENCODER_A = 0;
-	public static final int DIO_DRIVE_RL_ENCODER_B = 0;
+	public static final int DIO_DRIVE_FR_ENCODER_B = 1;
+	
+	//Robot loop speed
+	public static final double REFRESH_RATE = 50;
+
 }
