@@ -17,6 +17,9 @@ public class DriveTrain extends RobotDrive {
 	private Encoder encoder_FR = new Encoder(Constants.DIO_DRIVE_FR_ENCODER_A, Constants.DIO_DRIVE_FR_ENCODER_B, 
 			true, EncodingType.k1X);
 	
+	//Gyro definition
+	private Heading heading = new Heading(Constants.ANA_GYRO, Constants.GYRO_P, Constants.GYRO_I, Constants.GYRO_D, Constants.GYRO_SENSITIVITY);
+	
 	//Accel Curve Speeds
 	double driveSpeed = 0;
 	double turnSpeed = 0;
@@ -64,8 +67,10 @@ public class DriveTrain extends RobotDrive {
 		}
 	
 	public void setDrive(double drive, double turn) {
+		if (heading.isHeadingHold()) {
+			turn = heading.turnRate();
+		}
 		arcadeDrive(drive, turn);
-		
 	}
 
 	public void baseDrive(double drive, double turn) {

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 public class Heading {
 	private Gyro gyro;
+	//PID takes cumulative angles
 	private PID pid;
 	private boolean headingHold;
 	
@@ -46,14 +47,14 @@ public class Heading {
 		pid.setTarget(gyro.getAngle() + change);
 	}
 	
-	public void headingHold() {
-		if (headingHold) {
-			reset();
-			headingHold = false;
+	public void setHeadingHold(boolean headingHold) {
+		if (!headingHold) {
+			resetPID();
+			this.headingHold = false;
 		}
 		else {
 			resetPID();
-			headingHold = true;
+			this.headingHold = true;
 			//Set target angle to current heading.
 			setHeading(getHeading());
 		}
