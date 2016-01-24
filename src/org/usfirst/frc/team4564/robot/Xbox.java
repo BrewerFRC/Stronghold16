@@ -31,11 +31,13 @@ public class Xbox extends Joystick {
 			
 			}
 		}
+	
+	// Returns Current State of button
 	public boolean A() {
-		Common.dashBool("A", getRawButton(1));
 		return getRawButton(1);
 	}
 	
+	// Watches for rising edge and activates once after being pressed and released
 	public boolean whenA() {
 		if (A()) {
 			if (prevA) {
@@ -51,7 +53,6 @@ public class Xbox extends Joystick {
 
 	}
 	public boolean B() {
-		Common.dashBool("B", getRawButton(2));
 		return getRawButton(2);
 		}
 	
@@ -71,7 +72,6 @@ public class Xbox extends Joystick {
 	}
 		
 	public boolean X() {
-		Common.dashBool("X", getRawButton(3));
 		return getRawButton(3);
 	}
 	
@@ -90,7 +90,6 @@ public class Xbox extends Joystick {
 	}
 	
 	public boolean Y() {
-		Common.dashBool("Y", getRawButton(4));
 		return getRawButton(4);
 	}
 	
@@ -109,7 +108,6 @@ public class Xbox extends Joystick {
 	}
 	
 	public boolean rightBumper() {
-		Common.dashBool("RBump", getRawButton(6));
 		return getRawButton(6);
 	}
 	
@@ -128,7 +126,6 @@ public class Xbox extends Joystick {
 	}
 	
 	public boolean leftBumper() {
-		Common.dashBool("LBump", getRawButton(5));
 		return getRawButton(5);
 	}
 	
@@ -147,7 +144,6 @@ public class Xbox extends Joystick {
 	}
 	
 	public boolean select () {
-		Common.dashBool("Select", getRawButton(7));
 		return getRawButton(7);
 	}
 	
@@ -166,7 +162,6 @@ public class Xbox extends Joystick {
 	}
 	
 	public boolean start () {
-		Common.dashBool("Start", getRawButton(8));
 		return getRawButton(8);
 	}
 	
@@ -185,7 +180,6 @@ public class Xbox extends Joystick {
 		}
 	
 	public boolean leftClick() {
-		Common.dashBool("leftClick", getRawButton(9));
 		return getRawButton(9);
 	}
 	
@@ -204,7 +198,6 @@ public class Xbox extends Joystick {
 	}
 	
 	public boolean rightClick() {
-		Common.dashBool("rightClick", getRawButton(10));
 		return getRawButton(10);
 	}
 	
@@ -223,9 +216,8 @@ public class Xbox extends Joystick {
 	}
 
 	public boolean dpadUp() {
-		Common.dashNum("dpadUp", getPOV(0));
 		return getPOV(0) == 0;
-	}
+		}
 	
 	public boolean whenDpadUp() {
 		if (dpadUp()) {
@@ -242,7 +234,6 @@ public class Xbox extends Joystick {
 	}
 	
 	public boolean dpadRight() {
-		Common.dashNum("dpadRight", getPOV(0));
 		return getPOV(0) == 90;
 	}
 	
@@ -260,7 +251,6 @@ public class Xbox extends Joystick {
 		}
 	}
 	public boolean dpadDown() {
-		Common.dashNum("dpadDown", getPOV(0));
 		return getPOV(0) == 180;
 	}
 	
@@ -279,8 +269,8 @@ public class Xbox extends Joystick {
 	}
 	
 	public boolean dpadLeft() {
-		Common.dashNum("dpadLeft", getPOV(0));
 		return getPOV(0) == 270;
+		
 	}
 
 	public boolean whenDpadLeft() {
@@ -298,32 +288,26 @@ public class Xbox extends Joystick {
 	}
 		
 	public double rightX () {
-		Common.dashNum("rightX", getRawAxis(4));
 		return deadzone(getRawAxis(4));
 	}
 	
 	public double rightY () {
-		Common.dashNum("rightY", getRawAxis(5));
 		return deadzone(getRawAxis(5));
 	}
 	
 	public double leftX () {
-		Common.dashNum("leftX", getRawAxis(0));
 		return deadzone(getRawAxis(0));
 	}
 	
 	public double leftY () {
-		Common.dashNum("leftY", getRawAxis(1));
 		return deadzone(getRawAxis(1));
 	}
 	
 	public double rightTrigger () {
-		Common.dashNum("rightTrigger", getRawAxis(3));
 		return deadzone(getRawAxis(3));
 	}
 	
 	public double leftTrigger () { 
-		Common.dashNum("leftTrigger", getRawAxis(2));
 		return deadzone(getRawAxis(2));
 	}
 }

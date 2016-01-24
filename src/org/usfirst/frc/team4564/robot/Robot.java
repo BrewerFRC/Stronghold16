@@ -30,6 +30,7 @@ public class Robot extends SampleRobot {
     	while (isOperatorControl() && isEnabled()) {
     		Common.debug("setDrive");
     		dt.baseDrive(j.leftY(), j.leftX());
+<<<<<<< HEAD
     		
     		if (j.whenA()) {
     			Common.dashBool("A" , j.whenA());
@@ -97,11 +98,12 @@ public class Robot extends SampleRobot {
     		target = 180;
     		dt.getHeading().setTarget(target);
     		
+=======
+>>>>>>> e0701191675bff25e20bd85e6a5d4b805665eae3
     		Timer.delay(1.0 / Constants.REFRESH_RATE);
     		
     		}
     	}
-    
     public void test() {
     	
     }
