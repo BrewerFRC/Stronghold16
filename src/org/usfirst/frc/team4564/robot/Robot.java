@@ -26,8 +26,73 @@ public class Robot extends SampleRobot {
     	Common.debug("Starting Teleop...");
     	while (isOperatorControl() && isEnabled()) {
     		Common.debug("setDrive");
-    		dt.setDrive(j.leftY(), j.leftX());
-    			
+    		dt.baseDrive(j.leftY(), j.leftX());
+    		
+    		if (j.whenA()) {
+    			Common.dashBool("A" , j.whenA());
+    		}
+    		
+    		if (j.whenB()) {
+    			Common.dashBool("B" , j.whenB());
+    		}
+    		
+    		if (j.whenX()) {
+    			Common.dashBool("X" , j.whenX());
+    		}
+    		
+    		if (j.whenY()) {
+    			Common.dashBool("Y" , j.whenY());
+    		}
+    		
+    		if (j.whenRightBumper()) {
+    			Common.dashBool("Right Bumper", j.whenRightBumper());
+    		}
+    		
+    		if (j.whenLeftBumper()) {
+    			Common.dashBool("Left Bumper", j.whenLeftBumper());
+    		}
+    		
+    		if (j.whenSelect()) {
+    			Common.dashBool("Select", j.whenSelect());
+    		}
+    		
+    		if (j.whenStart()) {
+    			Common.dashBool("Start", j.whenStart());
+    		}
+    		
+    		if (j.whenLeftClick()) {
+    			Common.dashBool("Left Click", j.whenLeftClick());
+    		}
+    		
+    		if (j.whenRightClick()) {
+    			Common.dashBool("Right Click", j.whenRightClick());
+    		}
+    		
+    		if (j.whenDpadUp()) {
+    			Common.dashBool("dpadUp", j.whenDpadUp());
+    		}
+    		
+    		if (j.whenDpadDown()) {
+    			Common.dashBool("dpadDown", j.whenDpadDown());
+    		}
+    		
+    		if (j.whenDpadLeft()) {
+    			Common.dashBool("dpadLeft", j.whenDpadLeft());
+    		}
+    		
+    		if (j.whenDpadRight()) {
+    			Common.dashBool("dpad right", j.whenDpadRight());
+    		}
+    		
+    		if (j.rightTrigger() >= 0) {
+    			Common.dashNum("Right Trigger", j.rightTrigger());
+    		}
+    		
+    		if (j.leftTrigger() >= 0) {
+    			Common.dashNum("Left Trigger", j.leftTrigger());
+    		}
+    		
+    		
     		Timer.delay(1.0 / Constants.REFRESH_RATE);
     		
     		}
