@@ -68,6 +68,8 @@ public class PID {
 		double derivative = (error - previousError) / deltaTime;
 		previousError = error;
 		
+		Common.dashNum("PCalc", p*error);
+		Common.dashNum("ICalc", i*sumError);
 		//Calculate output
 		double output = p*error + i*sumError + d*derivative;
 		if (forward) {

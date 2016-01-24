@@ -18,7 +18,7 @@ public class DriveTrain extends RobotDrive {
 			true, EncodingType.k1X);
 	
 	//Gyro definition
-	private Heading heading = new Heading(Constants.ANA_GYRO, Constants.GYRO_P, Constants.GYRO_I, Constants.GYRO_D, Constants.GYRO_SENSITIVITY);
+	public Heading heading = new Heading(Constants.ANA_GYRO, Constants.GYRO_P, Constants.GYRO_I, Constants.GYRO_D, Constants.GYRO_SENSITIVITY);
 	
 	//Accel Curve Speeds
 	double driveSpeed = 0;
@@ -38,10 +38,6 @@ public class DriveTrain extends RobotDrive {
 	
 	public void init() {
 		
-	}
-	
-	public Heading getHeading() {
-		return this.heading;
 	}
 	
 	 public double driveAccelCurve(double target, double driveAccel) {
