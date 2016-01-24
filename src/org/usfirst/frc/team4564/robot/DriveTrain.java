@@ -40,6 +40,10 @@ public class DriveTrain extends RobotDrive {
 		
 	}
 	
+	public Heading getHeading() {
+		return this.heading;
+	}
+	
 	 public double driveAccelCurve(double target, double driveAccel) {
 		 if (Math.abs(driveSpeed - target) > driveAccel) {
 	            if (driveSpeed > target) {
@@ -70,6 +74,7 @@ public class DriveTrain extends RobotDrive {
 		if (heading.isHeadingHold()) {
 			turn = heading.turnRate();
 		}
+		Common.dashNum("Turn", turn);
 		arcadeDrive(drive, turn);
 	}
 

@@ -2,11 +2,13 @@
 package org.usfirst.frc.team4564.robot;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SampleRobot {
 	
 	DriveTrain dt;
 	Xbox j = new Xbox(0);
+	private double target = 0;
 	
     public Robot() {
     	Common.debug("New driveTrain");
@@ -24,6 +26,7 @@ public class Robot extends SampleRobot {
     
     public void operatorControl() {
     	Common.debug("Starting Teleop...");
+    	dt.getHeading().setHeadingHold(true);
     	while (isOperatorControl() && isEnabled()) {
     		Common.debug("setDrive");
     		dt.baseDrive(j.leftY(), j.leftX());
@@ -91,7 +94,8 @@ public class Robot extends SampleRobot {
     		if (j.leftTrigger() >= 0) {
     			Common.dashNum("Left Trigger", j.leftTrigger());
     		}
-    		
+    		target = 180;
+    		dt.getHeading().setTarget(target);
     		
     		Timer.delay(1.0 / Constants.REFRESH_RATE);
     		
