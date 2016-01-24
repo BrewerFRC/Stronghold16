@@ -9,13 +9,14 @@ public class Constants {
 	public static final int PWM_DRIVE_RL = 3;
 	
 	//DIO Port
-	//*
-	public static final int DIO_DRIVE_FR_ENCODER_A = 0;
-	public static final int DIO_DRIVE_FR_ENCODER_B = 1;
+	public static final int DIO_DRIVE_FR_ENCODER_A = 1;
+	public static final int DIO_DRIVE_FR_ENCODER_B = 2;
+	public static final int DIO_LEFT_SONIC_ENABLE = 0;
 	
 	//Analog Ports
-	public static final int ANA_GYRO = 0;
-	
+	//public static final int ANA_GYRO = 0;
+	public static final int ANA_SONIC_RIGHT = 0 ;
+	public static final int ANA_GYRO = 1;
 	//Gyro constants
 	public static final double GYRO_P = 0.03;
 	public static final double GYRO_I = 0.0;
