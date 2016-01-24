@@ -2,7 +2,6 @@
 package org.usfirst.frc.team4564.robot;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SampleRobot {
 	
@@ -30,76 +29,6 @@ public class Robot extends SampleRobot {
     	while (isOperatorControl() && isEnabled()) {
     		Common.debug("setDrive");
     		dt.baseDrive(j.leftY(), j.leftX());
-<<<<<<< HEAD
-    		
-    		if (j.whenA()) {
-    			Common.dashBool("A" , j.whenA());
-    		}
-    		
-    		if (j.whenB()) {
-    			Common.dashBool("B" , j.whenB());
-    		}
-    		
-    		if (j.whenX()) {
-    			Common.dashBool("X" , j.whenX());
-    		}
-    		
-    		if (j.whenY()) {
-    			Common.dashBool("Y" , j.whenY());
-    		}
-    		
-    		if (j.whenRightBumper()) {
-    			Common.dashBool("Right Bumper", j.whenRightBumper());
-    		}
-    		
-    		if (j.whenLeftBumper()) {
-    			Common.dashBool("Left Bumper", j.whenLeftBumper());
-    		}
-    		
-    		if (j.whenSelect()) {
-    			Common.dashBool("Select", j.whenSelect());
-    		}
-    		
-    		if (j.whenStart()) {
-    			Common.dashBool("Start", j.whenStart());
-    		}
-    		
-    		if (j.whenLeftClick()) {
-    			Common.dashBool("Left Click", j.whenLeftClick());
-    		}
-    		
-    		if (j.whenRightClick()) {
-    			Common.dashBool("Right Click", j.whenRightClick());
-    		}
-    		
-    		if (j.whenDpadUp()) {
-    			Common.dashBool("dpadUp", j.whenDpadUp());
-    		}
-    		
-    		if (j.whenDpadDown()) {
-    			Common.dashBool("dpadDown", j.whenDpadDown());
-    		}
-    		
-    		if (j.whenDpadLeft()) {
-    			Common.dashBool("dpadLeft", j.whenDpadLeft());
-    		}
-    		
-    		if (j.whenDpadRight()) {
-    			Common.dashBool("dpad right", j.whenDpadRight());
-    		}
-    		
-    		if (j.rightTrigger() >= 0) {
-    			Common.dashNum("Right Trigger", j.rightTrigger());
-    		}
-    		
-    		if (j.leftTrigger() >= 0) {
-    			Common.dashNum("Left Trigger", j.leftTrigger());
-    		}
-    		target = 180;
-    		dt.getHeading().setTarget(target);
-    		
-=======
->>>>>>> e0701191675bff25e20bd85e6a5d4b805665eae3
     		Timer.delay(1.0 / Constants.REFRESH_RATE);
     		
     		}
