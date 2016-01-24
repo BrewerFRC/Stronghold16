@@ -62,7 +62,7 @@ public class Xbox extends Joystick {
 				return false;
 			} else {
 				prevB = true;
-				return false;
+				return true;
 			}
 		} else {
 			prevB = false;

@@ -18,7 +18,7 @@ public class Constants {
 	
 	//Gyro constants
 	public static final double GYRO_P = 0.03;
-	public static final double GYRO_I = 0.0;
+	public static final double GYRO_I = 0.00008;
 	public static final double GYRO_D = 0.0;
 	public static final double GYRO_SENSITIVITY = 0.00669;
 	
