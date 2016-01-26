@@ -4,17 +4,27 @@ public class Constants {
 
 	// PWM Constants
 	public static final int PWM_DRIVE_FR = 1;
-	public static final int PWM_DRIVE_FL = 3;
+	public static final int PWM_DRIVE_FL = 4;
 	public static final int PWM_DRIVE_RR = 2;
-	public static final int PWM_DRIVE_RL = 4;
+	public static final int PWM_DRIVE_RL = 3;
 	
-	//DIO Ports
-	public static final int DIO_DRIVE_FR_ENCODER_A = 0;
-	public static final int DIO_DRIVE_FR_ENCODER_B = 0;
-	public static final int DIO_DRIVE_FL_ENCODER_A = 0;
-	public static final int DIO_DRIVE_FL_ENCODER_B = 0;
-	public static final int DIO_DRIVE_RR_ENCODER_A = 0;
-	public static final int DIO_DRIVE_RR_ENCODER_B = 0;
-	public static final int DIO_DRIVE_RL_ENCODER_A = 0;
-	public static final int DIO_DRIVE_RL_ENCODER_B = 0;
+	//DIO Port
+	public static final int DIO_DRIVE_FR_ENCODER_A = 1;
+	public static final int DIO_DRIVE_FR_ENCODER_B = 2;
+	public static final int DIO_LEFT_SONIC_ENABLE = 0;
+	
+	//Analog Ports
+	//public static final int ANA_GYRO = 0;
+	public static final int ANA_SONIC_RIGHT = 0 ;
+	public static final int ANA_GYRO = 1;
+	//Gyro constants
+	public static final double GYRO_P = 0.03;
+	public static final double GYRO_I = 0.00008;
+	public static final double GYRO_D = 0.0;
+	public static final double GYRO_SENSITIVITY = 0.00669;
+	
+	
+	//Robot loop speed
+	public static final double REFRESH_RATE = 50;
+
 }

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 public class Heading {
 	private Gyro gyro;
+	//PID takes cumulative angles
 	private PID pid;
 	private boolean headingHold;
 	
@@ -12,6 +13,8 @@ public class Heading {
 		pid = new PID(p, i, d, true);
 		//PID is dealing with error; an error of 0 is always desired.
 		pid.setTarget(0.0);
+		pid.setMin(-1);
+		pid.setMax(1);
 		gyro = new AnalogGyro(pin);
 	}
 	
@@ -21,6 +24,10 @@ public class Heading {
 	}
 	public void resetPID() {
 		pid.reset();
+	}
+	
+	public double getTarget() {
+		return pid.getTarget();
 	}
 	
 	public boolean setTarget(double target) {
@@ -34,7 +41,15 @@ public class Heading {
 	
 	public double getHeading() {
 		//Partial degrees, 0.01 accuracy
-		return (gyro.getAngle()*100) % 360 / 100;
+		double angle = (getAngle()*100) % 36000 / 100;
+		if (angle < 0) {
+			angle += 360;
+		}
+		return angle;
+	}
+	
+	public double getAngle() {
+		return gyro.getAngle();
 	}
 	
 	public void setHeading(double heading) {
@@ -46,16 +61,16 @@ public class Heading {
 		pid.setTarget(gyro.getAngle() + change);
 	}
 	
-	public void headingHold() {
+	public void setHeadingHold(boolean headingHold) {
 		if (headingHold) {
-			reset();
-			headingHold = false;
+			resetPID();
+			this.headingHold = true;
+			//Set target angle to current heading.
+			setHeading(getHeading());
 		}
 		else {
 			resetPID();
-			headingHold = true;
-			//Set target angle to current heading.
-			setHeading(getHeading());
+			this.headingHold = false;
 		}
 	}
 	public boolean isHeadingHold() {
@@ -65,7 +80,7 @@ public class Heading {
 	public double turnRate() {
 		if (headingHold) {
 			//Return the PID calculation of the shorter path.
-			return pid.calc(gyro.getAngle());
+			return -1 * pid.calc(gyro.getAngle());
 		}
 		else {
 			return 0.0;

@@ -23,7 +23,7 @@ public class Xbox extends Joystick {
 		super(port);
 	}
 	
-	private double deadzone(double input) {
+	public double deadzone(double input) {
 		if (Math.abs(input) < .2) {
 			return (0);
 		} else {
@@ -31,11 +31,13 @@ public class Xbox extends Joystick {
 			
 			}
 		}
+	
+	// Returns Current State of button
 	public boolean A() {
-		Common.dashBool("A", getRawButton(1));
 		return getRawButton(1);
 	}
 	
+	// Watches for rising edge and activates once after being pressed and released
 	public boolean whenA() {
 		if (A()) {
 			if (prevA) {
@@ -60,7 +62,7 @@ public class Xbox extends Joystick {
 				return false;
 			} else {
 				prevB = true;
-				return false;
+				return true;
 			}
 		} else {
 			prevB = false;
@@ -139,7 +141,174 @@ public class Xbox extends Joystick {
 			prevLeftBumper = true;
 			return true;
 		}
+	}
+	
+	public boolean select () {
+		return getRawButton(7);
+	}
+	
+	public boolean whenSelect () {
+		if (select()) {
+			if (prevSelect) {
+				return false;
+			} else {
+				prevSelect = true;
+				return true;
+			}	
+		} else {
+			prevSelect = false;
+			return false;
+		}
+	}
+	
+	public boolean start () {
+		return getRawButton(8);
+	}
+	
+	public boolean whenStart () {
+		if (start()) {
+			if (prevStart) {
+				return false;
+			} else {
+				prevStart = true;
+				return true;
+			}
+		} else {
+			prevStart = false;
+			return false;			
+			}
+		}
+	
+	public boolean leftClick() {
+		return getRawButton(9);
+	}
+	
+	public boolean whenLeftClick() {
+		if (leftClick()) {
+			if (prevLeftClick) {
+				return false;
+			} else {
+				prevLeftClick = true;
+				return true;
+			}
+		} else {
+			prevLeftClick = false;
+			return false;
+		}
+	}
+	
+	public boolean rightClick() {
+		return getRawButton(10);
+	}
+	
+	public boolean whenRightClick() {
+		if (rightClick()) {
+			if (prevRightClick) {
+				return false;
+			} else {
+				prevRightClick = true;
+				return true;
+			}
+		} else {
+			prevRightClick = false;
+			return false;
+		}
+	}
+
+	public boolean dpadUp() {
+		return getPOV(0) == 0;
+		}
+	
+	public boolean whenDpadUp() {
+		if (dpadUp()) {
+			if (prevDpadUp) {
+				return false;
+			} else {
+				prevDpadUp = true;
+				return true;
+			}
+		} else {
+			prevDpadUp = false;
+			return false;
+		}
+	}
+	
+	public boolean dpadRight() {
+		return getPOV(0) == 90;
+	}
+	
+	public boolean whenDpadRight() {
+		if (dpadRight()) {
+			if (prevDpadRight) {
+				return false;
+			} else {
+				prevDpadRight = true;
+				return true;
+			}
+		} else {
+			prevDpadRight = false;
+			return false;
+		}
+	}
+	public boolean dpadDown() {
+		return getPOV(0) == 180;
+	}
+	
+	public boolean whenDpadDown() {
+		if (dpadDown()) {
+			if (prevDpadDown) {
+				return false;
+			} else {
+				prevDpadDown = true;
+				return true;
+			}
+		} else {
+			prevDpadDown = false;
+			return false;
+		}
+	}
+	
+	public boolean dpadLeft() {
+		return getPOV(0) == 270;
 		
+	}
+
+	public boolean whenDpadLeft() {
+		if (dpadLeft()) {
+			if (prevDpadLeft) {
+				return false;
+			} else {
+				prevDpadLeft = true;
+				return true;
+			}
+		} else {
+			prevDpadLeft = false;
+			return false;
+		}
+	}
+		
+	public double rightX () {
+		return deadzone(getRawAxis(4));
+	}
+	
+	public double rightY () {
+		return deadzone(getRawAxis(5));
+	}
+	
+	public double leftX () {
+		return deadzone(getRawAxis(0));
+	}
+	
+	public double leftY () {
+		return deadzone(getRawAxis(1));
+	}
+	
+	public double rightTrigger () {
+		return deadzone(getRawAxis(3));
+	}
+	
+	public double leftTrigger () { 
+		return deadzone(getRawAxis(2));
 	}
 }
 	

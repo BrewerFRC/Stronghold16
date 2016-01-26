@@ -11,23 +11,21 @@ public class DriveTrain extends RobotDrive {
 	static Talon FrontR = new Talon(Constants.PWM_DRIVE_FR);
 	static Talon FrontL = new Talon(Constants.PWM_DRIVE_FL);
 	static Talon BackR = new Talon(Constants.PWM_DRIVE_RR);
-	static Talon BackL = new Talon(Constants.PWM_DRIVE_RR);
+	static Talon BackL = new Talon(Constants.PWM_DRIVE_RL);
 	
 	// Encoder Definitions
 	private Encoder encoder_FR = new Encoder(Constants.DIO_DRIVE_FR_ENCODER_A, Constants.DIO_DRIVE_FR_ENCODER_B, 
 			true, EncodingType.k1X);
-	private Encoder encoder_FL = new Encoder(Constants.DIO_DRIVE_FL_ENCODER_A, Constants.DIO_DRIVE_FL_ENCODER_B,
-			true, EncodingType.k1X);
-	private Encoder encoder_RR = new Encoder(Constants.DIO_DRIVE_RR_ENCODER_A, Constants.DIO_DRIVE_RR_ENCODER_B,
-			true, EncodingType.k1X);
-	private Encoder encoder_RL = new Encoder(Constants.DIO_DRIVE_RL_ENCODER_A, Constants.DIO_DRIVE_RL_ENCODER_B,
-			true, EncodingType.k1X);
+	
+	//Gyro definition
+	public Heading heading = new Heading(Constants.ANA_GYRO, Constants.GYRO_P, Constants.GYRO_I, Constants.GYRO_D, Constants.GYRO_SENSITIVITY);
 	
 	//Accel Curve Speeds
 	double driveSpeed = 0;
 	double turnSpeed = 0;
 	double driveAccel = 0;
 	double turnAccel = 0;
+	
 	//DriveTrain constructor
 	public DriveTrain() {
 		super(FrontR, FrontL, BackR, BackL);
@@ -68,15 +66,17 @@ public class DriveTrain extends RobotDrive {
 	    return turnSpeed;
 		}
 	
-	private void setDrive(double drive, double turn) {
+	public void setDrive(double drive, double turn) {
+		if (heading.isHeadingHold()) {
+			turn = heading.turnRate();
+		}
+		Common.dashNum("Turn", turn);
 		arcadeDrive(drive, turn);
-		
 	}
 
-	public void driveBase(double drive, double turn) {
+	public void baseDrive(double drive, double turn) {
 		drive = driveAccelCurve(drive, driveAccel );
 		turn = turnAccelCurve(turn, turnAccel);
 		setDrive(drive, turn);
 	}
-	
 }
