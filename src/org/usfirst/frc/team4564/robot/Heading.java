@@ -10,7 +10,7 @@ public class Heading {
 	private boolean headingHold;
 	
 	public Heading(int pin, double p, double i, double d, double sensitivity) {
-		pid = new PID(p, i, d, true);
+		pid = new PID(p, i, d, false);
 		//PID is dealing with error; an error of 0 is always desired.
 		pid.setTarget(0.0);
 		pid.setMin(-1);
