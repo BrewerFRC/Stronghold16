@@ -26,5 +26,8 @@ public class Constants {
 	
 	//Robot loop speed
 	public static final double REFRESH_RATE = 50;
+	
+	//Sonic loop speed
+	public static final int SONIC_REFRESH_RATE = 10;
 
 }

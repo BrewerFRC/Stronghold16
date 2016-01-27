@@ -30,7 +30,9 @@ public class Robot extends SampleRobot {
     	while (isOperatorControl() && isEnabled()) {
     		Common.debug("setDrive");
     		dt.baseDrive(j.leftY(), j.leftX());
+    		bat.update();
     		Common.dashNum("Sonar Distance", bat.getRightDistance());
+    		Common.dashNum("Sonar Volts", bat.sonicRight.getVoltage());
     		dt.setDrive(j.leftY(), j.leftX());
     		Timer.delay(1.0 / Constants.REFRESH_RATE);
     		if (j.whenA()) {
