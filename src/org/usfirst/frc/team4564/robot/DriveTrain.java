@@ -17,6 +17,9 @@ public class DriveTrain extends RobotDrive {
 	private Encoder encoder_FR = new Encoder(Constants.DIO_DRIVE_FR_ENCODER_A, Constants.DIO_DRIVE_FR_ENCODER_B, 
 			true, EncodingType.k1X);
 	
+	//Distance PID
+	public PID distancePID = new PID(Constants.DRIVE_P, Constants.DRIVE_I, Constants.DRIVE_D, false);
+	
 	//Gyro definition
 	public Heading heading = new Heading(Constants.ANA_GYRO, Constants.GYRO_P, Constants.GYRO_I, Constants.GYRO_D, Constants.GYRO_SENSITIVITY);
 	
@@ -38,6 +41,23 @@ public class DriveTrain extends RobotDrive {
 	
 	public void init() {
 		
+	}
+	
+	public void setPIDDrive(boolean pidDrive) {
+		if (pidDrive) {
+			distancePID.reset();
+			heading.resetPID();
+			heading.setHeadingHold(true);
+		}
+		else {
+			heading.setHeadingHold(false);
+		}
+	}
+	
+	public void pidDrive() {
+		double speed = distancePID.calc(encoder_FR.getDistance());
+		double turn = heading.turnRate();
+		setDrive(speed, turn);
 	}
 	
 	 public double driveAccelCurve(double target, double driveAccel) {
@@ -71,6 +91,7 @@ public class DriveTrain extends RobotDrive {
 			turn = heading.turnRate();
 		}
 		Common.dashNum("Turn", turn);
+		System.out.println(turn);
 		arcadeDrive(drive, turn);
 	}
 

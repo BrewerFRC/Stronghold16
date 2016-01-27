@@ -14,8 +14,8 @@ public class PID {
 	private double target;
 	private double min;
 	private double max;
+	private long deltaTime;
 	
-	private long previousTime;
 	private double previousError;
 	private double sumError;
 	private double output;
@@ -25,6 +25,7 @@ public class PID {
 		this.i = i;
 		this.d = d;
 		this.forward = forward;
+		this.deltaTime = (long)(1.0/Constants.REFRESH_RATE*1000);
 	}
 	
 	public void setMin(double min) {
@@ -49,16 +50,11 @@ public class PID {
 		this.d = d;
 	}
 	public void reset() {
-		previousTime = Common.time();
 		sumError = 0;
 		previousError = 0;
 	}
 	
 	public double calc(double input) {
-		//Set up time values
-		long time = Common.time();
-		long deltaTime = time - previousTime;
-		previousTime = time;
 		
 		//Integral calculation
 		double error = input - target;
@@ -72,12 +68,14 @@ public class PID {
 		Common.dashNum("ICalc", i*sumError);
 		//Calculate output
 		double output = p*error + i*sumError + d*derivative;
+		output = Math.min(Math.max(output, min), max);
 		if (forward) {
-			this.output += Math.max(Math.min(output, min), max);
+			this.output += output;
 		}
 		else {
-			this.output = Math.max(Math.min(output, min), max);
+			this.output = output;
 		}
-		return output;
+		System.out.println(error + " --- " + target + " --- " + input + " --- " + output);
+		return this.output;
 	}
 }

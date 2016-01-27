@@ -20,7 +20,12 @@ public class Robot extends SampleRobot {
     }
     
     public void autonomous() {
-        
+        dt.setPIDDrive(true);
+        dt.distancePID.setTarget(2);
+        while(isAutonomous() && isEnabled()) {
+        	dt.pidDrive();
+        }
+        dt.setPIDDrive(false);
     }
     
     public void operatorControl() {
@@ -28,9 +33,9 @@ public class Robot extends SampleRobot {
     	dt.heading.reset();
     	dt.heading.setTarget(0);
     	while (isOperatorControl() && isEnabled()) {
-    		Common.debug("setDrive");
+    		//Common.debug("setDrive");
     		dt.baseDrive(j.leftY(), j.leftX());
-    		Common.dashNum("Sonar Distance", bat.getRightDistance());
+    		//Common.dashNum("Sonar Distance", bat.getRightDistance());
     		dt.setDrive(j.leftY(), j.leftX());
     		Timer.delay(1.0 / Constants.REFRESH_RATE);
     		if (j.whenA()) {
@@ -40,10 +45,10 @@ public class Robot extends SampleRobot {
     			dt.heading.setHeadingHold(false);
     		}
     		if (j.whenDpadLeft()) {
-    			dt.heading.setTarget(dt.heading.getTarget()-20);
+    			dt.heading.setTarget(dt.heading.getTarget()-10);
     		}
     		if (j.whenDpadRight()) {
-    			dt.heading.setTarget(dt.heading.getTarget()+20);
+    			dt.heading.setTarget(dt.heading.getTarget()+10);
     		}
     		Common.dashNum("GyroAngle", dt.heading.getAngle());
     		Common.dashNum("GyroHeading", dt.heading.getHeading());

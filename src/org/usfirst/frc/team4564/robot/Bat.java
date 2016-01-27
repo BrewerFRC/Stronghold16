@@ -12,7 +12,6 @@ public class Bat {
 	private static final double VOLTS_PER_INCH = 5.0 / 1024 * 2.54; // Volts per inch constant
 	
 	public double getRightDistance() {
-		Common.debug("ACTIVATING BAT SONAR!!!!");
 		return sonicRight.getVoltage() / VOLTS_PER_INCH / 12;
 	}	
 	
