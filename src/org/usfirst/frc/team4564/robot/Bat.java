@@ -10,8 +10,8 @@ public class Bat {
 	private static final double CORRECTION = 1 / 1.04;
 	private static final double VOLTS_PER_INCH = 5.0 / 1024 * 2.54 * CORRECTION; // Volts per inch constant
 	
-	public double getRightDistance() {
-		return sonicRight.getVoltage() / VOLTS_PER_INCH / 12;
+	public double getDistance(double offset) {
+		return sonicRight.getVoltage() / VOLTS_PER_INCH - offset;
 	}	
 	
 	public void update() {
