@@ -32,14 +32,16 @@ public class Robot extends SampleRobot {
     	Common.debug("Starting Teleop...");
     	dt.heading.reset();
     	dt.heading.setTarget(0);
+    	long delay = 0;
     	while (isOperatorControl() && isEnabled()) {
     		//Common.debug("setDrive");
+    		long time = Common.time();
+    		delay = (long)(time + (1000/Constants.REFRESH_RATE));
     		dt.baseDrive(j.leftY(), j.leftX());
     		bat.update();
     		Common.dashNum("Sonar Distance", bat.getRightDistance());
     		Common.dashNum("Sonar Volts", bat.sonicRight.getVoltage());
     		dt.setDrive(j.leftY(), j.leftX());
-    		Timer.delay(1.0 / Constants.REFRESH_RATE);
     		if (j.whenA()) {
     			dt.heading.setHeadingHold(true);
     		}
@@ -57,6 +59,14 @@ public class Robot extends SampleRobot {
     		Common.dashNum("TargetAngle", dt.heading.getTarget());
     		Common.dashBool("HeadingHold", dt.heading.isHeadingHold());
     		Common.dashNum("Error", dt.heading.getAngle()-dt.heading.getTarget());
+    		double wait = (delay-Common.time())/1000.0;
+    		Common.dashNum("Wait", wait);
+    		Common.dashNum("Delay", delay);
+    		if (wait < 0) {
+    			wait = 0;
+    		}
+    		Timer.delay(wait);
+    		Common.dashNum("DeltaTime", Common.time() - time);
     	}
     }
     

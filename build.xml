@@ -17,11 +17,8 @@
   <!-- <property name="team-number" value=""/> -->
 
   <!-- By default the target is set to 10.TE.AM.2 -->
-<<<<<<< HEAD
   <!--property name="target" value=""/-->
-=======
   <!-- <property name="target" value=""/> -->
->>>>>>> d2082062253c214238f5e2f31bfa02706c221547
 
   <!-- Any other property in build.properties can also be overridden. -->
   

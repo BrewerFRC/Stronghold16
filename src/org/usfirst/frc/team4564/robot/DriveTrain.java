@@ -91,7 +91,6 @@ public class DriveTrain extends RobotDrive {
 			turn = heading.turnRate();
 		}
 		Common.dashNum("Turn", turn);
-		System.out.println(turn);
 		arcadeDrive(drive, turn);
 	}
 

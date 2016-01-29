@@ -1,9 +1,10 @@
 package org.usfirst.frc.team4564.robot;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
-import edu.wpi.first.wpilibj.Timer;
 public class Bat {
-
+	// 10 cycles per second update rate
+	int cycleDelay = (int)Constants.REFRESH_RATE/10;
+	int currentCycle = 0;
 	//Constants
 	AnalogInput sonicRight = new AnalogInput (Constants.ANA_SONIC_RIGHT);
 	DigitalOutput sonicRightEnable = new DigitalOutput(Constants.DIO_LEFT_SONIC_ENABLE);
@@ -15,9 +16,11 @@ public class Bat {
 	}	
 	
 	public void update() {
-	sonicRightEnable.set(true);
-	sonicRightEnable.set(false);
-	Timer.delay(1.0 / Constants.SONIC_REFRESH_RATE);
-	
+		currentCycle++;
+		if (currentCycle >= cycleDelay) {
+			sonicRightEnable.set(true);
+			sonicRightEnable.set(false);
+			currentCycle = 0;
+		}
 	}
 }

@@ -75,7 +75,6 @@ public class PID {
 		else {
 			this.output = output;
 		}
-		System.out.println(error + " --- " + target + " --- " + input + " --- " + output);
 		return this.output;
 	}
 }
