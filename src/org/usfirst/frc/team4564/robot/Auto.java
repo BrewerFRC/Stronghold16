@@ -1,9 +1,10 @@
 package org.usfirst.frc.team4564.robot;
-
+import edu.wpi.first.wpilibj.Timer;
 public class Auto {
 
 	DriveTrain dt;
 	Bat bat;
+	Heading h;
 	
 	public static final int AUTO_INIT = 0;
 	public static final int DETECT_APPROACH = 1;
@@ -21,69 +22,52 @@ public class Auto {
 	public static final int OPEN_DEFENSE = 13;
 	public static final int FINI = 14;
 	public int currentState = 0;
-	
-	public Auto (DriveTrain dt, Bat bat) {
-		this.dt = dt;
-		this.bat = bat;
-	}
+	public double detectTime;
+	public double currentTime;
 	public void updateAuto () {
-		switch(currentState) {
+		if (currentState == 0) {
+			Common.debug("Starting Init");
+			currentState++;
+		} else {
+			
+		}
 		
-		case AUTO_INIT:
-		Common.debug("Starting Init");
-		break;
+		if (currentState == 1) {
+			Common.debug("Searching For Wall");
+			if ((bat.getDistance() >= 0) && (bat.getDistance() <= 2.0)) { 
+				detectTime = Timer.getFPGATimestamp();
+				Common.debug("Panel Detected");
+				currentState = 2;
+			} else {
+				currentState = DETECT_APPROACH;
+			}
+			
+		} else {
 		
-		case DETECT_APPROACH:
-		Common.debug("Searching For Wall");
-		break;
+		}
 		
-		case APPROACH_WAIT:
-		Common.debug("Verifying Approach");
-		break;
+		if (currentState == 2) {
+			Common.debug("Verifying Approach");
+			currentTime = Timer.getFPGATimestamp();
+			if ((currentTime - detectTime == 6000) && (bat.getDistance() >= 0) && (bat.getDistance() <= 2.0))  {
+				Common.debug("Panel Verified");
+				currentState = 3;
+			} else {
+				currentState = 2;
+			}
+			
+	//	Common.debug("Searching For Exit");
+	//	Common.debug("Verifying Exit");
+	//	Common.debug("Preparing To Execute Second Turn");
+	//	Common.debug("Exectuting First Turn");
+	//	Common.debug("Verifying First Turn Completed");
+	//	Common.debug("Preping To Exectue Second Turn");
+	//	Common.debug("Executing Second Turn");
+	//	Common.debug("Verifying Second Turn Completed");
+	//	Common.debug("Returning to Defense");
+	//	Common.debug("Verifying Return");
+	//	Common.debug("Opening Defense");
 		
-		case DETECT_EXIT:
-		Common.debug("Searching For Exit");
-		break;
-		
-		case EXIT_WAIT:
-		Common.debug("Verifying Exit");
-		break;
-		
-		case PREPPING_FOR_FIRST_TURN:
-		Common.debug("Preparing To Execute Second Turn");
-		break;
-		
-		case DETECT_FIRST_TURN:
-		Common.debug("Exectuting First Turn");
-		break;
-		
-		case FIRST_TURN_WAIT:
-		Common.debug("Verifying First Turn Completed");
-		break;
-		
-		case PREP_FOR_SECOND_TURN:
-		Common.debug("Preping To Exectue Second Turn");
-		break;
-		
-		case DETECT_SECOND_TURN:
-		Common.debug("Executing Second Turn");
-		break;
-		
-		case SECOND_TURN_WAIT:
-		Common.debug("Verifying Second Turn Completed");
-		break;
-		
-		case DETECT_RETURN:
-		Common.debug("Returning to Defense");
-		break;
-		
-		case RETURN_WAIT:
-		Common.debug("Verifying Return");
-		break;
-		
-		case OPEN_DEFENSE:
-		Common.debug("Opening Defense");
-		break;
 		}
 		
 	}

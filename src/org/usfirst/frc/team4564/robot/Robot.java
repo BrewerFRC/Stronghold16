@@ -8,7 +8,7 @@ public class Robot extends SampleRobot {
 	DriveTrain dt;
 	Bat bat = new Bat();
 	Xbox j = new Xbox(0);
-	
+	Auto auto = new Auto();
     public Robot() {
     	Common.debug("New driveTrain");
     	dt = new DriveTrain();
@@ -22,8 +22,11 @@ public class Robot extends SampleRobot {
     public void autonomous() {
         dt.setPIDDrive(true);
         dt.distancePID.setTarget(2);
+        dt.setSafetyEnabled(false);
         while(isAutonomous() && isEnabled()) {
         	dt.pidDrive();
+        	bat.update();
+        	auto.updateAuto();
         }
         dt.setPIDDrive(false);
     }
@@ -39,7 +42,7 @@ public class Robot extends SampleRobot {
     		delay = (long)(time + (1000/Constants.REFRESH_RATE));
     		dt.baseDrive(j.leftY(), j.leftX());
     		bat.update();
-    		Common.dashNum("Sonar Distance", bat.getDistance(0));
+    		Common.dashNum("Sonar Distance", bat.getDistance());
     		Common.dashNum("Sonar Volts", bat.sonicRight.getVoltage());
     		dt.setDrive(j.leftY(), j.leftX());
     		if (j.whenA()) {
