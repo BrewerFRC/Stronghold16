@@ -2,12 +2,14 @@
 package org.usfirst.frc.team4564.robot;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Robot extends SampleRobot {
 	
 	DriveTrain dt;
 	Bat bat = new Bat();
 	Xbox j = new Xbox(0);
+	NetworkTable table;
 	
     public Robot() {
     	Common.debug("New driveTrain");
@@ -17,6 +19,10 @@ public class Robot extends SampleRobot {
     
     public void robotInit () {
     	Common.debug("Robot Init...");
+    	table = NetworkTable.getTable("dashTable");
+    	table.putNumber("gyroP", Constants.GYRO_P);
+    	table.putNumber("gyroI", Constants.GYRO_I);
+    	table.putNumber("gyroD", Constants.GYRO_D);
     }
     
     public void autonomous() {
@@ -54,19 +60,22 @@ public class Robot extends SampleRobot {
     		if (j.whenDpadRight()) {
     			dt.heading.setTarget(dt.heading.getTarget()+10);
     		}
+    		Constants.GYRO_P = table.getNumber("gyroP", 0);
+    		Constants.GYRO_I = table.getNumber("gyroI", 0);
+    		Constants.GYRO_D = table.getNumber("gyroD", 0);
+    		Common.dashNum("Gyro P", Constants.GYRO_P);
+    		Common.dashNum("Gyro I", Constants.GYRO_I);
+    		Common.dashNum("Gyro D", Constants.GYRO_D);
     		Common.dashNum("GyroAngle", dt.heading.getAngle());
     		Common.dashNum("GyroHeading", dt.heading.getHeading());
     		Common.dashNum("TargetAngle", dt.heading.getTarget());
     		Common.dashBool("HeadingHold", dt.heading.isHeadingHold());
     		Common.dashNum("Error", dt.heading.getAngle()-dt.heading.getTarget());
     		double wait = (delay-Common.time())/1000.0;
-    		Common.dashNum("Wait", wait);
-    		Common.dashNum("Delay", delay);
     		if (wait < 0) {
     			wait = 0;
     		}
     		Timer.delay(wait);
-    		Common.dashNum("DeltaTime", Common.time() - time);
     	}
     }
     

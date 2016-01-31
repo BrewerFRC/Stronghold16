@@ -1,10 +1,12 @@
 package org.usfirst.frc.team4564.robot;
 
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 public class Heading {
-	private Gyro gyro;
+	private Gyro gyroOld;
+	private ADXRS450_Gyro gyro;
 	//PID takes cumulative angles
 	private PID pid;
 	private boolean headingHold;
@@ -15,10 +17,13 @@ public class Heading {
 		pid.setTarget(0.0);
 		pid.setMin(-1);
 		pid.setMax(1);
-		gyro = new AnalogGyro(pin);
+		//gyro = new AnalogGyro(pin);
+		gyro = new ADXRS450_Gyro();
+		
 	}
 	
 	public void reset() {
+		gyro.calibrate();
 		gyro.reset();
 		resetPID();
 	}
