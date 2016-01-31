@@ -8,7 +8,7 @@ public class Robot extends SampleRobot {
 	DriveTrain dt;
 	Bat bat = new Bat();
 	Xbox j = new Xbox(0);
-	Auto auto = new Auto();
+	Auto auto = new Auto (dt, bat);
     public Robot() {
     	Common.debug("New driveTrain");
     	dt = new DriveTrain();
@@ -23,12 +23,15 @@ public class Robot extends SampleRobot {
         dt.setPIDDrive(true);
         dt.distancePID.setTarget(2);
         dt.setSafetyEnabled(false);
+        auto.currentState = 0;
         while(isAutonomous() && isEnabled()) {
         	dt.pidDrive();
         	bat.update();
         	auto.updateAuto();
+        	Common.dashNum("Sonar", bat.getDistance());
         }
         dt.setPIDDrive(false);
+        Common.dashNum("Sonar", bat.getDistance());
     }
     
     public void operatorControl() {
