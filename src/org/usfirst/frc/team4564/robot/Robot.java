@@ -10,7 +10,8 @@ public class Robot extends SampleRobot {
 	Bat bat = new Bat();
 	Xbox j = new Xbox(0);
 	NetworkTable table;
-	
+	Auto auto = new Auto (dt, bat);
+	Winch w = new Winch();
     public Robot() {
     	Common.debug("New driveTrain");
     	dt = new DriveTrain();
@@ -28,10 +29,16 @@ public class Robot extends SampleRobot {
     public void autonomous() {
         dt.setPIDDrive(true);
         dt.distancePID.setTarget(2);
+        dt.setSafetyEnabled(false);
+        auto.currentState = 0;
         while(isAutonomous() && isEnabled()) {
         	dt.pidDrive();
+        	bat.update();
+        	auto.updateAuto();
+        	Common.dashNum("Sonar", bat.getDistance());
         }
         dt.setPIDDrive(false);
+        Common.dashNum("Sonar", bat.getDistance());
     }
     
     public void operatorControl() {
@@ -45,9 +52,13 @@ public class Robot extends SampleRobot {
     		delay = (long)(time + (1000/Constants.REFRESH_RATE));
     		dt.baseDrive(j.leftY(), j.leftX());
     		bat.update();
-    		Common.dashNum("Sonar Distance", bat.getDistance(0));
+    		Common.dashNum("Sonar Distance", bat.getDistance());
     		Common.dashNum("Sonar Volts", bat.sonicRight.getVoltage());
+			Common.dashBool("restricted from moving down?", w.winchLimit.get());
+			Common.dashNum("allowed to move up?", w.infraRed.getVoltage());
+			Common.dashNum("right y output", j.leftY());
     		dt.setDrive(j.leftY(), j.leftX());
+    		w.setWinchMotor(j.rightY());
     		if (j.whenA()) {
     			dt.heading.setHeadingHold(true);
     		}

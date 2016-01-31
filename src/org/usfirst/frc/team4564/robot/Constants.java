@@ -7,11 +7,14 @@ public class Constants {
 	public static final int PWM_DRIVE_FL = 4;
 	public static final int PWM_DRIVE_RR = 2;
 	public static final int PWM_DRIVE_RL = 3;
+	public static final int PWM_WINCH_DRIVE_TM = 5;
 	
 	//DIO Port
 	public static final int DIO_DRIVE_FR_ENCODER_A = 1;
 	public static final int DIO_DRIVE_FR_ENCODER_B = 2;
 	public static final int DIO_LEFT_SONIC_ENABLE = 0;
+	public static final int DIO_WINCH_EXTEND_LIMIT = 3;
+	public static final int DIO_WINCH_RETRACT_LIMIT = 4;
 	
 	//Analog Ports
 	//public static final int ANA_GYRO = 0;

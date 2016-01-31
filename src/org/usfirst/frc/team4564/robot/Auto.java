@@ -1,5 +1,5 @@
 package org.usfirst.frc.team4564.robot;
-
+import edu.wpi.first.wpilibj.Timer;
 public class Auto {
 
 	DriveTrain dt;
@@ -21,71 +21,74 @@ public class Auto {
 	public static final int OPEN_DEFENSE = 13;
 	public static final int FINI = 14;
 	public int currentState = 0;
+	public double detectTime;
+	public double currentTime;
 	
-	public Auto (DriveTrain dt, Bat bat) {
+	public Auto(DriveTrain dt, Bat bat) {
 		this.dt = dt;
 		this.bat = bat;
 	}
-	public void updateAuto () {
-		switch(currentState) {
-		
-		case AUTO_INIT:
-		Common.debug("Starting Init");
-		break;
-		
-		case DETECT_APPROACH:
-		Common.debug("Searching For Wall");
-		break;
-		
-		case APPROACH_WAIT:
-		Common.debug("Verifying Approach");
-		break;
-		
-		case DETECT_EXIT:
-		Common.debug("Searching For Exit");
-		break;
-		
-		case EXIT_WAIT:
-		Common.debug("Verifying Exit");
-		break;
-		
-		case PREPPING_FOR_FIRST_TURN:
-		Common.debug("Preparing To Execute Second Turn");
-		break;
-		
-		case DETECT_FIRST_TURN:
-		Common.debug("Exectuting First Turn");
-		break;
-		
-		case FIRST_TURN_WAIT:
-		Common.debug("Verifying First Turn Completed");
-		break;
-		
-		case PREP_FOR_SECOND_TURN:
-		Common.debug("Preping To Exectue Second Turn");
-		break;
-		
-		case DETECT_SECOND_TURN:
-		Common.debug("Executing Second Turn");
-		break;
-		
-		case SECOND_TURN_WAIT:
-		Common.debug("Verifying Second Turn Completed");
-		break;
-		
-		case DETECT_RETURN:
-		Common.debug("Returning to Defense");
-		break;
-		
-		case RETURN_WAIT:
-		Common.debug("Verifying Return");
-		break;
-		
-		case OPEN_DEFENSE:
-		Common.debug("Opening Defense");
-		break;
-		}
-		
-	}
 	
+	public void updateAuto () {
+		
+		switch (currentState) {
+			case 0:
+				currentState = 1;
+				Common.dashNum("currentState", currentState);
+				break;
+			
+			case 1:
+				if ((bat.getDistance() >= 0.0) && (bat.getDistance() <= 15.0)) { 
+					detectTime = Timer.getFPGATimestamp();
+					currentState = 2;
+					Common.dashNum("currentState", currentState);
+				} else {
+					currentState = 1;
+					Common.dashNum("currentState", currentState);
+				}
+				break;
+				
+			case 2:
+				currentTime = Timer.getFPGATimestamp();
+				if ((bat.getDistance() >= 0.0) && (bat.getDistance() <= 15.0)) {
+					if(currentTime - detectTime >= 2.0) {
+						currentState = 3;
+						Common.dashNum("currentState", currentState);
+					} else { 
+						currentState = 2;
+						Common.dashNum("currentState", currentState);
+					}
+				} else {
+					currentState = 1;
+					Common.dashNum("currentState", currentState);
+					
+				}
+				break;
+				
+			case 3:
+				if ( bat.getDistance() >= 15.0) {
+					detectTime = Timer.getFPGATimestamp();
+					currentState = 4;
+					Common.dashNum("currentState", currentState);
+				} else {
+					currentState = 3;
+					Common.dashNum("currentState", currentState);
+				}	
+				break;
+				
+			case 4:
+				currentTime = Timer.getFPGATimestamp();
+				if ((bat.getDistance() >= 0) && (bat.getDistance() <= 15.0)) {
+					if (currentTime - detectTime >= 2.0) {
+						currentState = 5;
+						Common.dashNum("currentState", currentState);
+					} else {
+						currentState = 3;
+					}
+				} else {
+					currentState = 3;
+				}
+			    break;
+		}	
+	}
 }
