@@ -9,6 +9,7 @@ public class Robot extends SampleRobot {
 	Bat bat = new Bat();
 	Xbox j = new Xbox(0);
 	Auto auto = new Auto (dt, bat);
+	Winch w = new Winch();
     public Robot() {
     	Common.debug("New driveTrain");
     	dt = new DriveTrain();
@@ -47,7 +48,11 @@ public class Robot extends SampleRobot {
     		bat.update();
     		Common.dashNum("Sonar Distance", bat.getDistance());
     		Common.dashNum("Sonar Volts", bat.sonicRight.getVoltage());
+			Common.dashBool("restricted from moving down?", w.winchLimit.get());
+			Common.dashNum("allowed to move up?", w.infraRed.getVoltage());
+			Common.dashNum("right y output", j.leftY());
     		dt.setDrive(j.leftY(), j.leftX());
+    		w.setWinchMotor(j.rightY());
     		if (j.whenA()) {
     			dt.heading.setHeadingHold(true);
     		}
