@@ -31,11 +31,14 @@ public class DriveTrain extends RobotDrive {
 	
 	//DriveTrain constructor
 	public DriveTrain() {
-		super(FrontR, FrontL, BackR, BackL);
-        setInvertedMotor(RobotDrive.MotorType.kFrontLeft,true);
-        setInvertedMotor(RobotDrive.MotorType.kRearLeft,true);
-        setInvertedMotor(RobotDrive.MotorType.kFrontRight,true);
-        setInvertedMotor(RobotDrive.MotorType.kRearRight,true);
+		super(FrontL, FrontR);
+		//	setInvertedMotor(RobotDrive.MotorType.kFrontLeft,true);
+		//	setInvertedMotor(RobotDrive.MotorType.kFrontLeft,true);
+	//super(FrontL, FrontR, BackL, BackR);
+       // setInvertedMotor(RobotDrive.MotorType.kFrontLeft,false);
+        //setInvertedMotor(RobotDrive.MotorType.kRearLeft,false);
+      //  setInvertedMotor(RobotDrive.MotorType.kFrontRight,false);
+        //setInvertedMotor(RobotDrive.MotorType.kRearRight,false);
         
 	}
 	
@@ -91,7 +94,8 @@ public class DriveTrain extends RobotDrive {
 			turn = heading.turnRate();
 		}
 		Common.dashNum("Turn", turn);
-		arcadeDrive(drive, turn);
+		Common.dashNum("Drive", drive);
+		arcadeDrive(-drive, -turn);
 	}
 
 	public void baseDrive(double drive, double turn) {

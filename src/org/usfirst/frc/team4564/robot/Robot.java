@@ -50,13 +50,13 @@ public class Robot extends SampleRobot {
     		//Common.debug("setDrive");
     		long time = Common.time();
     		delay = (long)(time + (1000/Constants.REFRESH_RATE));
-    		dt.baseDrive(j.leftY(), j.leftX());
+    		dt.setDrive(j.leftY(), j.leftX());
     		bat.update();
     		Common.dashNum("Sonar Distance", bat.getDistance());
     		Common.dashNum("Sonar Volts", bat.sonicRight.getVoltage());
 			Common.dashBool("restricted from moving down?", w.winchLimit.get());
 			Common.dashNum("allowed to move up?", w.infraRed.getVoltage());
-			Common.dashNum("right y output", j.leftY());
+			Common.dashNum("left y output", j.leftY());
     		dt.setDrive(j.leftY(), j.leftX());
     		w.setWinchMotor(j.rightY());
     		if (j.whenA()) {
