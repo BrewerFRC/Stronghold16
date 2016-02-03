@@ -96,6 +96,8 @@ public class Auto {
 		public static final int DRIVING = 1;
 		public static final int NOT_TURNING = 2;
 		public static final int TURNING = 3;
+		public static final int DEFENSE_CROSSED = 4;
+		
 		public int defenseType = 0;
 		public int driveState = 0;
 		Gate gate = new Gate();
@@ -105,13 +107,19 @@ public class Auto {
 		
 			switch(defenseType) {
 				case 0:
-					if (driveState == 0) {
-						dt.setDrive(.5,0);
-						driveState = 1;
-					
-					
+						if (driveState == 0) {
+							dt.setDrive(.5,0);
+							driveState = 1;
+						} 
+						if (driveState == 1) {
+							dt.setDrive(.5,0);
+							if (driveComplete()) {
+								driveState = 4;
+							} else {						
+					}
 				}
-			}	
+				break;
+			}
 		}	
 	}	
 }
