@@ -41,5 +41,7 @@ public class Constants {
 	
 	//Sonic loop speed
 	public static final int SONIC_REFRESH_RATE = 10;
+	
+
 
 }

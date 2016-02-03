@@ -5,6 +5,7 @@ public class Auto {
 	DriveTrain dt;
 	Bat bat;
 	
+	//Gate Constants
 	public static final int AUTO_INIT = 0;
 	public static final int DETECT_APPROACH = 1;
 	public static final int APPROACH_WAIT = 2;
@@ -20,6 +21,11 @@ public class Auto {
 	public static final int RETURN_WAIT = 12;
 	public static final int OPEN_DEFENSE = 13;
 	public static final int FINI = 14;
+	public static final double MIN_PANEL_DISTANCE = 0;
+	public static final double MAX_PANEL_DISTANCE = 15;
+	public static final double VERIFICATION_TIME = 2;
+	
+	//Gate Variables
 	public int currentState = 0;
 	public double detectTime;
 	public double currentTime;
@@ -27,68 +33,62 @@ public class Auto {
 	public Auto(DriveTrain dt, Bat bat) {
 		this.dt = dt;
 		this.bat = bat;
+		dt.setPIDDrive(true);
 	}
 	
-	public void updateAuto () {
+	public void updateGate () {
 		
 		switch (currentState) {
 			case 0:
-				currentState = 1;
-				Common.dashNum("currentState", currentState);
+				currentState = DETECT_APPROACH;
 				break;
 			
 			case 1:
-				if ((bat.getDistance() >= 0.0) && (bat.getDistance() <= 15.0)) { 
+				if ((bat.getDistance() >= MIN_PANEL_DISTANCE) && (bat.getDistance() <= MAX_PANEL_DISTANCE)) { 
 					detectTime = Timer.getFPGATimestamp();
-					currentState = 2;
-					Common.dashNum("currentState", currentState);
+					currentState = APPROACH_WAIT;
 				} else {
-					currentState = 1;
-					Common.dashNum("currentState", currentState);
+					currentState =  DETECT_APPROACH;
 				}
 				break;
 				
 			case 2:
 				currentTime = Timer.getFPGATimestamp();
-				if ((bat.getDistance() >= 0.0) && (bat.getDistance() <= 15.0)) {
-					if(currentTime - detectTime >= 2.0) {
-						currentState = 3;
-						Common.dashNum("currentState", currentState);
+				if ((bat.getDistance() >= MIN_PANEL_DISTANCE ) && (bat.getDistance() <= MAX_PANEL_DISTANCE )) {
+					if(currentTime - detectTime >= VERIFICATION_TIME) {
+						currentState = DETECT_EXIT;
 					} else { 
-						currentState = 2;
-						Common.dashNum("currentState", currentState);
+						currentState = APPROACH_WAIT;
 					}
 				} else {
-					currentState = 1;
-					Common.dashNum("currentState", currentState);
-					
+					currentState = DETECT_APPROACH;
 				}
 				break;
 				
 			case 3:
-				if ( bat.getDistance() >= 15.0) {
+				if ( bat.getDistance() >= MAX_PANEL_DISTANCE) {
 					detectTime = Timer.getFPGATimestamp();
-					currentState = 4;
-					Common.dashNum("currentState", currentState);
+					currentState = EXIT_WAIT;
 				} else {
-					currentState = 3;
-					Common.dashNum("currentState", currentState);
+					currentState = DETECT_EXIT;
 				}	
 				break;
 				
 			case 4:
 				currentTime = Timer.getFPGATimestamp();
-				if ((bat.getDistance() >= 0) && (bat.getDistance() <= 15.0)) {
-					if (currentTime - detectTime >= 2.0) {
-						currentState = 5;
-						Common.dashNum("currentState", currentState);
+				if ((bat.getDistance() >= MIN_PANEL_DISTANCE) && (bat.getDistance() <= MAX_PANEL_DISTANCE)) {
+					if (currentTime - detectTime >= VERIFICATION_TIME) {
+						currentState = PREPPING_FOR_FIRST_TURN;
 					} else {
-						currentState = 3;
+						currentState = DETECT_EXIT;
 					}
 				} else {
-					currentState = 3;
+					currentState = DETECT_EXIT;
 				}
 			    break;
 		}	
+	}
+	public class Gate {	
+		
 	}
 }

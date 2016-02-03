@@ -34,7 +34,8 @@ public class Robot extends SampleRobot {
         while(isAutonomous() && isEnabled()) {
         	dt.pidDrive();
         	bat.update();
-        	auto.updateAuto();
+        	auto.updateGate();
+        	Common.dashNum("currentState", auto.currentState);
         	Common.dashNum("Sonar", bat.getDistance());
         }
         dt.setPIDDrive(false);
