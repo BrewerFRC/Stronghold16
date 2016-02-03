@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Robot extends SampleRobot {
-	
+	Thrower thrower = new Thrower();
 	DriveTrain dt;
 	Bat bat = new Bat();
 	Xbox j = new Xbox(0);
@@ -59,10 +59,10 @@ public class Robot extends SampleRobot {
 			Common.dashNum("left y output", j.leftY());
     		dt.setDrive(j.leftY(), j.leftX());
     		w.setWinchMotor(j.rightY());
-    		if (j.whenA()) {
+    		if (j.whenY()) {
     			dt.heading.setHeadingHold(true);
     		}
-    		if (j.whenB()) {
+    		if (j.whenX()) {
     			dt.heading.setHeadingHold(false);
     		}
     		if (j.whenDpadLeft()) {
@@ -71,6 +71,19 @@ public class Robot extends SampleRobot {
     		if (j.whenDpadRight()) {
     			dt.heading.setTarget(dt.heading.getTarget()+10);
     		}
+    		
+    		thrower.setFlywheel(j.leftTrigger());
+    		if (j.B()){	// pulls ball back as long as held down
+    			thrower.setInternalIntake(-0.25);
+    		}
+    		if (j.A()){ //throw into shooter & pick up ball
+    			thrower.setInternalIntake(0.85);
+    		}
+    		if (j.whenStart()){ //reset
+    			thrower.setInternalIntake(-0.85);
+    		}
+    		
+    		
     		Constants.GYRO_P = table.getNumber("gyroP", 0);
     		Constants.GYRO_I = table.getNumber("gyroI", 0);
     		Constants.GYRO_D = table.getNumber("gyroD", 0);

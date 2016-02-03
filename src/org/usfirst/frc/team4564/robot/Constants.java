@@ -4,10 +4,13 @@ public class Constants {
 
 	// PWM Constants
 	public static final int PWM_DRIVE_FR = 0;
+	
 	public static final int PWM_DRIVE_FL = 2;
 	public static final int PWM_DRIVE_RR = 1;
 	public static final int PWM_DRIVE_RL = 3;
-	public static final int PWM_WINCH_DRIVE_TM = 5;
+	public static final int PWM_WINCH_DRIVE_TM = 4;
+	public static final int PWM_THROWER_FLYWHEEL = 5;
+	public static final int PWM_THROWER_INT_INTAKE = 6;
 	
 	//DIO Port
 	public static final int DIO_DRIVE_FR_ENCODER_A = 1;
