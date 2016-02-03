@@ -14,7 +14,7 @@ public class DriveTrain extends RobotDrive {
 	static Talon BackL = new Talon(Constants.PWM_DRIVE_RL);
 	
 	// Encoder Definitions
-	private Encoder encoder_FR = new Encoder(Constants.DIO_DRIVE_FR_ENCODER_A, Constants.DIO_DRIVE_FR_ENCODER_B, 
+	private Encoder encoderFR = new Encoder(Constants.DIO_DRIVE_FR_ENCODER_A, Constants.DIO_DRIVE_FR_ENCODER_B, 
 			true, EncodingType.k1X);
 	
 	//Distance PID
@@ -22,6 +22,8 @@ public class DriveTrain extends RobotDrive {
 	
 	//Gyro definition
 	public Heading heading = new Heading(Constants.ANA_GYRO, Constants.GYRO_P, Constants.GYRO_I, Constants.GYRO_D, Constants.GYRO_SENSITIVITY);
+	
+	public ActionHandler actionHandler = new ActionHandler();
 	
 	//Accel Curve Speeds
 	double driveSpeed = 0;
@@ -43,6 +45,31 @@ public class DriveTrain extends RobotDrive {
 		
 	}
 	
+	public void rotateTo(double heading) {
+		this.heading.setHeading(heading);
+		actionHandler.setTargetReachedFunction(
+			() -> Math.abs(this.heading.getTarget() - this.heading.getAngle()) <= 2
+		);
+	}
+	
+	public void relTurn(double heading) {
+		this.heading.setTarget(this.heading.getTarget() + heading);
+		actionHandler.setTargetReachedFunction(
+			() -> Math.abs(this.heading.getTarget() - this.heading.getAngle()) <= 2
+		);
+	}
+	
+	public void driveDistance(double inches) {
+		this.distancePID.setTarget(this.distancePID.getTarget() + inches);
+		actionHandler.setTargetReachedFunction(
+			() -> Math.abs(this.distancePID.getTarget() - this.encoderFR.getDistance()) <= 2
+		);
+	}
+	
+	public boolean driveComplete() {
+		return this.actionHandler.isComplete();
+	}
+	
 	public void setPIDDrive(boolean pidDrive) {
 		if (pidDrive) {
 			distancePID.reset();
@@ -55,7 +82,7 @@ public class DriveTrain extends RobotDrive {
 	}
 	
 	public void pidDrive() {
-		double speed = distancePID.calc(encoder_FR.getDistance());
+		double speed = distancePID.calc(encoderFR.getDistance());
 		double turn = heading.turnRate();
 		setDrive(speed, turn);
 	}
