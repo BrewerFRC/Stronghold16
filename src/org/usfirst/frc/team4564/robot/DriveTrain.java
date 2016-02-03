@@ -8,13 +8,11 @@ import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 public class DriveTrain extends RobotDrive {
 		
 	//Drive Motors
-	static Talon FrontR = new Talon(Constants.PWM_DRIVE_FR);
-	static Talon FrontL = new Talon(Constants.PWM_DRIVE_FL);
-	static Talon BackR = new Talon(Constants.PWM_DRIVE_RR);
-	static Talon BackL = new Talon(Constants.PWM_DRIVE_RL);
+	static Talon FrontL = new Talon(Constants.PWM_DRIVE_L);
+	static Talon FrontR = new Talon(Constants.PWM_DRIVE_R);
 	
 	// Encoder Definitions
-	private Encoder encoderFR = new Encoder(Constants.DIO_DRIVE_FR_ENCODER_A, Constants.DIO_DRIVE_FR_ENCODER_B, 
+	private Encoder encoder = new Encoder(Constants.DIO_DRIVE_FR_ENCODER_A, Constants.DIO_DRIVE_FR_ENCODER_B, 
 			true, EncodingType.k1X);
 	
 	//Distance PID
@@ -33,12 +31,7 @@ public class DriveTrain extends RobotDrive {
 	
 	//DriveTrain constructor
 	public DriveTrain() {
-		super(FrontR, FrontL, BackR, BackL);
-        setInvertedMotor(RobotDrive.MotorType.kFrontLeft,true);
-        setInvertedMotor(RobotDrive.MotorType.kRearLeft,true);
-        setInvertedMotor(RobotDrive.MotorType.kFrontRight,true);
-        setInvertedMotor(RobotDrive.MotorType.kRearRight,true);
-        
+		super(FrontR, FrontL);
 	}
 	
 	public void init() {
@@ -62,7 +55,7 @@ public class DriveTrain extends RobotDrive {
 	public void driveDistance(double inches) {
 		this.distancePID.setTarget(this.distancePID.getTarget() + inches);
 		actionHandler.setTargetReachedFunction(
-			() -> Math.abs(this.distancePID.getTarget() - this.encoderFR.getDistance()) <= 2
+			() -> Math.abs(this.distancePID.getTarget() - this.encoder.getDistance()) <= 2
 		);
 	}
 	
@@ -82,7 +75,7 @@ public class DriveTrain extends RobotDrive {
 	}
 	
 	public void pidDrive() {
-		double speed = distancePID.calc(encoderFR.getDistance());
+		double speed = distancePID.calc(encoder.getDistance());
 		double turn = heading.turnRate();
 		setDrive(speed, turn);
 	}
@@ -118,7 +111,7 @@ public class DriveTrain extends RobotDrive {
 			turn = heading.turnRate();
 		}
 		Common.dashNum("Turn", turn);
-		arcadeDrive(drive, turn);
+		arcadeDrive(-drive, -turn);
 	}
 
 	public void baseDrive(double drive, double turn) {

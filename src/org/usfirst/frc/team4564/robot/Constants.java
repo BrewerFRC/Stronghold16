@@ -3,11 +3,8 @@ package org.usfirst.frc.team4564.robot;
 public class Constants {
 
 	// PWM Constants
-	public static final int PWM_DRIVE_FR = 0;
-	
-	public static final int PWM_DRIVE_FL = 2;
-	public static final int PWM_DRIVE_RR = 1;
-	public static final int PWM_DRIVE_RL = 3;
+	public static final int PWM_DRIVE_L = 0;
+	public static final int PWM_DRIVE_R = 1;
 	public static final int PWM_WINCH_DRIVE_TM = 4;
 	public static final int PWM_THROWER_FLYWHEEL = 5;
 	public static final int PWM_THROWER_INT_INTAKE = 6;
