@@ -5,7 +5,7 @@ public class Auto {
 	DriveTrain dt;
 	Bat bat;
 	
-	//Gate Constants
+	//Sheild Constants
 	public static final int AUTO_INIT = 0;
 	public static final int DETECT_APPROACH = 1;
 	public static final int APPROACH_WAIT = 2;
@@ -21,8 +21,8 @@ public class Auto {
 	public static final int RETURN_WAIT = 12;
 	public static final int OPEN_DEFENSE = 13;
 	public static final int FINI = 14;
-	public static final double MIN_PANEL_DISTANCE = 0;
-	public static final double MAX_PANEL_DISTANCE = 15;
+	public static final double MIN_SHEILD_DISTANCE = 0;
+	public static final double MAX_SHEILD_DISTANCE = 15;
 	public static final double VERIFICATION_TIME = 2;
 	
 	//Gate Variables
@@ -36,7 +36,7 @@ public class Auto {
 		dt.setPIDDrive(true);
 	}
 	
-	public void updateGate () {
+	public void updateAuto () {
 		
 		switch (currentState) {
 			case 0:
@@ -44,7 +44,7 @@ public class Auto {
 				break;
 			
 			case 1:
-				if ((bat.getDistance() >= MIN_PANEL_DISTANCE) && (bat.getDistance() <= MAX_PANEL_DISTANCE)) { 
+				if ((bat.getDistance() >= MIN_SHEILD_DISTANCE) && (bat.getDistance() <= MAX_SHEILD_DISTANCE)) { 
 					detectTime = Timer.getFPGATimestamp();
 					currentState = APPROACH_WAIT;
 				} else {
@@ -54,7 +54,7 @@ public class Auto {
 				
 			case 2:
 				currentTime = Timer.getFPGATimestamp();
-				if ((bat.getDistance() >= MIN_PANEL_DISTANCE ) && (bat.getDistance() <= MAX_PANEL_DISTANCE )) {
+				if ((bat.getDistance() >= MIN_SHEILD_DISTANCE ) && (bat.getDistance() <= MAX_SHEILD_DISTANCE )) {
 					if(currentTime - detectTime >= VERIFICATION_TIME) {
 						currentState = DETECT_EXIT;
 					} else { 
@@ -66,7 +66,7 @@ public class Auto {
 				break;
 				
 			case 3:
-				if ( bat.getDistance() >= MAX_PANEL_DISTANCE) {
+				if ( bat.getDistance() >= MAX_SHEILD_DISTANCE) {
 					detectTime = Timer.getFPGATimestamp();
 					currentState = EXIT_WAIT;
 				} else {
@@ -76,7 +76,7 @@ public class Auto {
 				
 			case 4:
 				currentTime = Timer.getFPGATimestamp();
-				if ((bat.getDistance() >= MIN_PANEL_DISTANCE) && (bat.getDistance() <= MAX_PANEL_DISTANCE)) {
+				if ((bat.getDistance() >= MIN_SHEILD_DISTANCE) && (bat.getDistance() <= MAX_SHEILD_DISTANCE)) {
 					if (currentTime - detectTime >= VERIFICATION_TIME) {
 						currentState = PREPPING_FOR_FIRST_TURN;
 					} else {
@@ -86,40 +86,66 @@ public class Auto {
 					currentState = DETECT_EXIT;
 				}
 			    break;
-		}	
+		}
 	}
 
 	
-	public class Gate {	
+	public class Shield {	
 		
 		public static final int NOT_DRIVING = 0;
 		public static final int DRIVING = 1;
-		public static final int NOT_TURNING = 2;
+		public static final int DEFENSE_CROSSED = 2;
 		public static final int TURNING = 3;
-		public static final int DEFENSE_CROSSED = 4;
 		
 		public int defenseType = 0;
 		public int driveState = 0;
-		Gate gate = new Gate();
+		// Input for turn logic
+		public int targetPlatform = 0;
+		public int currentPlatform = 0;		
+		Shield shield = new Shield();
 		DriveTrain drivetrain = new DriveTrain();
 		
-		public void updateDrive() {
+		public void driveDefense(int defenseType) {
 		
 			switch(defenseType) {
 				case 0:
-						if (driveState == 0) {
+						if (driveState == NOT_DRIVING) {
 							dt.setDrive(.5,0);
-							driveState = 1;
+							driveState = DRIVING;
 						} 
-						if (driveState == 1) {
+						if (driveState == DRIVING) {
 							dt.setDrive(.5,0);
-							if (driveComplete()) {
-								driveState = 4;
-							} else {						
-					}
-				}
+							if (defenseComplete()) {
+								driveState = DEFENSE_CROSSED;
+							}
+						}
+						if (driveState == DEFENSE_CROSSED) {
+							dt.rotateTo(turnLogic(targetPlatform, currentPlatform));
+							driveState = TURNING;
+						}
+						if (driveState == TURNING)
+						
 				break;
 			}
 		}	
-	}	
-}
+		
+		public double turnLogic(int targetPlatform, int currentPlatform) {
+			if ( targetPlatform - currentPlatform > 0) {
+				return 90;
+			} else {
+				return -90;
+			}
+		}
+		
+		public double moveToPlatform(int currentPlatform, int targetPlatform) {
+			public int deltaPlatform = Math.abs(currentPlatform - targetPlatform * 25);
+			dt.driveDistance(distanceToTarget);
+		}
+		
+		public boolean defenseComplete() {
+			if (currentState == PREPPING_FOR_FIRST_TURN) {
+				return true;
+			}
+		}
+	}
+}	
