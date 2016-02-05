@@ -25,10 +25,11 @@ public class Auto {
 	public static final double MAX_SHEILD_DISTANCE = 15;
 	public static final double VERIFICATION_TIME = 2;
 	
-	//Gate Variables
+	//Auto Variables
 	public int currentState = 0;
 	public double detectTime;
 	public double currentTime;
+	public double shieldDistance;
 	
 	public Auto(DriveTrain dt, Bat bat) {
 		this.dt = dt;
@@ -79,6 +80,7 @@ public class Auto {
 				if ((bat.getDistance() >= MIN_SHEILD_DISTANCE) && (bat.getDistance() <= MAX_SHEILD_DISTANCE)) {
 					if (currentTime - detectTime >= VERIFICATION_TIME) {
 						currentState = PREPPING_FOR_FIRST_TURN;
+						shieldDistance = bat.getDistance();
 					} else {
 						currentState = DETECT_EXIT;
 					}
@@ -96,12 +98,11 @@ public class Auto {
 		public static final int DRIVING = 1;
 		public static final int DEFENSE_CROSSED = 2;
 		public static final int TURNING = 3;
-		
+		public static final double PLATFORM_WIDTH = 52.5;
 		public int defenseType = 0;
 		public int driveState = 0;
-		// Input for turn logic
 		public int targetPlatform = 0;
-		public int currentPlatform = 0;		
+		public int startingPlatform = 0;
 		Shield shield = new Shield();
 		DriveTrain drivetrain = new DriveTrain();
 		
@@ -120,10 +121,11 @@ public class Auto {
 							}
 						}
 						if (driveState == DEFENSE_CROSSED) {
-							dt.rotateTo(turnLogic(targetPlatform, currentPlatform));
+							dt.rotateTo(turnLogic(targetPlatform, startingPlatform));
 							driveState = TURNING;
 						}
 						if (driveState == TURNING)
+							dt.driveDistance(xDrive);
 						
 				break;
 			}
@@ -137,14 +139,23 @@ public class Auto {
 			}
 		}
 		
-		public double moveToPlatform(int currentPlatform, int targetPlatform) {
-			public int deltaPlatform = Math.abs(currentPlatform - targetPlatform * 25);
-			dt.driveDistance(distanceToTarget);
+		public double xAbs(int startingPlatform, double PLATFORM_WIDTH, double shieldDistance) {
+			return (startingPlatform * PLATFORM_WIDTH - shieldDistance);
+		}
+		
+		public double xTarget(int targetPlatform, double PLATFORM_WIDTH, double shieldDistance) {
+			return (targetPlatform * PLATFORM_WIDTH - (PLATFORM_WIDTH * .5));
+		}
+		
+		public double xDrive (double xAbs, double xTarget) {
+			return (xAbs - xTarget);
 		}
 		
 		public boolean defenseComplete() {
 			if (currentState == PREPPING_FOR_FIRST_TURN) {
-				return true;
+				return (true);
+			} else { 
+				return (false);
 			}
 		}
 	}
