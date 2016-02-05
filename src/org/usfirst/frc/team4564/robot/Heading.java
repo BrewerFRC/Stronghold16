@@ -23,7 +23,6 @@ public class Heading {
 	}
 	
 	public void reset() {
-		gyro.calibrate();
 		gyro.reset();
 		resetPID();
 	}
@@ -31,6 +30,11 @@ public class Heading {
 		pid.reset();
 	}
 	
+	public void setPID(double p, double i, double d) {
+		pid.setP(p);
+		pid.setI(i);
+		pid.setD(d);
+	}
 	public double getTarget() {
 		return pid.getTarget();
 	}
