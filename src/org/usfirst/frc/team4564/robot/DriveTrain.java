@@ -12,7 +12,7 @@ public class DriveTrain extends RobotDrive {
 	static Talon FrontR = new Talon(Constants.PWM_DRIVE_R);
 	
 	// Encoder Definitions
-	private Encoder encoder = new Encoder(Constants.DIO_DRIVE_FR_ENCODER_A, Constants.DIO_DRIVE_FR_ENCODER_B, 
+	public Encoder encoder = new Encoder(Constants.DIO_DRIVE_FR_ENCODER_A, Constants.DIO_DRIVE_FR_ENCODER_B, 
 			true, EncodingType.k1X);
 	
 	//Distance PID
@@ -21,6 +21,7 @@ public class DriveTrain extends RobotDrive {
 	//Gyro definition
 	public Heading heading = new Heading(Constants.ANA_GYRO, Constants.GYRO_P, Constants.GYRO_I, Constants.GYRO_D, Constants.GYRO_SENSITIVITY);
 	
+	//Object to handle tracking and controlling current autonomous actions.
 	public ActionHandler actionHandler = new ActionHandler();
 	
 	//Accel Curve Speeds
@@ -35,28 +36,43 @@ public class DriveTrain extends RobotDrive {
 	}
 	
 	public void init() {
-		
+		FrontL.setInverted(true);
+		FrontR.setInverted(true);
+		encoder.setDistancePerPulse(1.0/Constants.COUNTS_PER_INCH);
+		encoder.reset();
 	}
 	
-	public void rotateTo(double heading) {
-		this.heading.setHeading(heading);
-		actionHandler.setTargetReachedFunction(
-			() -> Math.abs(this.heading.getTarget() - this.heading.getAngle()) <= 2
-		);
+	public boolean rotateTo(double heading) {
+		if (driveComplete()) {
+			this.heading.setHeading(heading);
+			actionHandler.setTargetReachedFunction(
+				() -> Math.abs(this.heading.getTarget() - this.heading.getAngle()) <= 2
+			);
+			return true;
+		}
+		return false;
 	}
 	
-	public void relTurn(double heading) {
-		this.heading.setTarget(this.heading.getTarget() + heading);
-		actionHandler.setTargetReachedFunction(
-			() -> Math.abs(this.heading.getTarget() - this.heading.getAngle()) <= 2
-		);
+	public boolean relTurn(double heading) {
+		if (driveComplete()) {
+			this.heading.setTarget(this.heading.getAngle() + heading);
+			actionHandler.setTargetReachedFunction(
+				() -> Math.abs(this.heading.getTarget() - this.heading.getAngle()) <= 2
+			);
+			return true;
+		}
+		return false;
 	}
 	
-	public void driveDistance(double inches) {
-		this.distancePID.setTarget(this.distancePID.getTarget() + inches);
-		actionHandler.setTargetReachedFunction(
-			() -> Math.abs(this.distancePID.getTarget() - this.encoder.getDistance()) <= 2
-		);
+	public boolean driveDistance(double inches) {
+		if (driveComplete()) {
+			this.distancePID.setTarget(this.encoder.getDistance() + inches);
+			actionHandler.setTargetReachedFunction(
+				() -> Math.abs(this.distancePID.getTarget() - this.encoder.getDistance()) <= 2
+			);
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean driveComplete() {
@@ -67,15 +83,17 @@ public class DriveTrain extends RobotDrive {
 		if (pidDrive) {
 			distancePID.reset();
 			heading.resetPID();
-			heading.setHeadingHold(true);
+			//heading.setHeadingHold(true);
 		}
 		else {
-			heading.setHeadingHold(false);
+			//heading.setHeadingHold(false);
 		}
 	}
 	
 	public void pidDrive() {
 		double speed = distancePID.calc(encoder.getDistance());
+		Common.dashNum("DrivePID", speed);
+		Common.dashNum("DriveError", this.distancePID.getTarget() - this.encoder.getDistance());
 		double turn = heading.turnRate();
 		setDrive(speed, turn);
 	}
