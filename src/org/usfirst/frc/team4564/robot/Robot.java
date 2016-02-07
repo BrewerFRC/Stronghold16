@@ -1,5 +1,6 @@
 
 package org.usfirst.frc.team4564.robot;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
@@ -81,6 +82,7 @@ public class Robot extends SampleRobot {
 			Common.dashBool("restricted from moving down?", w.winchLimit.get());
 			Common.dashNum("allowed to move up?", w.infraRed.getVoltage());
 			Common.dashNum("left y output", j.leftY());
+			Common.dashNum("Flywheel encoder", thrower.encoder.get() );
     		dt.setDrive(j.leftY(), j.leftX());
     		w.setWinchMotor(j.rightY());
     		if (j.whenY()) {
@@ -100,13 +102,12 @@ public class Robot extends SampleRobot {
     		if (j.B()){	// pulls ball back as long as held down
     			thrower.setInternalIntake(-0.25);
     		}
-    		if (j.A()){ //throw into shooter & pick up ball
-    			thrower.setInternalIntake(0.85);
+    		if (j.A()){ //pick up ball
+    			thrower.setInternalIntake(1);
     		}
-    		if (j.whenStart()){ //reset
-    			thrower.setInternalIntake(-0.85);
+    		if (j.whenB()){ //eject ball
+    			thrower.setInternalIntake(-0.15);
     		}
-    		
     		
     		dt.heading.setPID(table.getNumber("gyroP", 0), table.getNumber("gyroI", 0), table.getNumber("gyroD", 0));
     		dt.distancePID.setP(table.getNumber("distanceP", 0));

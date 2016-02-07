@@ -6,7 +6,7 @@ public class Auto {
 	Bat bat;
 	Thrower t;
 	
-	//Sheild Constants
+	//currentState constants
 	public static final int AUTO_INIT = 0;
 	public static final int DETECT_APPROACH = 1;
 	public static final int APPROACH_WAIT = 2;
@@ -21,22 +21,24 @@ public class Auto {
 	public static final double MAX_SHEILD_DISTANCE = 15;
 	public static final double VERIFICATION_TIME = 2;
 	
-	//Auto Variables
+	//updateAuto variables
 	public int currentState = 0;
 	public double detectTime;
 	public double currentTime;
 	public double shieldDistance;
 	
+	//Auto constructor
 	public Auto(DriveTrain dt, Bat bat) {
 		this.dt = dt;
 		this.bat = bat;
-		this.t = t;
 		dt.setPIDDrive(true);
 	}
 	
+	//Low level logic that determines Robot state from internal and external inputs.
 	public void updateAuto () {
 		
 		switch (currentState) {
+		
 			case 0:
 				currentState = DETECT_APPROACH;
 				break;
@@ -135,6 +137,7 @@ public class Auto {
 	
 	public class Shield {	
 		
+		//driveState constants.
 		public static final int NOT_DRIVING = 0;
 		public static final int DRIVING = 1;
 		public static final int DEFENSE_CROSSED = 2;
@@ -147,18 +150,20 @@ public class Auto {
 		public static final int ALIGNMENT_COMPLETE = 9;
 		public static final int FIRING = 10;
 		public static final int FINI = 11;
+		//Field Dimension constants.
 		public static final double PLATFORM_WIDTH = 52.5;
 		public static final double ABSOLUTE_CASTLE_X = 170.6113;
+		//Auto action constants.
 		public static final double AUTO_HIGHGOAL_SPEED = 100;
+		//driveDefense variables
 		public int defenseType;
 		public int selectedAction;
 		public int driveState = 0;
 		public int targetPlatform;
 		public int target;
 		public int startingPlatform;
-		Shield shield = new Shield();
-		DriveTrain drivetrain = new DriveTrain();
 		
+		//Execute Auto based upon startingPlatform, defenseType, and selectedAction.
 		public void driveDefense(int defenseType) {
 		
 			switch(defenseType) {
@@ -233,6 +238,7 @@ public class Auto {
 	}
 }
 		
+		//Determines right or left turn based on starting position and target.
 		public double turnLogic(double target, int startingPlatform) {
 			if ( target - startingPlatform > 0) {
 				return 90;
@@ -241,22 +247,27 @@ public class Auto {
 			}
 		}
 		
+		//Find absolute robot position on field after crossing intial defense.
 		public double xAbs(int startingPlatform, double PLATFORM_WIDTH, double shieldDistance) {
 			return (startingPlatform * PLATFORM_WIDTH - shieldDistance);
 		}
 		
+		//Drive to selected platform based on starting position.
 		public double xPlatformTarget(int targetPlatform, double PLATFORM_WIDTH, double shieldDistance) {
 			return (targetPlatform * PLATFORM_WIDTH - (PLATFORM_WIDTH * .5));
 		}
 		
+		//Drive to castle based on starting position.
 		public double xCastleTarget(double ABSOLUTE_CASTLE_X, double xABS){
 			return (Math.abs(xABS - ABSOLUTE_CASTLE_X));
 		}
 		
+		//Drive to target on field based on current position.
 		public double xDrive (double xAbs, double xTarget) {
 			return (xAbs - xTarget);
 		}
 		
+		//Have we crossed the initial defense?
 		public boolean defenseComplete() {
 			if (currentState == DETECT_RETURN) {
 				return (true);
@@ -264,7 +275,7 @@ public class Auto {
 				return (false);
 			}
 		}
-		
+		// Have we crossed the defense when returning?
 		public boolean returnDefenseComplete() {
 			if (currentState == CROSSED_RETURN_DEFENSE) {
 				return (true);
