@@ -8,7 +8,7 @@ public class Robot extends SampleRobot {
 	Thrower thrower = new Thrower();
 	DriveTrain dt;
 	Bat bat = new Bat();
-	Xbox j = new Xbox(0);
+	public static Xbox j = new Xbox(0);
 	NetworkTable table;
 	Auto auto;
 	Winch w = new Winch();

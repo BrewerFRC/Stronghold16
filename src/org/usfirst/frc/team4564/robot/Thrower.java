@@ -19,6 +19,17 @@ public class Thrower {
 		
 	}
 	
+	public static class ThrowerState {
+		private static int READY = 0;
+		private static int INTAKE = 1;
+		private static int BALL_DETECT = 2;
+		private static int PREP_SHOOT = 3;
+		private static int SPIN_UP = 4;
+		
+		private int currentState;
+		
+	}
+	
 	
 	
 }
