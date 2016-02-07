@@ -5,6 +5,7 @@ public class Auto {
 	DriveTrain dt;
 	Bat bat;
 	Thrower t;
+	public Shield shield;
 	
 	//Sheild Constants
 	public static final int AUTO_INIT = 0;
@@ -30,6 +31,7 @@ public class Auto {
 	public Auto(DriveTrain dt, Bat bat) {
 		this.dt = dt;
 		this.bat = bat;
+		shield = new Shield();
 		this.t = t;
 		dt.setPIDDrive(true);
 	}
@@ -156,7 +158,6 @@ public class Auto {
 		public int targetPlatform;
 		public int target;
 		public int startingPlatform;
-		Shield shield = new Shield();
 		DriveTrain drivetrain = new DriveTrain();
 		
 		public void driveDefense(int defenseType) {
