@@ -1,6 +1,5 @@
 
 package org.usfirst.frc.team4564.robot;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
@@ -79,6 +78,7 @@ public class Robot extends SampleRobot {
     		long time = Common.time();
     		delay = (long)(time + (1000/Constants.REFRESH_RATE));
     		dt.setDrive(j.leftY(), j.leftX());
+    		thrower.state.update();
     		bat.update();
     		Common.dashNum("Sonar Distance", bat.getDistance());
     		Common.dashNum("Sonar Volts", bat.sonicRight.getVoltage());
@@ -99,17 +99,6 @@ public class Robot extends SampleRobot {
     		}
     		if (j.whenDpadRight()) {
     			dt.heading.setTarget(dt.heading.getTarget()+10);
-    		}
-    		
-    		thrower.setFlywheel(j.leftTrigger());
-    		if (j.B()){	// pulls ball back as long as held down
-    			thrower.setInternalIntake(-0.25);
-    		}
-    		if (j.A()){ //pick up ball
-    			thrower.setInternalIntake(1);
-    		}
-    		if (j.whenB()){ //eject ball
-    			thrower.setInternalIntake(-0.15);
     		}
     		
     		dt.heading.setPID(table.getNumber("gyroP", 0), table.getNumber("gyroI", 0), table.getNumber("gyroD", 0));

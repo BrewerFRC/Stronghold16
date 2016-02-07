@@ -310,5 +310,13 @@ public class Xbox extends Joystick {
 	public double leftTrigger () { 
 		return deadzone(getRawAxis(2));
 	}
+	
+	public boolean rightTriggerPressed() {
+		return rightTrigger() > 0.75;
+	}
+	
+	public boolean leftTriggerPressed() {
+		return leftTrigger() > 0.75;
+	}
 }
 	
