@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 public class Robot extends SampleRobot {
 	Thrower thrower = new Thrower();
@@ -32,6 +31,10 @@ public class Robot extends SampleRobot {
     }
     
     public void autonomous() {
+    	auto.shield.startingPlatform = (int) table.getNumber("platform", 0);
+    	auto.shield.targetPlatform = (int) table.getNumber("targetPlatform", 0);
+    	auto.shield.defenseType = (int) table.getNumber("defense", 0);
+    	auto.shield.selectedAction = (int) table.getNumber("action", 0);
         dt.setSafetyEnabled(false);
         //auto.currentState = 0;
         long delay = 0;

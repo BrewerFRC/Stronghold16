@@ -5,6 +5,7 @@ public class Auto {
 	DriveTrain dt;
 	Bat bat;
 	Thrower t;
+	public Shield shield;
 	
 	//currentState constants
 	public static final int AUTO_INIT = 0;
@@ -31,6 +32,7 @@ public class Auto {
 	public Auto(DriveTrain dt, Bat bat) {
 		this.dt = dt;
 		this.bat = bat;
+		shield = new Shield();
 		dt.setPIDDrive(true);
 	}
 	
@@ -162,6 +164,7 @@ public class Auto {
 		public int targetPlatform;
 		public int target;
 		public int startingPlatform;
+
 		
 		//Execute Auto based upon startingPlatform, defenseType, and selectedAction.
 		public void driveDefense(int defenseType) {
