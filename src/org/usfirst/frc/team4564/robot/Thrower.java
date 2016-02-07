@@ -4,8 +4,8 @@ import edu.wpi.first.wpilibj.Talon;
 
 public class Thrower {
 	
-	static Talon flywheel = new Talon(Constants.PWM_THROWER_FLYWHEEL);
-	static Talon internalIntake = new Talon(Constants.PWM_THROWER_INT_INTAKE);
+	private Talon flywheel = new Talon(Constants.PWM_THROWER_FLYWHEEL);
+	private Talon internalIntake = new Talon(Constants.PWM_THROWER_INT_INTAKE);
 	
 	
 	public void setFlywheel(double speed){
@@ -25,9 +25,38 @@ public class Thrower {
 		private static int BALL_DETECT = 2;
 		private static int PREP_SHOOT = 3;
 		private static int SPIN_UP = 4;
-		
+		private static int FIRE = 5;
+		private Thrower thrower;
 		private int currentState;
 		
+		public ThrowerState(Thrower thrower) {
+			currentState = READY;
+			this.thrower = thrower;
+		}
+		
+		public void update() {
+			switch(currentState) {
+				case 0:
+					if (Robot.j.whenA()) {
+						currentState = INTAKE;
+					}
+					break;
+				case 1:
+					thrower.setInternalIntake(1.0);
+					if () {
+						
+					}
+					break;
+				case 2:
+					break;
+				case 3:
+					break;
+				case 4:
+					break;
+				case 5:
+					break;
+			}
+		}
 	}
 	
 	
