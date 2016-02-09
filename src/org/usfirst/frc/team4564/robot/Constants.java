@@ -13,13 +13,14 @@ public class Constants {
 	public static final int DIO_DRIVE_FR_ENCODER_A = 1;
 	public static final int DIO_DRIVE_FR_ENCODER_B = 2;
 	public static final int DIO_LEFT_SONIC_ENABLE = 0;
-	public static final int DIO_WINCH_EXTEND_LIMIT = 3;
-	public static final int DIO_WINCH_RETRACT_LIMIT = 4;
+	public static final int DIO_WINCH_RETRACT_LIMIT = 3;
+	
 	
 	//Analog Ports
 	//public static final int ANA_GYRO = 0;
 	public static final int ANA_SONIC_RIGHT = 0 ;
 	public static final int ANA_GYRO = 1;
+	public static final int ANA_WINCH_EXTEND_LIMIT = 2;
 	
 	//Drive PID constants
 	public static final double DRIVE_P = 0.0;

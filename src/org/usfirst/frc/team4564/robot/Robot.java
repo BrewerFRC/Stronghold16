@@ -71,15 +71,15 @@ public class Robot extends SampleRobot {
     	dt.heading.setTarget(0);
     	long delay = 0;
     	while (isOperatorControl() && isEnabled()) {
-    		//Common.debug("setDrive");
+    		Common.debug("setDrive");
     		long time = Common.time();
-    		delay = (long)(time + (1000/Constants.REFRESH_RATE));
+    		delay = (long)(time + (1000/Constants.REFRESH_RATE));/*
     		dt.setDrive(j.leftY(), j.leftX());
     		bat.update();
     		Common.dashNum("Sonar Distance", bat.getDistance());
     		Common.dashNum("Sonar Volts", bat.sonicRight.getVoltage());
-			Common.dashBool("restricted from moving down?", w.winchLimit.get());
-			Common.dashNum("allowed to move up?", w.infraRed.getVoltage());
+			Common.dashBool("raw output from limit switch", w.winchLimit.get());
+			Common.dashNum("raw output from infrared", w.infraRed.getVoltage());
 			Common.dashNum("left y output", j.leftY());
     		dt.setDrive(j.leftY(), j.leftX());
     		w.setWinchMotor(j.rightY());
@@ -120,7 +120,55 @@ public class Robot extends SampleRobot {
     		Common.dashNum("TargetAngle", dt.heading.getTarget());
     		Common.dashBool("HeadingHold", dt.heading.isHeadingHold());
     		Common.dashNum("Error", dt.heading.getAngle()-dt.heading.getTarget());
-    		Common.dashNum("Encoder", dt.encoder.get());
+    		Common.dashNum("Encoder", dt.encoder.get());*/
+    		
+    		
+    		////TEST////
+    		dt.setDrive(j.leftY(), j.leftX());
+    		bat.update();
+    		w.setWinchMotor(j.rightY());
+    		thrower.setFlywheel(j.leftTrigger()); //set flywheel to trigger
+    		thrower.setInternalIntake(j.rightTrigger()); //set intake to trigger
+    		if (j.select()) {
+    			thrower.setFlywheel(-1 * j.leftTrigger()); //set flywheel to negative of trigger value
+    			thrower.setInternalIntake(-1 * j.rightTrigger()); //set intake to negative of trigger value
+    		}
+    		
+    		if (j.whenA()) { //set flywheel to shooting speed
+    			thrower.setFlywheel(.85);
+    		}
+    		
+    		if (j.whenB()) { //set intake to pickup speed and throw into shooter speed
+    			thrower.setInternalIntake(.25);
+    		}
+    		
+    		if (j.X()) { //set intake to throwout speed
+    			thrower.setInternalIntake(-.85);
+    			}
+    		
+    		if (j.whenY()) //reset
+    			thrower.setInternalIntake(0);
+    			thrower.setFlywheel(0);
+    		
+    		Common.dashNum("Front Right motor value", DriveTrain.FrontR.get());
+    		Common.dashNum("Front Left motor value", DriveTrain.FrontL.get());
+    		Common.dashNum("Winch (tape) motor value", w.tapeMotor.get());
+    		Common.dashNum("Flywheel (thrower) motor value", Thrower.flywheel.get());
+    		Common.dashNum("Intake motor value", Thrower.internalIntake.get());
+    		Common.dashNum("Drivetrain Encoder value", dt.encoder.get());
+    		Common.dashNum("Gyro Angle", dt.heading.getAngle());
+    		Common.dashNum("Gyro Heading", dt.heading.getHeading());
+    		Common.dashNum("Sonar Distance", bat.getDistance());
+			Common.dashBool("Limit Switch Value", w.winchLimit.get());
+			Common.dashNum("Infrared Value", w.infraRed.getVoltage());
+			Common.dashNum("Raw Left joystick Y value", j.leftY());
+			Common.dashNum("Raw Left joystick X value", j.leftX());
+			Common.dashNum("Raw Right joystick Y value", j.rightY());
+			Common.dashNum("Raw Left trigger value", j.leftTrigger());
+			Common.dashNum("Raw Right trigger value", j.rightTrigger());
+			////END OF TEST////
+    		
+    	
     		double wait = (delay-Common.time())/1000.0;
     		if (wait < 0) {
     			wait = 0;
