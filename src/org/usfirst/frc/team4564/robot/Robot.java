@@ -1,4 +1,3 @@
-
 package org.usfirst.frc.team4564.robot;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -34,6 +33,10 @@ public class Robot extends SampleRobot {
     	auto.shield.targetPlatform = (int) table.getNumber("targetPlatform", 0);
     	auto.shield.defenseType = (int) table.getNumber("defense", 0);
     	auto.shield.selectedAction = (int) table.getNumber("action", 0);
+    	Common.dashNum("Platform", auto.shield.startingPlatform);
+    	Common.dashNum("TargetPlatform", auto.shield.targetPlatform);
+    	Common.dashNum("Defense", auto.shield.defenseType);
+    	Common.dashNum("Action", auto.shield.selectedAction);
         dt.setSafetyEnabled(false);
         //auto.currentState = 0;
         long delay = 0;
@@ -146,8 +149,8 @@ public class Robot extends SampleRobot {
     		Common.dashNum("Front Right motor value", DriveTrain.FrontR.get());
     		Common.dashNum("Front Left motor value", DriveTrain.FrontL.get());
     		Common.dashNum("Winch (tape) motor value", w.tapeMotor.get());
-    		Common.dashNum("Flywheel (thrower) motor value", Thrower.flywheel.get());
-    		Common.dashNum("Intake motor value", Thrower.internalIntake.get());
+    		Common.dashNum("Flywheel (thrower) motor value", thrower.getFlywheelPower());
+    		Common.dashNum("Intake motor value", thrower.getInternalIntakePower());
     		Common.dashNum("Drivetrain Encoder value", dt.encoder.get());
     		Common.dashNum("Gyro Angle", dt.heading.getAngle());
     		Common.dashNum("Gyro Heading", dt.heading.getHeading());

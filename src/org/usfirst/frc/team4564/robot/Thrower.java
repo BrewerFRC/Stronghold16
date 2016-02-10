@@ -22,11 +22,20 @@ public class Thrower {
 		encoder.setDistancePerPulse(1/1024);
 	}
 	
+	public double getFlywheelPower() {
+		return flywheel.get();
+	}
 	public void setFlywheel(double speed){
 		flywheel.set(Math.abs(speed));
 	}
+	public double getInternalIntakePower() {
+		return internalIntake.get();
+	}
 	public void setInternalIntake(double speed){
 		internalIntake.set(speed);
+	}
+	public double getExternalIntakePower() {
+		return externalIntake.get();
 	}
 	public void setExternalIntake(double speed) {
 		externalIntake.set(speed);
