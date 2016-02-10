@@ -5,10 +5,12 @@ public class Constants {
 	// PWM Constants
 	public static final int PWM_DRIVE_L = 0;
 	public static final int PWM_DRIVE_R = 1;
-	public static final int PWM_WINCH_DRIVE_TM = 4;
+	public static final int PWM_WINCH_ARM = 4;
+
 	public static final int PWM_THROWER_FLYWHEEL = 5;
 	public static final int PWM_THROWER_INT_INTAKE = 6;
-	
+	public static final int PWM_THROWER_EXT_INTAKE = 7;
+	public static final int PWM_WINCH_DRIVE_TM = 8;
 	
 	//DIO Port
 	public static final int DIO_DRIVE_FR_ENCODER_A = 1;
@@ -24,6 +26,7 @@ public class Constants {
 	//public static final int ANA_GYRO = 0;
 	public static final int ANA_SONIC_RIGHT = 0 ;
 	public static final int ANA_GYRO = 1;
+	public static final int ANA_WINCH_EXTEND_LIMIT = 2;
 	
 	//Drive PID constants
 	public static final double DRIVE_P = 0.0;

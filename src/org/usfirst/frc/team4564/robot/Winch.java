@@ -11,8 +11,8 @@ public class Winch {
 	public static final boolean RETRACT_LIMIT_REACHED = true;
 	public static final boolean EXTEND_LIMIT_REACHED = false;
 	public DigitalInput winchLimit = new DigitalInput(Constants.DIO_WINCH_RETRACT_LIMIT);
-	public AnalogInput infraRed = new AnalogInput(Constants.DIO_WINCH_EXTEND_LIMIT);
-	private Talon tapeMotor = new Talon(Constants.PWM_WINCH_DRIVE_TM);
+	public AnalogInput infraRed = new AnalogInput(Constants.ANA_WINCH_EXTEND_LIMIT);
+	public Talon tapeMotor = new Talon(Constants.PWM_WINCH_DRIVE_TM);
 	
 	public void setWinchMotor(double power){
 		
