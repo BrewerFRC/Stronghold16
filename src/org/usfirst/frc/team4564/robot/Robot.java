@@ -3,13 +3,12 @@ package org.usfirst.frc.team4564.robot;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 public class Robot extends SampleRobot {
 	Thrower thrower = new Thrower();
 	DriveTrain dt;
 	Bat bat = new Bat();
-	Xbox j = new Xbox(0);
+	public static Xbox j = new Xbox(0);
 	NetworkTable table;
 	Auto auto;
 	Winch w = new Winch();
@@ -31,6 +30,10 @@ public class Robot extends SampleRobot {
     }
     
     public void autonomous() {
+    	auto.shield.startingPlatform = (int) table.getNumber("platform", 0);
+    	auto.shield.targetPlatform = (int) table.getNumber("targetPlatform", 0);
+    	auto.shield.defenseType = (int) table.getNumber("defense", 0);
+    	auto.shield.selectedAction = (int) table.getNumber("action", 0);
         dt.setSafetyEnabled(false);
         //auto.currentState = 0;
         long delay = 0;
@@ -75,12 +78,14 @@ public class Robot extends SampleRobot {
     		long time = Common.time();
     		delay = (long)(time + (1000/Constants.REFRESH_RATE));/*
     		dt.setDrive(j.leftY(), j.leftX());
+    		thrower.state.update();
     		bat.update();
     		Common.dashNum("Sonar Distance", bat.getDistance());
     		Common.dashNum("Sonar Volts", bat.sonicRight.getVoltage());
 			Common.dashBool("raw output from limit switch", w.winchLimit.get());
 			Common.dashNum("raw output from infrared", w.infraRed.getVoltage());
 			Common.dashNum("left y output", j.leftY());
+			Common.dashNum("Flywheel encoder", thrower.encoder.get() );
     		dt.setDrive(j.leftY(), j.leftX());
     		w.setWinchMotor(j.rightY());
     		if (j.whenY()) {
@@ -95,18 +100,6 @@ public class Robot extends SampleRobot {
     		if (j.whenDpadRight()) {
     			dt.heading.setTarget(dt.heading.getTarget()+10);
     		}
-    		
-    		thrower.setFlywheel(j.leftTrigger());
-    		if (j.B()){	// pulls ball back as long as held down
-    			thrower.setInternalIntake(-0.25);
-    		}
-    		if (j.A()){ //throw into shooter & pick up ball
-    			thrower.setInternalIntake(0.85);
-    		}
-    		if (j.whenStart()){ //reset
-    			thrower.setInternalIntake(-0.85);
-    		}
-    		
     		
     		dt.heading.setPID(table.getNumber("gyroP", 0), table.getNumber("gyroI", 0), table.getNumber("gyroD", 0));
     		dt.distancePID.setP(table.getNumber("distanceP", 0));

@@ -13,7 +13,7 @@ public class DriveTrain extends RobotDrive {
 	
 	// Encoder Definitions
 	public Encoder encoder = new Encoder(Constants.DIO_DRIVE_FR_ENCODER_A, Constants.DIO_DRIVE_FR_ENCODER_B, 
-			true, EncodingType.k1X);
+			false, EncodingType.k1X);
 	
 	//Distance PID
 	public PID distancePID = new PID(Constants.DRIVE_P, Constants.DRIVE_I, Constants.DRIVE_D, false);
