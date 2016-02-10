@@ -18,6 +18,7 @@ public class Constants {
 	public static final int DIO_WINCH_RETRACT_LIMIT = 4;
 	public static final int DIO_FLYWHEEL_ENCODER_A = 5;
 	public static final int DIO_FLYWHEEL_ENCODER_B = 6;
+	public static final int DIO_THROWER_BALL_DETECT = 7;
 	
 	//Analog Ports
 	//public static final int ANA_GYRO = 0;

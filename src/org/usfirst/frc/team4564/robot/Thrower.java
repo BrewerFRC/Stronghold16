@@ -1,14 +1,18 @@
 package org.usfirst.frc.team4564.robot;
 
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 
 public class Thrower {
 	public ThrowerState state;
 	
 	private Talon flywheel = new Talon(Constants.PWM_THROWER_FLYWHEEL);
 	private Talon internalIntake = new Talon(Constants.PWM_THROWER_INT_INTAKE);
+	private Talon externalIntake = new Talon(Constants.PWM_THROWER_EXT_INTAKE);
+	//Normally closed
+	private DigitalInput ballDetect = new DigitalInput(Constants.DIO_THROWER_BALL_DETECT);
 	
 	public Encoder encoder = new Encoder(Constants.DIO_FLYWHEEL_ENCODER_A, Constants.DIO_FLYWHEEL_ENCODER_B, 
 			true, EncodingType.k1X);
@@ -23,6 +27,9 @@ public class Thrower {
 	}
 	public void setInternalIntake(double speed){
 		internalIntake.set(speed);
+	}
+	public void setExternalIntake(double speed) {
+		externalIntake.set(speed);
 	}
 	public void pickUpBall(){
 		internalIntake.set(1.00);
@@ -55,12 +62,19 @@ public class Thrower {
 					break;
 				case INTAKE:
 					thrower.setInternalIntake(1.0);
+					thrower.setExternalIntake(1.0);
+					/*
 					if (thrower.encoder.getRate()*60 >= -10) {
+						currentState = BALL_DETECT;
+					}
+					*/
+					if (thrower.ballDetect.get()) {
 						currentState = BALL_DETECT;
 					}
 					break;
 				case BALL_DETECT:
 					thrower.setInternalIntake(-0.15);
+					thrower.setExternalIntake(-0.15);
 					currentState = PREP_SHOOT;
 					break;
 				case PREP_SHOOT:
@@ -69,6 +83,7 @@ public class Thrower {
 					}
 					if (Common.time() - prepStart > 250) {
 						thrower.setInternalIntake(0.0);
+						thrower.setExternalIntake(0.0);
 						currentState = SPIN_UP;
 					}
 					break;
@@ -86,6 +101,7 @@ public class Thrower {
 					}
 					if (Common.time() - fireStart > 500) {
 						thrower.setInternalIntake(0.0);
+						thrower.setExternalIntake(0.0);
 						thrower.setFlywheel(0.0);
 					}
 					break;
@@ -93,7 +109,4 @@ public class Thrower {
 			return currentState;
 		}
 	}
-	
-	
-	
 }
