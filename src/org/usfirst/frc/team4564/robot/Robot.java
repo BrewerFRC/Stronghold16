@@ -30,6 +30,7 @@ public class Robot extends SampleRobot {
     
     public void autonomous() {
     	auto.shield.startingPlatform = (int) table.getNumber("platform", 0);
+    	System.out.println(auto.shield.startingPlatform);
     	auto.shield.targetPlatform = (int) table.getNumber("targetPlatform", 0);
     	auto.shield.defenseType = (int) table.getNumber("defense", 0);
     	auto.shield.selectedAction = (int) table.getNumber("action", 0);
