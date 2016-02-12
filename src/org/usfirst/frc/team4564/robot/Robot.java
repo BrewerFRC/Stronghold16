@@ -73,8 +73,8 @@ public class Robot extends SampleRobot {
     
     public void operatorControl() {
     	Common.debug("Starting Teleop...");
-    	dt.heading.reset();
-    	dt.heading.setTarget(0);
+    	//dt.heading.reset();
+    	//dt.heading.setTarget(0);
     	long delay = 0;
     	while (isOperatorControl() && isEnabled()) {
     		Common.debug("setDrive");
@@ -122,30 +122,9 @@ public class Robot extends SampleRobot {
     		////TEST////
     		dt.setDrive(j.leftY(), j.leftX());
     		bat.update();
+    		w.lockWinch();
     		w.setWinchMotor(j.rightY());
-    		thrower.setFlywheel(j.leftTrigger()); //set flywheel to trigger
-    		thrower.setInternalIntake(j.rightTrigger()); //set intake to trigger
-    		if (j.select()) {
-    			thrower.setFlywheel(-1 * j.leftTrigger()); //set flywheel to negative of trigger value
-    			thrower.setInternalIntake(-1 * j.rightTrigger()); //set intake to negative of trigger value
-    		}
-    		
-    		if (j.whenA()) { //set flywheel to shooting speed
-    			thrower.setFlywheel(.85);
-    		}
-    		
-    		if (j.whenB()) { //set intake to pickup speed and throw into shooter speed
-    			thrower.setInternalIntake(.25);
-    		}
-    		
-    		if (j.X()) { //set intake to throwout speed
-    			thrower.setInternalIntake(-.85);
-    			}
-    		
-    		if (j.whenY()) //reset
-    			thrower.setInternalIntake(0);
-    			thrower.setFlywheel(0);
-    		
+    		thrower.state.update();
     		Common.dashNum("Front Right motor value", DriveTrain.FrontR.get());
     		Common.dashNum("Front Left motor value", DriveTrain.FrontL.get());
     		Common.dashNum("Winch (tape) motor value", w.tapeMotor.get());

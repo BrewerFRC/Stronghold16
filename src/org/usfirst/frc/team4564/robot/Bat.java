@@ -10,7 +10,7 @@ public class Bat {
 	DigitalOutput sonicRightEnable = new DigitalOutput(Constants.DIO_LEFT_SONIC_ENABLE);
 	private static final double CORRECTION = 1 / 1.04;
 	private static final double VOLTS_PER_INCH = 5.0 / 1024 * 2.54 * CORRECTION; // Volts per inch constant
-	private static final double OFFSET = 0;
+	private static final double OFFSET = 3.25;
 	
 	public double getDistance() {
 		return sonicRight.getVoltage() / VOLTS_PER_INCH - OFFSET;

@@ -11,6 +11,7 @@ public class Constants {
 	public static final int PWM_THROWER_INT_INTAKE = 6;
 	public static final int PWM_THROWER_EXT_INTAKE = 7;
 	public static final int PWM_WINCH_DRIVE_TM = 8;
+	public static final int PWM_WINCH_LOCK = 2;
 	
 	//DIO Port
 	public static final int DIO_DRIVE_FR_ENCODER_A = 1;

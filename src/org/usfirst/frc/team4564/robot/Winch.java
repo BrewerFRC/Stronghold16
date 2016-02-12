@@ -1,8 +1,9 @@
 package org.usfirst.frc.team4564.robot;
 
-import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Talon;
 
 
 
@@ -13,6 +14,12 @@ public class Winch {
 	public DigitalInput winchLimit = new DigitalInput(Constants.DIO_WINCH_RETRACT_LIMIT);
 	public AnalogInput infraRed = new AnalogInput(Constants.ANA_WINCH_EXTEND_LIMIT);
 	public Talon tapeMotor = new Talon(Constants.PWM_WINCH_DRIVE_TM);
+	public Servo ratchet = new Servo(Constants.PWM_WINCH_LOCK);
+	
+	
+	public Winch() {
+		ratchet.setAngle(90);
+	}
 	
 	public void setWinchMotor(double power){
 		
@@ -31,6 +38,12 @@ public class Winch {
 		tapeMotor.set(power);
 	}
 
+	
+	public void lockWinch(){
+		if (infraRed.getVoltage() >.3){
+			ratchet.setAngle(-90);		
+		}
+	}
 
 	
 	
