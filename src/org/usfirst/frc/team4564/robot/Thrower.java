@@ -46,74 +46,116 @@ public class Thrower {
 	}
 	
 	public static class ThrowerState {
-		private static final int READY = 0;
-		private static final int INTAKE = 1;
-		private static final int BALL_DETECT = 2;
-		private static final int PREP_SHOOT = 3;
-		private static final int SPIN_UP = 4;
-		private static final int FIRE = 5;
+		//States for intake and throw.
+		private static final int READY = 0; //Intake running slowly inward; flywheel off; ready for startIntake.
+		private static final int INTAKE = 1; //Intake running full speed until ball detected; sets state to BALL_DETECT.
+		private static final int BALL_DETECTED = 2; //Ball loaded; intake running slowly; awaiting prepThrow.
+		private static final int BACK_OUT = 3; //prepThrow; move ball from flywheel before spin-up; set state to SPIN_UP.
+		private static final int SPIN_UP = 4; //Bring flywheel up to speed; waiting 1 seconds.
+		private static final int READY_TO_FIRE = 5; //Flywheel spinning at full speed; awaiting throwBall.
+		private static final int FIRE = 6; //Intake fullspeed in for .25 seconds; sets state to READY.
+		//States for eject.
+		private static final int START_EJECT = 10; //Start ejectTimer; set state to EJECT.
+		private static final int EJECT = 11; //Set intake backwards full speed unitl ejectTimer is complete; set currentStae to READY.
+		
 		private Thrower thrower;
-		private int currentState;
-		private long prepStart;
-		private long fireStart;
+		public int currentState;
+		private long spinUpTimer;
+		private long fireTimer;
+		private long ejectTimer;
 		
 		public ThrowerState(Thrower thrower) {
 			currentState = READY;
 			this.thrower = thrower;
 		}
 		
+		// Returns true when ball is pressing limit switch.
+		public boolean hasBall() {
+			return thrower.ballDetect.get(); 
+		}
+		
+		public void startIntake() { 
+			if (currentState < BACK_OUT) {
+				currentState = INTAKE;
+			}
+		}
+		
+		public void prepThrow() {
+			if (currentState == BALL_DETECTED) {
+				currentState = BACK_OUT;
+			}
+		}
+		
+		public void throwBall() {
+			if (currentState == READY_TO_FIRE) {
+				currentState = FIRE;
+			}
+		}
+		
+		public void ejectBall() {
+			currentState = START_EJECT;
+		}
+		
+		//Positive speed runs intakes inward.
+		private void setIntakeSpeed(double speed) {
+			thrower.setInternalIntake(speed);
+			thrower.setExternalIntake(speed);
+		}
+		
+		//Positive speed runs flywheel in throwing direction.
+		private void setFlywheelSpeed(double speed) {
+			thrower.setFlywheel(speed);
+		}
+		
+		
 		public int update() {
 			switch(currentState) {
 				case READY:
-					if (Robot.j.whenA()) {
-						currentState = INTAKE;
-					}
+					setFlywheelSpeed(0.0);
+					setIntakeSpeed(.15);
 					break;
 				case INTAKE:
-					thrower.setInternalIntake(1.0);
-					thrower.setExternalIntake(1.0);
-					/*
-					if (thrower.encoder.getRate()*60 >= -10) {
-						currentState = BALL_DETECT;
+					if (hasBall()) {
+						currentState = BALL_DETECTED;
 					}
-					*/
-					if (thrower.ballDetect.get()) {
-						currentState = BALL_DETECT;
-					}
+					setIntakeSpeed(1.0);
 					break;
-				case BALL_DETECT:
-					thrower.setInternalIntake(-0.15);
-					thrower.setExternalIntake(-0.15);
-					currentState = PREP_SHOOT;
+				case BALL_DETECTED:
+					setIntakeSpeed(0.15);
 					break;
-				case PREP_SHOOT:
-					if (Robot.j.whenB()) {
-						prepStart = Common.time();
-					}
-					if (Common.time() - prepStart > 250) {
-						thrower.setInternalIntake(0.0);
-						thrower.setExternalIntake(0.0);
+				case BACK_OUT:
+					setIntakeSpeed(-.15);
+					if (hasBall() != true ) {
+						setIntakeSpeed(0);
 						currentState = SPIN_UP;
+						spinUpTimer = Common.time() + 1000; //SpinUpTimer for 1 second;
 					}
 					break;
 				case SPIN_UP:
 					//TODO: Velocity control
-					thrower.setFlywheel(1.0);
-					if (true /*Velocity reached*/) {
-						currentState = FIRE;
+					setFlywheelSpeed(1.0);
+					if (Common.time() >= spinUpTimer) {
+						currentState = READY_TO_FIRE;
 					}
+					break;
+				case READY_TO_FIRE:
+					setFlywheelSpeed(1.0);
+					fireTimer = Common.time() + 250; //fireTimer set for .25 seconds.
 					break;
 				case FIRE:
-					if (Robot.j.rightTriggerPressed()) {
-						thrower.setInternalIntake(0.15);
-						fireStart = Common.time();
-					}
-					if (Common.time() - fireStart > 500) {
-						thrower.setInternalIntake(0.0);
-						thrower.setExternalIntake(0.0);
-						thrower.setFlywheel(0.0);
+					setIntakeSpeed(1.0);
+					if (Common.time() >= fireTimer) {
+						currentState = READY;
 					}
 					break;
+				case START_EJECT:
+					ejectTimer = Common.time() + 500; //ejectTimer set for .5 seconds.
+					currentState = EJECT;
+				case EJECT:
+					setIntakeSpeed(-1.0);
+					if (Common.time() >= ejectTimer) {
+						currentState = READY;
+					}
 			}
 			return currentState;
 		}

@@ -10,7 +10,7 @@ public class Robot extends SampleRobot {
 	public static Xbox j = new Xbox(0);
 	NetworkTable table;
 	Auto auto;
-	Winch w = new Winch();
+	TapeWinch w = new TapeWinch();
     public Robot() {
     	Common.debug("New driveTrain");
     	dt = new DriveTrain();
@@ -77,12 +77,42 @@ public class Robot extends SampleRobot {
     	//dt.heading.reset();
     	//dt.heading.setTarget(0);
     	long delay = 0;
+    	thrower.state.currentState = 0;
     	while (isOperatorControl() && isEnabled()) {
-    		Common.debug("setDrive");
+    		//Calculate loop timer.
     		long time = Common.time();
-    		delay = (long)(time + (1000/Constants.REFRESH_RATE));/*
+    		delay = (long)(time + (1000/Constants.REFRESH_RATE));
+    		
+    		//Drivetrain  
     		dt.setDrive(j.leftY(), j.leftX());
-    		thrower.state.update();
+    		
+    		//Thrower / Intake
+    		if (j.whenA()) {
+    			if (thrower.state.hasBall()) {
+    				thrower.state.prepThrow();
+    			} else {
+        			thrower.state.startIntake();
+    			}
+    		}
+    		if (j.rightTrigger() == 1.0) {
+    			thrower.state.throwBall();
+    		}
+    		if (j.whenB()) {
+    			thrower.state.ejectBall();
+    		}
+     		thrower.state.update();
+     		
+     		//TapeWinch
+        	Common.dashNum("Reflector Volatge", w.reflectorVoltage());
+     		if(j.whenX()) {
+     			w.lockWinch();
+     		}
+     		if(j.whenY()) {
+     			w.unlockWinch();
+     		}
+     		w.setWinchMotor(j.rightY());
+  
+    		/*
     		bat.update();
     		Common.dashNum("Sonar Distance", bat.getDistance());
     		Common.dashNum("Sonar Volts", bat.sonicRight.getVoltage());
@@ -119,29 +149,23 @@ public class Robot extends SampleRobot {
     		Common.dashNum("Error", dt.heading.getAngle()-dt.heading.getTarget());
     		Common.dashNum("Encoder", dt.encoder.get());*/
     		
-    		
-    		////TEST////
-    		dt.setDrive(j.leftY(), j.leftX());
-    		bat.update();
-    		w.lockWinch();
-    		w.setWinchMotor(j.rightY());
-    		thrower.state.update();
-    		Common.dashNum("Front Right motor value", DriveTrain.FrontR.get());
-    		Common.dashNum("Front Left motor value", DriveTrain.FrontL.get());
-    		Common.dashNum("Winch (tape) motor value", w.tapeMotor.get());
-    		Common.dashNum("Flywheel (thrower) motor value", thrower.getFlywheelPower());
-    		Common.dashNum("Intake motor value", thrower.getInternalIntakePower());
-    		Common.dashNum("Drivetrain Encoder value", dt.encoder.get());
-    		Common.dashNum("Gyro Angle", dt.heading.getAngle());
-    		Common.dashNum("Gyro Heading", dt.heading.getHeading());
-    		Common.dashNum("Sonar Distance", bat.getDistance());
-			Common.dashBool("Limit Switch Value", w.winchLimit.get());
-			Common.dashNum("Infrared Value", w.infraRed.getVoltage());
-			Common.dashNum("Raw Left joystick Y value", j.leftY());
-			Common.dashNum("Raw Left joystick X value", j.leftX());
-			Common.dashNum("Raw Right joystick Y value", j.rightY());
-			Common.dashNum("Raw Left trigger value", j.leftTrigger());
-			Common.dashNum("Raw Right trigger value", j.rightTrigger());
+    		//Common.dashNum("Thrower State", thrower.state.currentState);
+    		//Common.dashNum("Front Right motor value", DriveTrain.FrontR.get());
+    		//Common.dashNum("Front Left motor value", DriveTrain.FrontL.get());
+    		//Common.dashNum("Winch (tape) motor value", w.tapeMotor.get());
+    		//Common.dashNum("Flywheel (thrower) motor value", thrower.getFlywheelPower());
+    		//Common.dashNum("Intake motor value", thrower.getInternalIntakePower());
+    		//Common.dashNum("Drivetrain Encoder value", dt.encoder.get());
+    		//Common.dashNum("Gyro Angle", dt.heading.getAngle());
+    		//Common.dashNum("Gyro Heading", dt.heading.getHeading());
+    		//Common.dashNum("Sonar Distance", bat.getDistance());
+			//Common.dashBool("Limit Switch Value", w.winchLimit.get());
+			//Common.dashNum("Infrared Value", w.infraRed.getVoltage());
+			//Common.dashNum("Raw Left joystick Y value", j.leftY());
+			//Common.dashNum("Raw Left joystick X value", j.leftX());
+			//Common.dashNum("Raw Right joystick Y value", j.rightY());
+			//Common.dashNum("Raw Left trigger value", j.leftTrigger());
+			//Common.dashNum("Raw Right trigger value", j.rightTrigger());
 			////END OF TEST////
     		
     	
