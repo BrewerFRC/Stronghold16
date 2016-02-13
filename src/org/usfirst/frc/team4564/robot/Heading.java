@@ -1,25 +1,24 @@
 package org.usfirst.frc.team4564.robot;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.AnalogGyro;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 public class Heading {
-	private Gyro gyroOld;
 	private ADXRS450_Gyro gyro;
 	//PID takes cumulative angles
 	private PID pid;
 	private boolean headingHold;
 	
 	public Heading(int pin, double p, double i, double d, double sensitivity) {
-		pid = new PID(p, i, d, false);
+		pid = new PID(p, i, d, false, "gyro");
 		//PID is dealing with error; an error of 0 is always desired.
 		pid.setTarget(0.0);
 		pid.setMin(-1);
 		pid.setMax(1);
-		//gyro = new AnalogGyro(pin);
 		gyro = new ADXRS450_Gyro();
-		
+	}
+	
+	public void update() {
+		pid.update();
 	}
 	
 	public void reset() {

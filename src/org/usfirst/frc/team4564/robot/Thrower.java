@@ -47,7 +47,7 @@ public class Thrower {
 	
 	public static class ThrowerState {
 		//States for intake and throw.
-		private static final int READY = 0; //Intake running slowly inward; flywheel off; ready for startIntake.
+		private static final int READY = 0; //Intake running slowly inward; flywheel off; ready for startIntake; if ball detected switches to BALL_DETECTED.
 		private static final int INTAKE = 1; //Intake running full speed until ball detected; sets state to BALL_DETECT.
 		private static final int BALL_DETECTED = 2; //Ball loaded; intake running slowly; awaiting prepThrow.
 		private static final int BACK_OUT = 3; //prepThrow; move ball from flywheel before spin-up; set state to SPIN_UP.
@@ -57,6 +57,8 @@ public class Thrower {
 		//States for eject.
 		private static final int START_EJECT = 10; //Start ejectTimer; set state to EJECT.
 		private static final int EJECT = 11; //Set intake backwards full speed unitl ejectTimer is complete; set currentStae to READY.
+		//States for Portcullis
+		private static final int START_PORTCULLIS = 12; //starts portcullis
 		
 		private Thrower thrower;
 		public int currentState;
@@ -97,8 +99,11 @@ public class Thrower {
 		}
 		
 		//Positive speed runs intakes inward.
-		private void setIntakeSpeed(double speed) {
+		private void setInternalIntakeSpeed(double speed) {
 			thrower.setInternalIntake(speed);
+		}
+		
+		private void setExternalIntakeSpeed(double speed) {
 			thrower.setExternalIntake(speed);
 		}
 		
@@ -107,26 +112,53 @@ public class Thrower {
 			thrower.setFlywheel(speed);
 		}
 		
+		public void startPortcullis() {
+			currentState = START_PORTCULLIS;
+		}
 		
+		public void stopPortcullis() {
+			currentState = READY;
+		}
+		
+		public void togglePortcullis() {
+			if (currentState == START_PORTCULLIS) {
+				stopPortcullis();
+			} else {
+				startPortcullis();
+			}
+		}
 		public int update() {
 			switch(currentState) {
 				case READY:
-					setFlywheelSpeed(0.0);
-					setIntakeSpeed(.15);
+					if (hasBall()) {
+						currentState = BALL_DETECTED;
+					} else {
+	 					setFlywheelSpeed(0.0);
+						setInternalIntakeSpeed(0.09);
+						setExternalIntakeSpeed(0.09);
+					}
 					break;
 				case INTAKE:
 					if (hasBall()) {
 						currentState = BALL_DETECTED;
 					}
-					setIntakeSpeed(1.0);
+					setInternalIntakeSpeed(0.75);
+					setExternalIntakeSpeed(0.75);
 					break;
 				case BALL_DETECTED:
-					setIntakeSpeed(0.15);
+					if (!hasBall()) {
+						currentState = READY;
+						break;
+					}
+					setInternalIntakeSpeed(0.13);
+					setExternalIntakeSpeed(0);
 					break;
 				case BACK_OUT:
-					setIntakeSpeed(-.15);
+					setInternalIntakeSpeed(-.15);
+					setExternalIntakeSpeed(-.15);
 					if (hasBall() != true ) {
-						setIntakeSpeed(0);
+						setInternalIntakeSpeed(0);
+						setExternalIntakeSpeed(0);
 						currentState = SPIN_UP;
 						spinUpTimer = Common.time() + 1000; //SpinUpTimer for 1 second;
 					}
@@ -140,10 +172,11 @@ public class Thrower {
 					break;
 				case READY_TO_FIRE:
 					setFlywheelSpeed(1.0);
-					fireTimer = Common.time() + 250; //fireTimer set for .25 seconds.
+					fireTimer = Common.time() + 350; //fireTimer set for .25 seconds.
 					break;
 				case FIRE:
-					setIntakeSpeed(1.0);
+					setInternalIntakeSpeed(1.0);
+					setExternalIntakeSpeed(1.0);
 					if (Common.time() >= fireTimer) {
 						currentState = READY;
 					}
@@ -152,11 +185,18 @@ public class Thrower {
 					ejectTimer = Common.time() + 500; //ejectTimer set for .5 seconds.
 					currentState = EJECT;
 				case EJECT:
-					setIntakeSpeed(-1.0);
+					setInternalIntakeSpeed(-1.0);
+					setExternalIntakeSpeed(-1.0);
 					if (Common.time() >= ejectTimer) {
 						currentState = READY;
 					}
-			}
+					break;
+				case START_PORTCULLIS:
+					setFlywheelSpeed(0);
+					setInternalIntakeSpeed(0);
+					setExternalIntakeSpeed(-.50);
+					break;
+				}
 			return currentState;
 		}
 	}

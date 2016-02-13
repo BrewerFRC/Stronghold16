@@ -8,60 +8,41 @@ public class Robot extends SampleRobot {
 	DriveTrain dt;
 	Bat bat = new Bat();
 	public static Xbox j = new Xbox(0);
-	NetworkTable table;
+	public static NetworkTable table;
 	Auto auto;
 	TapeWinch w = new TapeWinch();
-    public Robot() {
-    	Common.debug("New driveTrain");
+	ArmWinch arm = new ArmWinch();
+	
+    public void robotInit () {
+    	Common.debug("Robot Init...");
+    	table = NetworkTable.getTable("dashTable");
     	dt = new DriveTrain();
     	auto = new Auto (dt, bat);
     }
     
-    public void robotInit () {
-    	Common.debug("Robot Init...");
-    	table = NetworkTable.getTable("dashTable");
-    	table.putNumber("gyroP", Constants.GYRO_P);
-    	table.putNumber("gyroI", Constants.GYRO_I);
-    	table.putNumber("gyroD", Constants.GYRO_D);
-    	table.putNumber("driveP", Constants.DRIVE_P);
-    	table.putNumber("driveI", Constants.DRIVE_I);
-    	table.putNumber("driveD", Constants.DRIVE_D);
-    }
-    
     public void autonomous() {
-    	auto.shield.startingPlatform = (int) table.getNumber("platform", 0);
-    	System.out.println(auto.shield.startingPlatform);
-    	auto.shield.targetPlatform = (int) table.getNumber("targetPlatform", 0);
-    	auto.shield.defenseType = (int) table.getNumber("defense", 0);
-    	auto.shield.selectedAction = (int) table.getNumber("action", 0);
-    	Common.dashNum("Platform", auto.shield.startingPlatform);
-    	Common.dashNum("TargetPlatform", auto.shield.targetPlatform);
-    	Common.dashNum("Defense", auto.shield.defenseType);
-    	Common.dashNum("Action", auto.shield.selectedAction);
+    	//auto.shield.startingPlatform = (int) table.getNumber("platform", 1);
+    	//auto.shield.targetPlatform = (int) table.getNumber("targetPlatform", 1);
+    	//auto.shield.defenseType = (int) table.getNumber("defense", 1);
+    	//auto.shield.selectedAction = (int) table.getNumber("action", 1);
         dt.setSafetyEnabled(false);
         //auto.currentState = 0;
         long delay = 0;
+        dt.driveDistance(10);
         while(isAutonomous() && isEnabled()) {
+        	//Loop delay timer
         	long time = Common.time();
     		delay = (long)(time + (1000/Constants.REFRESH_RATE));
+    		
+    		dt.setPIDDrive(true);
         	dt.pidDrive();
-        	if (j.whenA()) {
-        		dt.setPIDDrive(true);
-        		dt.driveDistance(6);
-        	}
-        	if (j.whenB()) {
-        		dt.setPIDDrive(false);
-        	}
         	//bat.update();
         	//auto.updateGate();
-        	Common.dashNum("currentState", auto.currentState);
-        	Common.dashNum("Sonar", bat.getDistance());
-        	Common.dashBool("IsComplete", dt.driveComplete());
-        	dt.heading.setPID(table.getNumber("gyroP", 0), table.getNumber("gyroI", 0), table.getNumber("gyroD", 0));
-    		dt.distancePID.setP(table.getNumber("distanceP", 0));
-    		dt.distancePID.setI(table.getNumber("distanceI", 0));
-    		dt.distancePID.setD(table.getNumber("distanceD", 0));
+        	//Common.dashNum("currentState", auto.currentState);
+        	//Common.dashNum("Sonar", bat.getDistance());
+        	//Common.dashBool("IsComplete", dt.driveComplete());
     		
+    		//Delay timer
     		double wait = (delay-Common.time())/1000.0;
     		if (wait < 0) {
     			wait = 0;
@@ -69,13 +50,12 @@ public class Robot extends SampleRobot {
     		Timer.delay(wait);
         }
         dt.setPIDDrive(false);
-        Common.dashNum("Sonar", bat.getDistance());
     }
     
     public void operatorControl() {
     	Common.debug("Starting Teleop...");
-    	//dt.heading.reset();
-    	//dt.heading.setTarget(0);
+    	dt.heading.reset();
+    	dt.heading.setTarget(0);
     	long delay = 0;
     	thrower.state.currentState = 0;
     	while (isOperatorControl() && isEnabled()) {
@@ -84,7 +64,7 @@ public class Robot extends SampleRobot {
     		delay = (long)(time + (1000/Constants.REFRESH_RATE));
     		
     		//Drivetrain  
-    		dt.setDrive(j.leftY(), j.leftX());
+    		dt.baseDrive(j.leftY(), j.leftX());
     		
     		//Thrower / Intake
     		if (j.whenA()) {
@@ -100,18 +80,30 @@ public class Robot extends SampleRobot {
     		if (j.whenB()) {
     			thrower.state.ejectBall();
     		}
+     		if (j.whenX()) {
+     			thrower.state.togglePortcullis();
+     		}
+     		
      		thrower.state.update();
      		
      		//TapeWinch
         	Common.dashNum("Reflector Volatge", w.reflectorVoltage());
-     		if(j.whenX()) {
-     			w.lockWinch();
-     		}
-     		if(j.whenY()) {
+     		w.setWinchMotor(j.rightY());
+     		if (j.whenSelect()) {
      			w.unlockWinch();
      		}
-     		w.setWinchMotor(j.rightY());
-  
+     		
+     		//ArmWinch
+     		if (j.dpadUp()) {
+     			arm.moveUp();
+     		} else if (j.dpadDown()) {
+     			arm.moveDown();     			
+     		} else {
+     			arm.stopArm();
+     		}
+     		Common.dashNum("Distance", dt.encoder.getDistance());
+     		Common.dashNum("Sonic", bat.getDistance());
+     		
     		/*
     		bat.update();
     		Common.dashNum("Sonar Distance", bat.getDistance());
@@ -149,7 +141,7 @@ public class Robot extends SampleRobot {
     		Common.dashNum("Error", dt.heading.getAngle()-dt.heading.getTarget());
     		Common.dashNum("Encoder", dt.encoder.get());*/
     		
-    		//Common.dashNum("Thrower State", thrower.state.currentState);
+    		Common.dashNum("Thrower State", thrower.state.currentState);
     		//Common.dashNum("Front Right motor value", DriveTrain.FrontR.get());
     		//Common.dashNum("Front Left motor value", DriveTrain.FrontL.get());
     		//Common.dashNum("Winch (tape) motor value", w.tapeMotor.get());

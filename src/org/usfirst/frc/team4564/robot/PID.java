@@ -5,6 +5,7 @@ public class PID {
 	private double p;
 	private double i;
 	private double d;
+	private String name;
 	
 	/* 
 	 * Whether or not to cummulate values over time.
@@ -15,17 +16,31 @@ public class PID {
 	private double min;
 	private double max;
 	private long deltaTime;
-	
 	private double previousError;
 	private double sumError;
 	private double output;
 	
-	public PID(double p, double i, double d, boolean forward) {
+	public PID(double p, double i, double d, boolean forward, String name) {
 		this.p = p;
 		this.i = i;
 		this.d = d;
+		this.name = name;
 		this.forward = forward;
 		this.deltaTime = (long)(1.0/Constants.REFRESH_RATE*1000);
+		
+		Robot.table.putNumber(name + "P", p);
+		Robot.table.putNumber(name + "I", i);
+		Robot.table.putNumber(name + "D", d);
+	}
+	
+	public void update() {
+		this.p = Robot.table.getNumber(name + "P", this.p);
+		this.i = Robot.table.getNumber(name + "I", this.i);
+		this.d = Robot.table.getNumber(name + "D", this.d);
+		
+		Common.dashNum(name + "P", this.p);
+		Common.dashNum(name + "I", this.i);
+		Common.dashNum(name + "D", this.d);
 	}
 	
 	public void setMin(double min) {
@@ -64,8 +79,6 @@ public class PID {
 		double derivative = (error - previousError) / deltaTime;
 		previousError = error;
 		
-		Common.dashNum("PCalc", p*error);
-		Common.dashNum("ICalc", i*sumError);
 		//Calculate output
 		double output = p*error + i*sumError + d*derivative;
 		output = Math.min(Math.max(output, min), max);

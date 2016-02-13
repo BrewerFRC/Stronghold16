@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 
 public class DriveTrain extends RobotDrive {
-		
+	
 	//Drive Motors
 	static Talon FrontL = new Talon(Constants.PWM_DRIVE_L);
 	static Talon FrontR = new Talon(Constants.PWM_DRIVE_R);
@@ -16,7 +16,7 @@ public class DriveTrain extends RobotDrive {
 			false, EncodingType.k1X);
 	
 	//Distance PID
-	public PID distancePID = new PID(Constants.DRIVE_P, Constants.DRIVE_I, Constants.DRIVE_D, false);
+	public PID distancePID = new PID(Constants.DRIVE_P, Constants.DRIVE_I, Constants.DRIVE_D, false, "distance");
 	
 	//Gyro definition
 	public Heading heading = new Heading(Constants.ANA_GYRO, Constants.GYRO_P, Constants.GYRO_I, Constants.GYRO_D, Constants.GYRO_SENSITIVITY);
@@ -27,19 +27,20 @@ public class DriveTrain extends RobotDrive {
 	//Accel Curve Speeds
 	double driveSpeed = 0;
 	double turnSpeed = 0;
-	double driveAccel = 0;
-	double turnAccel = 0;
+	double driveAccel = .05;
+	double turnAccel = .05;
 	
 	//DriveTrain constructor
 	public DriveTrain() {
 		super(FrontR, FrontL);
+		init();
 	}
 	
 	public void init() {
-		FrontL.setInverted(true);
-		FrontR.setInverted(true);
 		encoder.setDistancePerPulse(1.0/Constants.COUNTS_PER_INCH);
 		encoder.reset();
+		distancePID.setMin(-0.15);
+		distancePID.setMax(0.15);
 	}
 	
 	public boolean rotateTo(double heading) {
@@ -65,14 +66,14 @@ public class DriveTrain extends RobotDrive {
 	}
 	
 	public boolean driveDistance(double inches) {
-		if (driveComplete()) {
+		//if (driveComplete()) {
 			this.distancePID.setTarget(this.encoder.getDistance() + inches);
-			actionHandler.setTargetReachedFunction(
+			/*actionHandler.setTargetReachedFunction(
 				() -> Math.abs(this.distancePID.getTarget() - this.encoder.getDistance()) <= 2
-			);
+			);*/
 			return true;
-		}
-		return false;
+		//}
+		//return false;
 	}
 	
 	public boolean driveComplete() {
@@ -91,13 +92,17 @@ public class DriveTrain extends RobotDrive {
 	}
 	
 	public void pidDrive() {
+		distancePID.update();
+		heading.update();
 		double speed = distancePID.calc(encoder.getDistance());
 		Common.dashNum("DrivePID", speed);
+		Common.dashNum("DriveTarget", this.distancePID.getTarget());
 		Common.dashNum("DriveError", this.distancePID.getTarget() - this.encoder.getDistance());
 		double turn = heading.turnRate();
 		setDrive(speed, turn);
 	}
 	
+	//target = target speed (desired speed), driveSpeed = current speed
 	 public double driveAccelCurve(double target, double driveAccel) {
 		 if (Math.abs(driveSpeed - target) > driveAccel) {
 	            if (driveSpeed > target) {
@@ -129,7 +134,7 @@ public class DriveTrain extends RobotDrive {
 			turn = heading.turnRate();
 		}
 		Common.dashNum("Turn", turn);
-		arcadeDrive(drive, -turn);
+		arcadeDrive(drive, .8 * -turn);
 	}
 
 	public void baseDrive(double drive, double turn) {
