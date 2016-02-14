@@ -26,15 +26,17 @@ public class Robot extends SampleRobot {
     	//auto.shield.defenseType = (int) table.getNumber("defense", 1);
     	//auto.shield.selectedAction = (int) table.getNumber("action", 1);
         dt.setSafetyEnabled(false);
+    	dt.init();
+    	dt.heading.setHeadingHold(true);
         //auto.currentState = 0;
         long delay = 0;
-        dt.driveDistance(10);
+		dt.setPIDDrive(true);
+        //dt.driveDistance(2);
+		dt.rotateTo(5);
         while(isAutonomous() && isEnabled()) {
         	//Loop delay timer
         	long time = Common.time();
     		delay = (long)(time + (1000/Constants.REFRESH_RATE));
-    		
-    		dt.setPIDDrive(true);
         	dt.pidDrive();
         	//bat.update();
         	//auto.updateGate();
@@ -55,7 +57,8 @@ public class Robot extends SampleRobot {
     public void operatorControl() {
     	Common.debug("Starting Teleop...");
     	dt.heading.reset();
-    	dt.heading.setTarget(0);
+    	dt.heading.setHeadingHold(false);
+    	dt.init(); 
     	long delay = 0;
     	thrower.state.currentState = 0;
     	while (isOperatorControl() && isEnabled()) {

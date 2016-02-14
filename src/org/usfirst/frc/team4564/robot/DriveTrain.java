@@ -39,26 +39,26 @@ public class DriveTrain extends RobotDrive {
 	public void init() {
 		encoder.setDistancePerPulse(1.0/Constants.COUNTS_PER_INCH);
 		encoder.reset();
-		distancePID.setMin(-0.15);
-		distancePID.setMax(0.15);
+		distancePID.setMin(-0.50);
+		distancePID.setMax(0.50);
 	}
 	
 	public boolean rotateTo(double heading) {
-		if (driveComplete()) {
+		//if (driveComplete()) {
 			this.heading.setHeading(heading);
-			actionHandler.setTargetReachedFunction(
-				() -> Math.abs(this.heading.getTarget() - this.heading.getAngle()) <= 2
-			);
+			//actionHandler.setTargetReachedFunction(
+				//() -> Math.abs(this.heading.getTarget() - this.heading.getAngle()) <= 2
+			//);
 			return true;
-		}
-		return false;
+		//}
+		//return false;
 	}
 	
-	public boolean relTurn(double heading) {
+	public boolean relTurn(double degrees) {
 		if (driveComplete()) {
-			this.heading.setTarget(this.heading.getAngle() + heading);
+			this.heading.relTurn(degrees);
 			actionHandler.setTargetReachedFunction(
-				() -> Math.abs(this.heading.getTarget() - this.heading.getAngle()) <= 2
+				() -> Math.abs(this.heading.getTargetAngle() - this.heading.getAngle()) <= 2
 			);
 			return true;
 		}
@@ -80,6 +80,7 @@ public class DriveTrain extends RobotDrive {
 		return this.actionHandler.isComplete();
 	}
 	
+	// Switch between PID driving and joystick driving.
 	public void setPIDDrive(boolean pidDrive) {
 		if (pidDrive) {
 			distancePID.reset();
@@ -99,7 +100,18 @@ public class DriveTrain extends RobotDrive {
 		Common.dashNum("DriveTarget", this.distancePID.getTarget());
 		Common.dashNum("DriveError", this.distancePID.getTarget() - this.encoder.getDistance());
 		double turn = heading.turnRate();
-		setDrive(speed, turn);
+		Common.dashNum("TurnPID", turn);
+		Common.dashNum("Gyro Current Angle", heading.getAngle());
+		Common.dashNum("Gyro Target Angle", heading.getTargetAngle());
+		Common.dashNum("Gyro Current Heading", heading.getHeading());
+		Common.dashNum("Gyro Target Heading", heading.getTargetHeading());
+		Common.dashNum("TurnError", heading.getTargetAngle() - heading.getAngle());
+		if (speed >= .01) {
+			speed = speed + 0.15;
+		} else if (speed  <= .01) {
+			speed = speed - 0.15;
+		}
+		baseDrive(speed, turn);
 	}
 	
 	//target = target speed (desired speed), driveSpeed = current speed

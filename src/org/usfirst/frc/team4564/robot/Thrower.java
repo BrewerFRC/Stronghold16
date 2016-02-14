@@ -143,14 +143,14 @@ public class Thrower {
 						currentState = BALL_DETECTED;
 					}
 					setInternalIntakeSpeed(0.75);
-					setExternalIntakeSpeed(0.75);
+					setExternalIntakeSpeed(1.0);
 					break;
 				case BALL_DETECTED:
 					if (!hasBall()) {
 						currentState = READY;
 						break;
 					}
-					setInternalIntakeSpeed(0.13);
+					setInternalIntakeSpeed(0.18);
 					setExternalIntakeSpeed(0);
 					break;
 				case BACK_OUT:
@@ -194,7 +194,7 @@ public class Thrower {
 				case START_PORTCULLIS:
 					setFlywheelSpeed(0);
 					setInternalIntakeSpeed(0);
-					setExternalIntakeSpeed(-.50);
+					setExternalIntakeSpeed(-1);
 					break;
 				}
 			return currentState;

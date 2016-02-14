@@ -35,7 +35,7 @@ public class ArmWinch {
 		}
 		
 		public void moveDown(){
-			setWinchMotor(-.35);
+			setWinchMotor(-.5);
 		}
 		
 		public void stopArm(){
