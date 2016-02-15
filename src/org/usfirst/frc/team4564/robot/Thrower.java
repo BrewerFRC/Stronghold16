@@ -21,7 +21,7 @@ public class Thrower {
 		state = new ThrowerState(this);
 		encoder.setDistancePerPulse(1/1024);
 	}
-	
+
 	public double getFlywheelPower() {
 		return flywheel.get();
 	}
@@ -165,17 +165,17 @@ public class Thrower {
 					break;
 				case SPIN_UP:
 					//TODO: Velocity control
-					setFlywheelSpeed(1.0);
+					setFlywheelSpeed(.8);
 					if (Common.time() >= spinUpTimer) {
 						currentState = READY_TO_FIRE;
 					}
 					break;
 				case READY_TO_FIRE:
-					setFlywheelSpeed(1.0);
-					fireTimer = Common.time() + 350; //fireTimer set for .25 seconds.
+					setFlywheelSpeed(.8);
+					fireTimer = Common.time() + 750; //fireTimer set for .75 seconds.
 					break;
 				case FIRE:
-					setInternalIntakeSpeed(1.0);
+					setInternalIntakeSpeed(.4);
 					setExternalIntakeSpeed(1.0);
 					if (Common.time() >= fireTimer) {
 						currentState = READY;

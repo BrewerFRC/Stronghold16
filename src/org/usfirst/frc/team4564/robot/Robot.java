@@ -62,6 +62,7 @@ public class Robot extends SampleRobot {
     	long delay = 0;
     	thrower.state.currentState = 0;
     	while (isOperatorControl() && isEnabled()) {
+     		Common.dashNum("Flywheel encoder", thrower.encoder.get() );
     		//Calculate loop timer.
     		long time = Common.time();
     		delay = (long)(time + (1000/Constants.REFRESH_RATE));
@@ -106,7 +107,6 @@ public class Robot extends SampleRobot {
      		}
      		Common.dashNum("Distance", dt.encoder.getDistance());
      		Common.dashNum("Sonic", bat.getDistance());
-     		
     		/*
     		bat.update();
     		Common.dashNum("Sonar Distance", bat.getDistance());
