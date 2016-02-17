@@ -25,11 +25,19 @@ public class Robot extends SampleRobot {
 		dt.setPIDDrive(true);
         //dt.driveDistance(2);
 		dt.rotateTo(45);
+		boolean driven = false;
         while(isAutonomous() && isEnabled()) {
         	//Loop delay timer
         	long time = Common.time();
-    		delay = (long)(time + (1000/Constants.REFRESH_RATE));
+    		long delay = (long)(time + (1000/Constants.REFRESH_RATE));
         	dt.pidDrive();
+        	boolean complete = dt.driveComplete();
+        	Common.dashBool("DriveComplete", complete);
+        	if (complete && !driven) {
+        		System.out.println("Drive");
+        		dt.driveDistance(20);
+        		driven = true;
+        	}
         	//bat.update();
         	//auto.updateGate();
         	//Common.dashNum("currentState", auto.currentState);

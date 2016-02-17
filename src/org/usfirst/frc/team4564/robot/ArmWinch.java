@@ -15,7 +15,7 @@ public class ArmWinch {
 		
 		public void setWinchMotor(double power){
 			
-			/*if (power > 0) {
+			if (power > 0) {
 				if (winchLimitHigh.get() == HIGH_LIMIT_REACHED) {
 					power = 0;
 				}
@@ -25,7 +25,7 @@ public class ArmWinch {
 				if (winchLimitLow.get() == LOW_LIMIT_REACHED) {
 					power = 0;
 				}
-			}*/
+			}
 			
 			armMotor.set(power);
 		}
