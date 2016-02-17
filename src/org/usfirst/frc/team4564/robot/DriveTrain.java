@@ -41,6 +41,7 @@ public class DriveTrain extends RobotDrive {
 		encoder.reset();
 		distancePID.setMin(-0.50);
 		distancePID.setMax(0.50);
+		heading.reset();
 	}
 	
 	public boolean rotateTo(double heading) {
@@ -142,11 +143,8 @@ public class DriveTrain extends RobotDrive {
 		}
 	
 	public void setDrive(double drive, double turn) {
-		if (heading.isHeadingHold()) {
-			turn = heading.turnRate();
-		}
 		Common.dashNum("Turn", turn);
-		arcadeDrive(drive, .8 * -turn);
+		arcadeDrive(drive, /*.8 **/ -turn);
 	}
 
 	public void baseDrive(double drive, double turn) {

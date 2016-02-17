@@ -25,7 +25,7 @@ public class Constants {
 	
 	//Analog Ports
 	//public static final int ANA_GYRO = 0;
-	public static final int ANA_SONIC_RIGHT = 0 ;
+	public static final int ANA_SONIC_RIGHT = 0;
 	public static final int ANA_GYRO = 1;
 	public static final int ANA_TAPE_WINCH_EXTEND_LIMIT = 2;
 	
@@ -36,7 +36,7 @@ public class Constants {
 	public static final double COUNTS_PER_INCH = 83.39;
 	
 	//Turn PID constants
-	public static final double TURN_P = 0.04;
+	public static final double TURN_P = 0.12;
 	public static final double TURN_I = 0;
 	public static final double TURN_D = 0;
 	

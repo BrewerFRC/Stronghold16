@@ -8,8 +8,8 @@ public class Auto {
 	public Shield shield;
 	
 	//currentState constants
-	public static final int AUTO_INIT = 0;
-	public static final int DETECT_APPROACH = 1;
+	public static final int AUTO_INIT = 0;						// Auto mode has to be initialed
+	public static final int DETECT_APPROACH = 1;				// Awaiting for Sheild detect
 	public static final int APPROACH_WAIT = 2;
 	public static final int DETECT_EXIT = 3;
 	public static final int EXIT_WAIT = 4;
@@ -23,7 +23,7 @@ public class Auto {
 	public static final double VERIFICATION_TIME = 2;
 	
 	//updateAuto variables
-	public int currentState = 0;
+	public int currentState = AUTO_INIT;
 	public double detectTime;
 	public double currentTime;
 	public double shieldDistance;
@@ -36,13 +36,26 @@ public class Auto {
 		dt.setPIDDrive(true);
 	}
 	
+	// Prepare for auto run
+	public void init() {
+		currentState = DETECT_APPROACH;
+		// Setup drivetrain
+    	dt.init();
+        dt.setSafetyEnabled(false);
+    	dt.heading.setHeadingHold(true);
+    	// Get initial auto parameters from network tables.  They'll default to zero if not specified.
+    	shield.startingPlatform = (int) Robot.table.getNumber("platform", 0);
+    	shield.targetPlatform = (int) Robot.table.getNumber("targetPlatform", 0);
+    	shield.defenseType = (int) Robot.table.getNumber("defense", 0);
+    	shield.selectedAction = (int) Robot.table.getNumber("action", 0);
+	}
+	
 	//Low level logic that determines Robot state from internal and external inputs.
 	public void updateAuto () {
 		
 		switch (currentState) {
 		
-			case 0:
-				currentState = DETECT_APPROACH;
+			case AUTO_INIT:
 				break;
 			
 			case 1:

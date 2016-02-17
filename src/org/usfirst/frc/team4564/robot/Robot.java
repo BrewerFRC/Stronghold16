@@ -21,18 +21,10 @@ public class Robot extends SampleRobot {
     }
     
     public void autonomous() {
-    	//auto.shield.startingPlatform = (int) table.getNumber("platform", 1);
-    	//auto.shield.targetPlatform = (int) table.getNumber("targetPlatform", 1);
-    	//auto.shield.defenseType = (int) table.getNumber("defense", 1);
-    	//auto.shield.selectedAction = (int) table.getNumber("action", 1);
-        dt.setSafetyEnabled(false);
-    	dt.init();
-    	dt.heading.setHeadingHold(true);
-        //auto.currentState = 0;
-        long delay = 0;
+        auto.init();
 		dt.setPIDDrive(true);
         //dt.driveDistance(2);
-		dt.rotateTo(5);
+		dt.rotateTo(45);
         while(isAutonomous() && isEnabled()) {
         	//Loop delay timer
         	long time = Common.time();
