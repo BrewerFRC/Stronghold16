@@ -45,21 +45,44 @@ public class DriveTrain extends RobotDrive {
 	}
 	
 	public boolean rotateTo(double heading) {
-		//if (driveComplete()) {
+		if (driveComplete()) {
 			this.heading.setHeading(heading);
-			//actionHandler.setTargetReachedFunction(
-				//() -> Math.abs(this.heading.getTarget() - this.heading.getAngle()) <= 2
-			//);
+			actionHandler.setTargetReachedFunction(
+				() -> {
+					boolean complete = Math.abs(this.heading.getTargetAngle() - this.heading.getAngle()) <= 2;
+					if (!complete) {
+						System.out.println("IsTurning");
+						actionHandler.setTurning(true);
+					}
+					else if (actionHandler.isTurning()) {
+						System.out.println("ResetTarget");
+						actionHandler.setTurning(false);
+						distancePID.setTarget(encoder.getDistance());
+					}
+					return complete;
+				}
+			);
 			return true;
-		//}
-		//return false;
+		}
+		return false;
 	}
 	
 	public boolean relTurn(double degrees) {
 		if (driveComplete()) {
 			this.heading.relTurn(degrees);
 			actionHandler.setTargetReachedFunction(
-				() -> Math.abs(this.heading.getTargetAngle() - this.heading.getAngle()) <= 2
+				() -> {
+					
+					boolean complete = Math.abs(this.heading.getTargetAngle() - this.heading.getAngle()) <= 2;
+					if (!complete) {
+						actionHandler.setTurning(true);
+					}
+					else if (actionHandler.isTurning()) {
+						actionHandler.setTurning(false);
+						distancePID.setTarget(encoder.getDistance());
+					}
+					return complete;
+				}
 			);
 			return true;
 		}
@@ -112,7 +135,7 @@ public class DriveTrain extends RobotDrive {
 		} else if (speed  <= .01) {
 			speed = speed - 0.15;
 		}
-		baseDrive(speed, turn);
+		baseDrive((actionHandler.isTurning()) ? 0 : speed, turn);
 	}
 	
 	//target = target speed (desired speed), driveSpeed = current speed
