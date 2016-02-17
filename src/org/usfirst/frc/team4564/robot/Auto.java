@@ -7,26 +7,57 @@ public class Auto {
 	Thrower t;
 	public Shield shield;
 	
-	//currentState constants
+	//Shield detection states for driving through a defense
 	public static final int AUTO_INIT = 0;						// Auto mode has to be initialed
-	public static final int DETECT_APPROACH = 1;				// Awaiting for Sheild detect
-	public static final int APPROACH_WAIT = 2;
-	public static final int DETECT_EXIT = 3;
-	public static final int EXIT_WAIT = 4;
-	public static final int DETECT_RETURN = 5;
-	public static final int RETURN_WAIT = 6;
-	public static final int DETECT_RETURN_EXIT = 7;
-	public static final int RETURN_EXIT_WAIT = 8;
-	public static final int CROSSED_RETURN_DEFENSE = 9;
-	public static final double MIN_SHEILD_DISTANCE = 0;
-	public static final double MAX_SHEILD_DISTANCE = 15;
-	public static final double VERIFICATION_TIME = 2;
+	public static final int DETECT_APPROACH = 1;				// Awaiting for inital Shield detect
+	public static final int APPROACH_WAIT = 2;					// Verify shield detect for a set amount of time
+	public static final int DETECT_EXIT = 3;					// Within the defense, awaiting exit from Shield
+	public static final int EXIT_WAIT = 4;						// Verify shield exit for a set amount of time
+	public static final int DEFENSE_CLEARED = 5;				// Verified that defense has been cleared
+	//Shield detection states for returning through Portcullis or Sally Port
+	public static final int DETECT_RETURN = 10;					// Awaiting for initial Shield detect
+	public static final int RETURN_WAIT = 11;					// Verify shield detect for a set amount of time
+	public static final int IN_DEFENSE = 12;					// Robots within the defense
+	//driveState constants.
+	public static final int NOT_DRIVING = 0;
+	public static final int DRIVING = 1;
+	public static final int DEFENSE_CROSSED = 2;
+	public static final int TURNING = 3;
+	public static final int TURN_COMPLETE = 4;
+	public static final int MOVING_TO_TARGET = 5;
+	public static final int REACHED_TARGET = 6;
+	public static final int MOVING_TO_OPEN = 7;
+	public static final int OPENING_DEFENSE = 8;
+	public static final int ALIGNMENT_COMPLETE = 9;
+	public static final int FIRING = 10;
+	public static final int FINI = 11;
+	//Field Dimension constants.
+	public static final double PLATFORM_WIDTH = 52.5;
+	public static final double ABSOLUTE_CASTLE_X = 170.6113;
+	//Auto action constants.
+	public static final double AUTO_HIGHGOAL_SPEED = 100;
+	//driveDefense variables
+	public int defenseType;
+	public int selectedAction;
+	public int driveState = 0;
+	public int targetPlatform;
+	public int target;
+	public int startingPlatform;
+
+	
+	
+	
+	
+	
+	//public static final double MIN_SHIELD_DISTANCE = 0;
+	public static final double MAX_SHIELD_DISTANCE = 15;
+	public static final double VERIFICATION_TIME = 300;		//Amount of necessary time to verify panel detect
 	
 	//updateAuto variables
-	public int currentState = AUTO_INIT;
-	public double detectTime;
-	public double currentTime;
-	public double shieldDistance;
+	public int shieldState = AUTO_INIT;
+	public long detectTime;		//Start time of Sheild detect
+	//public long currentTime;
+	public double shieldDistance;  //The ultrasonic sensor distance upon exit of a defense
 	
 	//Auto constructor
 	public Auto(DriveTrain dt, Bat bat) {
@@ -38,7 +69,7 @@ public class Auto {
 	
 	// Prepare for auto run
 	public void init() {
-		currentState = DETECT_APPROACH;
+		shieldState = DETECT_APPROACH;
 		// Setup drivetrain
     	dt.init();
         dt.setSafetyEnabled(false);
@@ -50,133 +81,95 @@ public class Auto {
     	shield.selectedAction = (int) Robot.table.getNumber("action", 0);
 	}
 	
-	//Low level logic that determines Robot state from internal and external inputs.
-	public void updateAuto () {
-		
-		switch (currentState) {
-		
+	// Using the ultrasonic sensor, this logic determines when the robot passes through a shield.
+	// The value of "shieldDistance" will give the distance that the robot is away from the shield.
+	// Returns true when defense is cleared. 
+	public boolean shieldCross () {
+		boolean isCleared = false;
+		switch (shieldState) {
+
 			case AUTO_INIT:
 				break;
 			
-			case 1:
-				if ((bat.getDistance() >= MIN_SHEILD_DISTANCE) && (bat.getDistance() <= MAX_SHEILD_DISTANCE)) { 
-					detectTime = Timer.getFPGATimestamp();
-					currentState = APPROACH_WAIT;
-				} else {
-					currentState =  DETECT_APPROACH;
+			case DETECT_APPROACH:
+				if (bat.getDistance() <= MAX_SHIELD_DISTANCE) { 
+					detectTime = Common.time();
+					shieldState = APPROACH_WAIT;
 				}
 				break;
 				
-			case 2:
-				currentTime = Timer.getFPGATimestamp();
-				if ((bat.getDistance() >= MIN_SHEILD_DISTANCE ) && (bat.getDistance() <= MAX_SHEILD_DISTANCE )) {
-					if(currentTime - detectTime >= VERIFICATION_TIME) {
-						currentState = DETECT_EXIT;
-					} else { 
-						currentState = APPROACH_WAIT;
-					}
+			case APPROACH_WAIT:
+				if (bat.getDistance() <= MAX_SHIELD_DISTANCE) {
+					if(Common.time() - detectTime >= VERIFICATION_TIME) {
+						shieldState = DETECT_EXIT;
+					}		
 				} else {
-					currentState = DETECT_APPROACH;
+					shieldState = DETECT_APPROACH;
 				}
 				break;
 				
-			case 3:
-				if ( bat.getDistance() >= MAX_SHEILD_DISTANCE) {
-					detectTime = Timer.getFPGATimestamp();
-					currentState = EXIT_WAIT;
+			case DETECT_EXIT:
+				if ( bat.getDistance() > MAX_SHIELD_DISTANCE) {
+					detectTime = Common.time();
+					shieldState = EXIT_WAIT;
 				} else {
-					currentState = DETECT_EXIT;
-				}	
+					shieldDistance = bat.getDistance();   //remember our distance from the shield
+				}
 				break;
 				
-			case 4:
-				currentTime = Timer.getFPGATimestamp();
-				if ((bat.getDistance() >= MIN_SHEILD_DISTANCE) && (bat.getDistance() <= MAX_SHEILD_DISTANCE)) {
-					if (currentTime - detectTime >= VERIFICATION_TIME) {
-						currentState = DETECT_RETURN;
-						shieldDistance = bat.getDistance();
+			case EXIT_WAIT:
+				if (bat.getDistance() <= MAX_SHIELD_DISTANCE) {
+					if (Common.time() - detectTime >= VERIFICATION_TIME) {
+						shieldState = DEFENSE_CLEARED;
 					} else {
-						currentState = DETECT_EXIT;
+						shieldState = DETECT_EXIT;
 					}
 				} else {
-					currentState = DETECT_EXIT;
+					shieldState = DETECT_EXIT;
 				}
 			    break;
 			    
-			case 5:
-				if ((bat.getDistance() >= MIN_SHEILD_DISTANCE) && (bat.getDistance() <= MAX_SHEILD_DISTANCE)) { 
-					detectTime = Timer.getFPGATimestamp();
-					currentState = RETURN_WAIT ;
-				} else {
-					currentState =  DETECT_RETURN;
-				}
+			case DEFENSE_CLEARED:
+				isCleared = true;
 				break;
-				
-			case 6:
-				currentTime = Timer.getFPGATimestamp();
-				if ((bat.getDistance() >= MIN_SHEILD_DISTANCE) && (bat.getDistance() <= MAX_SHEILD_DISTANCE)) {
-					if (currentTime - detectTime >= VERIFICATION_TIME) {
-						currentState = DETECT_RETURN_EXIT;
-					} else {
-						currentState = DETECT_RETURN;
-					}
-				} else {
-					currentState = RETURN_WAIT;
-				}
-			    break;
-			    
-			case 7:
-				if ( bat.getDistance() >= MAX_SHEILD_DISTANCE) {
-					detectTime = Timer.getFPGATimestamp();
-					currentState = RETURN_EXIT_WAIT;
-				} else {
-					currentState = DETECT_RETURN_EXIT;
-				}	
-				break;
-				
-			case 8:
-				currentTime = Timer.getFPGATimestamp();
-				if ((bat.getDistance() >= MIN_SHEILD_DISTANCE) && (bat.getDistance() <= MAX_SHEILD_DISTANCE)) {
-					if (currentTime - detectTime >= VERIFICATION_TIME) {
-						currentState = CROSSED_RETURN_DEFENSE;
-					} else {
-						currentState = RETURN_EXIT_WAIT;
-					}
-				} else {
-					currentState = DETECT_RETURN_EXIT;
-				}
-			    break;
 		}
+		return isCleared;
+	}
+				
+	// Using the ultrasone sensor, this logic determines when the robot is within a defense.
+	// Use this for the u-turn action
+	// Retruns true when within a shield.
+	public boolean shieldReturn() {
+		boolean inDefense = false;
+		
+		switch (shieldState) {
+		
+			case DETECT_RETURN:
+				if (bat.getDistance() <= MAX_SHIELD_DISTANCE) { 
+					detectTime = Common.time();
+					shieldState = RETURN_WAIT ;
+				}
+				break;
+				
+			case RETURN_WAIT:
+				if (bat.getDistance() <= MAX_SHIELD_DISTANCE) {
+					if (Common.time() - detectTime >= VERIFICATION_TIME) {
+						shieldState = IN_DEFENSE;
+					}
+				} else {
+					shieldState = DETECT_RETURN;
+				}
+			    break;
+			    
+			case IN_DEFENSE:
+				inDefense = true;
+				break;
+		}
+		return inDefense;
 	}
 
 	
-	public class Shield {	
 		
-		//driveState constants.
-		public static final int NOT_DRIVING = 0;
-		public static final int DRIVING = 1;
-		public static final int DEFENSE_CROSSED = 2;
-		public static final int TURNING = 3;
-		public static final int TURN_COMPLETE = 4;
-		public static final int MOVING_TO_TARGET = 5;
-		public static final int REACHED_TARGET = 6;
-		public static final int MOVING_TO_OPEN = 7;
-		public static final int OPENING_DEFENSE = 8;
-		public static final int ALIGNMENT_COMPLETE = 9;
-		public static final int FIRING = 10;
-		public static final int FINI = 11;
-		//Field Dimension constants.
-		public static final double PLATFORM_WIDTH = 52.5;
-		public static final double ABSOLUTE_CASTLE_X = 170.6113;
-		//Auto action constants.
-		public static final double AUTO_HIGHGOAL_SPEED = 100;
-		//driveDefense variables
-		public int defenseType;
-		public int selectedAction;
-		public int driveState = 0;
-		public int targetPlatform;
-		public int target;
-		public int startingPlatform;
 
 		
 		//Execute Auto based upon startingPlatform, defenseType, and selectedAction.
@@ -252,7 +245,7 @@ public class Auto {
 			
 		}
 	}
-}
+
 		
 		//Determines right or left turn based on starting position and target.
 		public double turnLogic(double target, int startingPlatform) {
@@ -285,7 +278,7 @@ public class Auto {
 		
 		//Have we crossed the initial defense?
 		public boolean defenseComplete() {
-			if (currentState == DETECT_RETURN) {
+			if (shieldState == DETECT_RETURN) {
 				return (true);
 			} else { 
 				return (false);
@@ -293,7 +286,7 @@ public class Auto {
 		}
 		// Have we crossed the defense when returning?
 		public boolean returnDefenseComplete() {
-			if (currentState == CROSSED_RETURN_DEFENSE) {
+			if (shieldState == CROSSED_RETURN_DEFENSE) {
 				return (true);
 			} else {
 				return (false);
