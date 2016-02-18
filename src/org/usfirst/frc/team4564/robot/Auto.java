@@ -42,24 +42,27 @@ public class Auto {
 	private int paramSelectedAction;
 	private int paramTargetPlatform;
 	private int paramTarget;
-	//Action parameter constants
+	
+	//autoRun Action parameter constants
 	private static final int ACTION_STOP = 0;
 	private static final int ACTION_UTURN = 1;
 	private static final int ACTION_SHOOT = 2;
-	//Defense parameter constants
+	
+	//autoRunDefense parameter constants
 	private static final int DEFENSE_LOWBAR = 1;
-	private static final int DEFENSE_ROCK_WALL = 2;
-	private static final int DEFENSE_MOAT = 3;
-	private static final int DEFENSE_PORTCULLIS = 3;
-
-	//State variables
-	public int shieldState = AUTO_INIT;
-	private int driveState = NOT_DRIVING;
-	private int autoRunState = AUTO_SETUP;
+	private static final int DEFENSE_ROUGH_TERRAIN = 2;
+	private static final int DEFENSE_ROCK_WALL = 3;
+	private static final int DEFENSE_MOAT = 4;
+	private static final int DEFENSE_PORTCULLIS = 5;
 
 	//Field Dimension constants.
 	public static final double PLATFORM_WIDTH = 52.5;
 	public static final double ABSOLUTE_CASTLE_X = 170.6113;
+	
+	//State variables for Shield, Drive, and AutoRun
+	public int shieldState = AUTO_INIT;
+	private int driveState = NOT_DRIVING;
+	private int autoRunState = AUTO_SETUP;
 
 	//Misc variables
 	public long detectTime;		//Start time of Sheild detect
@@ -70,27 +73,28 @@ public class Auto {
 	public Auto(DriveTrain dt, Bat bat) {
 		this.dt = dt;
 		this.bat = bat;
-		dt.setHeadingHold(true);
 	}
 	
 	// Prepare for auto run
 	public void init() {
-		shieldState = AUTO_INIT;  //set initial shield state
-		driveState = NOT_DRIVING; //set initial drive state
+		shieldState = AUTO_INIT;     //set initial shield state
+		driveState = NOT_DRIVING;    //set initial drive state
+		autoRunState = AUTO_SETUP;   //set initial autoRun state
 		// Setup drivetrain
-    	dt.init();
-        dt.setSafetyEnabled(false);
-    	dt.heading.setHeadingHold(true);
-    	// Get initial auto parameters from network tables.  They'll default to zero if not specified.
-    	paramStartingPlatform = (int) Robot.table.getNumber("platform", 0);
-    	paramDefenseType = (int) Robot.table.getNumber("defense", 0);
-    	paramTargetPlatform = (int) Robot.table.getNumber("targetPlatform", 0);
-    	paramSelectedAction = (int) Robot.table.getNumber("action", 0);
+		dt.init();
+    		dt.setSafetyEnabled(false);
+        	dt.setHeadingHold(true);
+		// Get initial auto parameters from network tables.  They'll default to zero if not specified.
+		paramStartingPlatform = (int) Robot.table.getNumber("platform", 0);
+		paramDefenseType = (int) Robot.table.getNumber("defense", 0);
+		paramTargetPlatform = (int) Robot.table.getNumber("targetPlatform", 0);
+		paramSelectedAction = (int) Robot.table.getNumber("action", 0);
 	}
 	
 	// Using the ultrasonic sensor, this logic determines when the robot passes through a shield.
 	// The value of "shieldDistance" will give the distance that the robot was away from the shield just before exit.
 	// Returns true when defense is cleared. 
+	// This method is used by driveDefense().
 	public boolean shieldCrossed() {
 		boolean isCleared = false;
 		switch (shieldState) {
@@ -142,9 +146,10 @@ public class Auto {
 		return isCleared;
 	}
 				
-	// Using the ultrasone sensor, this logic determines when the robot is within a defense.
+	// Using the ultrasonic sensor, this logic determines when the robot is within a defense.
 	// Use this for the u-turn action
-	// Retruns true when within a shield.
+	// Retuuns true when within a shield.
+	//***We may not need this function***
 	public boolean shieldReturn() {
 		boolean inDefense = false;
 		switch (shieldState) {
@@ -174,13 +179,14 @@ public class Auto {
 	}
 
 	// Given a defenseType, this method will drive the robot through a defense.
-    // It will return true when the defense is cleared.
+	// It will return true when the defense is cleared.
+	// This methods is used to autoRun().
 	public boolean driveDefense(int defenseType) {
 		
 		boolean defenseCleared = false;
 	
 		switch(defenseType) {
-			//LOW-BAR
+
 			case DEFENSE_LOWBAR: 
 				Common.dashNum("Defense Drive State",driveState);
 				switch(driveState) {
@@ -226,12 +232,12 @@ public class Auto {
 	//Call this method from a robot loop, multiple times per second.
 	public void autoRun() {
 		// TESTING ONLY *****************
-    	paramStartingPlatform = 5;
-    	paramDefenseType = DEFENSE_LOWBAR;
-    	paramTargetPlatform = 4;
-    	paramSelectedAction = ACTION_UTURN;
-    	Common.dashNum("autoRun State", autoRunState);
-        //***********************
+		paramStartingPlatform = 5;
+		paramDefenseType = DEFENSE_LOWBAR;
+		paramTargetPlatform = 4;
+		paramSelectedAction = ACTION_UTURN;
+		Common.dashNum("autoRun State", autoRunState);
+		//***********************
 		switch (autoRunState) {
 			case AUTO_SETUP:
 				if (paramStartingPlatform > 0 && paramDefenseType > 0) {
