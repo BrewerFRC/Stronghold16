@@ -7,7 +7,7 @@ public class Auto {
 	Thrower t;
 	
 	//Shield detection states for driving through a defense
-	public static final int AUTO_INIT = 0;						// Auto mode has to be initialed
+	public static final int AUTO_INIT = 0;						// Auto mode has to be initialized
 	public static final int DETECT_APPROACH = 1;				// Awaiting for inital Shield detect
 	public static final int APPROACH_WAIT = 2;					// Verify shield detect for a set amount of time
 	public static final int DETECT_EXIT = 3;					// Within the defense, awaiting exit from Shield
@@ -20,7 +20,7 @@ public class Auto {
 	public static final int IN_DEFENSE = 12;					// Robots within the defense
 	
 	//Shield related constants
-	public static final double MAX_SHIELD_DISTANCE = 15;
+	public static final double MAX_SHIELD_DISTANCE = 20;
 	public static final double VERIFICATION_TIME = 300;		//Amount of necessary time to verify shield detect
 
 	//driveDefense states.
@@ -28,15 +28,15 @@ public class Auto {
 	public static final int DRIVING = 1;						//Robot moving, waiting to clear Shield
 	public static final int DEFENSE_CROSSED = 2;				//Robot cleared shield and now stopped.
 
-	//Autorun states
-	private static final int AUTO_SETUP = 1;					//Prep start of autorun
+	//autoRun states
+	private static final int AUTO_SETUP = 1;					//Prep start of autoRun
 	private static final int AUTO_DRIVE = 2;					//Drive through the defense, if one is selected
 	private static final int AUTO_NEXT_ACTION = 3;				//Determine what is the next action; UTURN, SHOOT, or STOP
-	private static final int AUTO_UTURN = 4;					//Drive to the return defense, if one is specifed
+	private static final int AUTO_UTURN = 4;					//Drive to the return defense, if one is specified
 	private static final int AUTO_SHOOT = 5;					//Drive to tower and shoot
-	private static final int AUTO_STOP = 6;						//Autorun complete; robot stopped.
+	private static final int AUTO_STOP = 6;						//autoRun complete; robot stopped.
 	
-	//Autorun parameters loaded from networktables
+	//autoRun parameters loaded from networktables
 	private int paramStartingPlatform;
 	private int paramDefenseType;	
 	private int paramSelectedAction;
@@ -53,9 +53,9 @@ public class Auto {
 	private static final int DEFENSE_PORTCULLIS = 3;
 
 	//State variables
-	private int shieldState = AUTO_INIT;
+	public int shieldState = AUTO_INIT;
 	private int driveState = NOT_DRIVING;
-	private int autorunState = AUTO_SETUP;
+	private int autoRunState = AUTO_SETUP;
 
 	//Field Dimension constants.
 	public static final double PLATFORM_WIDTH = 52.5;
@@ -70,12 +70,13 @@ public class Auto {
 	public Auto(DriveTrain dt, Bat bat) {
 		this.dt = dt;
 		this.bat = bat;
-		dt.setPIDDrive(true);
+		dt.setHeadingHold(true);
 	}
 	
 	// Prepare for auto run
 	public void init() {
-		shieldState = DETECT_APPROACH;
+		shieldState = AUTO_INIT;  //set initial shield state
+		driveState = NOT_DRIVING; //set initial drive state
 		// Setup drivetrain
     	dt.init();
         dt.setSafetyEnabled(false);
@@ -95,6 +96,7 @@ public class Auto {
 		switch (shieldState) {
 
 			case AUTO_INIT:
+				shieldState = DETECT_APPROACH;
 				break;
 			
 			case DETECT_APPROACH:
@@ -124,12 +126,10 @@ public class Auto {
 				break;
 				
 			case EXIT_WAIT:
-				if (bat.getDistance() <= MAX_SHIELD_DISTANCE) {
+				if (bat.getDistance() > MAX_SHIELD_DISTANCE) {
 					if (Common.time() - detectTime >= VERIFICATION_TIME) {
 						shieldState = DEFENSE_CLEARED;
-					} else {
-						shieldState = DETECT_EXIT;
-					}
+					} 
 				} else {
 					shieldState = DETECT_EXIT;
 				}
@@ -178,21 +178,21 @@ public class Auto {
 	public boolean driveDefense(int defenseType) {
 		
 		boolean defenseCleared = false;
-		shieldState = AUTO_INIT;  //set initial shield state
 	
 		switch(defenseType) {
 			//LOW-BAR
-			case DEFENSE_LOWBAR:  
+			case DEFENSE_LOWBAR: 
+				Common.dashNum("Defense Drive State",driveState);
 				switch(driveState) {
 
 					case NOT_DRIVING:
 						driveState = DRIVING;
-						dt.setDrive(0.5, 0.0);
+						dt.setDriveSpeed(0.6);
 						break;
 					
 					case DRIVING:
 						if (shieldCrossed()) {
-							dt.setDrive(0.0, 0.0);
+							dt.setDriveSpeed(0.0);
 							driveState = DEFENSE_CROSSED;
 						}
 						break;
@@ -223,41 +223,52 @@ public class Auto {
 				
 					
 	//Execute an full auto routine based on the user provided parameters.
-	public void autorun() {
-		driveState = NOT_DRIVING;  // set initial drive state
-
-		switch (autorunState) {
+	//Call this method from a robot loop, multiple times per second.
+	public void autoRun() {
+		// TESTING ONLY *****************
+    	paramStartingPlatform = 5;
+    	paramDefenseType = DEFENSE_LOWBAR;
+    	paramTargetPlatform = 4;
+    	paramSelectedAction = ACTION_UTURN;
+    	Common.dashNum("autoRun State", autoRunState);
+        //***********************
+		switch (autoRunState) {
 			case AUTO_SETUP:
 				if (paramStartingPlatform > 0 && paramDefenseType > 0) {
-					autorunState = AUTO_DRIVE;
+					autoRunState = AUTO_DRIVE;
 				}
 				break;
 			case AUTO_DRIVE:
 				if (driveDefense(paramDefenseType)) {
-					autorunState = AUTO_NEXT_ACTION;
+					autoRunState = AUTO_NEXT_ACTION;
 				}	
+				dt.autoDrive();
 				break;
 			case AUTO_NEXT_ACTION:
 				switch (paramSelectedAction) {
 				case ACTION_STOP:
-					autorunState = AUTO_STOP;
+					autoRunState = AUTO_STOP;
 					break;
 				case ACTION_UTURN:
-					autorunState = AUTO_UTURN;
+					dt.rotateTo(turnLogic(paramTargetPlatform, paramStartingPlatform));  // Initiate first turn
+					autoRunState = AUTO_UTURN;
 					break;
 				case ACTION_SHOOT:
-					autorunState = AUTO_SHOOT;
+					autoRunState = AUTO_SHOOT;
 					break;
 				}
 				break;
 			case AUTO_UTURN:
-				
+				dt.autoDrive();
+				if (dt.driveComplete()) {
+					driveState = AUTO_STOP;
+				}				
 				break;
 			case AUTO_SHOOT:
 				
 				break;
 			case AUTO_STOP:
-				
+				dt.baseDrive(0.0, 0.0);
 				break;
 		}
 	}
@@ -334,9 +345,9 @@ public class Auto {
 	}
 */
 		
-	//Determines right or left turn based on starting position and target.
+	//Determines right or left turn based on starting platform and target platform.
 	public double turnLogic(double target, int startingPlatform) {
-		if ( target - startingPlatform > 0) {
+		if ( target > startingPlatform) {
 			return 90;
 		} else {
 			return -90;

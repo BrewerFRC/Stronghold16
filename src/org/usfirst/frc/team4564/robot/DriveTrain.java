@@ -30,20 +30,30 @@ public class DriveTrain extends RobotDrive {
 	double driveAccel = .05;
 	double turnAccel = .05;
 	
+	//Auto drive variables
+	private boolean driveByPID = false;	  //True if distance based driving enabled, false is driving by set motor power
+	private double autoDriveSpeed = 0.0;  //Motor power for non-PID driving
+	
 	//DriveTrain constructor
 	public DriveTrain() {
 		super(FrontR, FrontL);
 		init();
 	}
 	
+	// Initialize drivetrain systems
 	public void init() {
 		encoder.setDistancePerPulse(1.0/Constants.COUNTS_PER_INCH);
 		encoder.reset();
+		heading.reset();
 		distancePID.setMin(-0.50);
 		distancePID.setMax(0.50);
-		heading.reset();
+
 	}
 	
+	// Set a target heading for robot to rotate to.
+	// Direction of rotation will be shortest path from current heading.
+	// Call setPIDDrive(true) to enable and call PIDDrive() from a robot loop to update.
+	// Call driveComplete() to determine if turn is completed.
 	public boolean rotateTo(double heading) {
 		if (driveComplete()) {
 			this.heading.setHeading(heading);
@@ -90,52 +100,78 @@ public class DriveTrain extends RobotDrive {
 	}
 	
 	public boolean driveDistance(double inches) {
-		//if (driveComplete()) {
+		if (driveComplete()) {
+			driveByPID = true;     //Note that we are performing distance drive
+			autoDriveSpeed = 0.0;  //Disable non-PID drive speed
 			this.distancePID.setTarget(this.encoder.getDistance() + inches);
-			/*actionHandler.setTargetReachedFunction(
+			actionHandler.setTargetReachedFunction(
 				() -> Math.abs(this.distancePID.getTarget() - this.encoder.getDistance()) <= 2
-			);*/
+			);
 			return true;
-		//}
-		//return false;
+		}
+		return false;
 	}
 	
+	// Has last requested PID drive action completed?
 	public boolean driveComplete() {
 		return this.actionHandler.isComplete();
 	}
 	
-	// Switch between PID driving and joystick driving.
-	public void setPIDDrive(boolean pidDrive) {
-		if (pidDrive) {
+	// Enable or disable heading when using pidDrive.
+	public void setHeadingHold(boolean headingHold) {
+		if (headingHold) {
+			//Clear any residual PID accumulators
 			distancePID.reset();
 			heading.resetPID();
-			//heading.setHeadingHold(true);
+			// Turn on heading hold
+			heading.setHeadingHold(true);
 		}
 		else {
-			//heading.setHeadingHold(false);
+			heading.setHeadingHold(false);
 		}
 	}
 	
-	public void pidDrive() {
-		distancePID.update();
-		heading.update();
-		double speed = distancePID.calc(encoder.getDistance());
-		Common.dashNum("DrivePID", speed);
-		Common.dashNum("DriveTarget", this.distancePID.getTarget());
-		Common.dashNum("DriveError", this.distancePID.getTarget() - this.encoder.getDistance());
-		double turn = heading.turnRate();
-		Common.dashNum("TurnPID", turn);
-		Common.dashNum("Gyro Current Angle", heading.getAngle());
-		Common.dashNum("Gyro Target Angle", heading.getTargetAngle());
-		Common.dashNum("Gyro Current Heading", heading.getHeading());
-		Common.dashNum("Gyro Target Heading", heading.getTargetHeading());
-		Common.dashNum("TurnError", heading.getTargetAngle() - heading.getAngle());
-		if (speed >= .01) {
-			speed = speed + 0.15;
-		} else if (speed  <= .01) {
-			speed = speed - 0.15;
+	// Set a non-PID based driving speed
+	public void setDriveSpeed(double speed) {
+		driveByPID = false;
+		autoDriveSpeed = speed;
+	}
+	
+	
+	// Process both distance and heading PIDs and then power robot drive accordingly.
+	// Call this method repeatedly from the robot loop.
+	public void autoDrive() {
+		double speed;
+		// Determine driving speed
+		if  (actionHandler.isTurning()) {	// If doing a PID Turn, set speed to zero 
+			speed = 0.0;
+		} else if (driveByPID) {  // Distance drive is enabled, so calculate speed based on distance PID
+			distancePID.update();
+			speed = distancePID.calc(encoder.getDistance());
+			// Scale the speed to overcome motor deadzone
+			if (speed >= .01) {
+				speed = speed + 0.15;
+			} else if (speed  <= .01) {
+				speed = speed - 0.15;
+			}
+		} else {  // Otherwise, drive based on the set motor drive speed
+			speed = autoDriveSpeed;
 		}
-		baseDrive((actionHandler.isTurning()) ? 0 : speed, turn);
+		// Determine turn rate			
+		heading.update();
+		double turn = heading.turnRate();
+		// Drive the robot
+		baseDrive(speed, turn);
+
+		//Common.dashNum("DrivePID", speed);
+		//Common.dashNum("DriveTarget", this.distancePID.getTarget());
+		//Common.dashNum("DriveError", this.distancePID.getTarget() - this.encoder.getDistance());
+		//Common.dashNum("TurnPID", turn);
+		//Common.dashNum("Gyro Current Angle", heading.getAngle());
+		//Common.dashNum("Gyro Target Angle", heading.getTargetAngle());
+		//Common.dashNum("Gyro Current Heading", heading.getHeading());
+		//Common.dashNum("Gyro Target Heading", heading.getTargetHeading());
+		//Common.dashNum("TurnError", heading.getTargetAngle() - heading.getAngle());
 	}
 	
 	//target = target speed (desired speed), driveSpeed = current speed
@@ -165,11 +201,12 @@ public class DriveTrain extends RobotDrive {
 	    return turnSpeed;
 		}
 	
-	public void setDrive(double drive, double turn) {
-		Common.dashNum("Turn", turn);
-		arcadeDrive(drive, /*.8 **/ -turn);
+	// Set drive motors.  
+	private void setDrive(double drive, double turn) {
+		arcadeDrive(-drive, -turn);
 	}
 
+	// Drive the robot using acceleration curves
 	public void baseDrive(double drive, double turn) {
 		drive = driveAccelCurve(drive, driveAccel );
 		turn = turnAccelCurve(turn, turnAccel);
