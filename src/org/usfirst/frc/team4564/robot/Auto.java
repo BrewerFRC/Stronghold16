@@ -32,9 +32,18 @@ public class Auto {
 	private static final int AUTO_SETUP = 1;					//Prep start of autoRun
 	private static final int AUTO_DRIVE = 2;					//Drive through the defense, if one is selected
 	private static final int AUTO_NEXT_ACTION = 3;				//Determine what is the next action; UTURN, SHOOT, or STOP
-	private static final int AUTO_UTURN = 4;					//Drive to the return defense, if one is specified
-	private static final int AUTO_SHOOT = 5;					//Drive to tower and shoot
-	private static final int AUTO_STOP = 6;						//autoRun complete; robot stopped.
+	private static final int AUTO_UTURN_STEP_1 = 4;				//Drive to the return defense, if one is specified
+	private static final int AUTO_UTURN_STEP_2 = 5;	
+	private static final int AUTO_UTURN_STEP_3 = 6;	
+	private static final int AUTO_UTURN_STEP_4 = 7;	
+	private static final int AUTO_SHOOT_STEP_1 = 8;				//Drive to tower and shoot
+	private static final int AUTO_SHOOT_STEP_2 = 9;		
+	private static final int AUTO_SHOOT_STEP_3 = 10;		
+	private static final int AUTO_SHOOT_STEP_4 = 11;		
+	private static final int AUTO_TOWER_ALIGN_STEP_1 = 12;		
+	private static final int AUTO_TOWER_ALIGN_STEP_2 = 13;	
+	private static final int AUTO_TOWER_ALIGN_STEP_3 = 14;
+	private static final int AUTO_STOP = 15;						//autoRun complete; robot stopped.
 	
 	//autoRun parameters loaded from networktables
 	private int paramStartingPlatform;
@@ -47,13 +56,18 @@ public class Auto {
 	private static final int ACTION_STOP = 0;
 	private static final int ACTION_UTURN = 1;
 	private static final int ACTION_SHOOT = 2;
+	private static final int ACTION_TOWER_ALIGN = 3;
 	
 	//autoRunDefense parameter constants
 	private static final int DEFENSE_LOWBAR = 1;
-	private static final int DEFENSE_ROUGH_TERRAIN = 2;
-	private static final int DEFENSE_ROCK_WALL = 3;
-	private static final int DEFENSE_MOAT = 4;
-	private static final int DEFENSE_PORTCULLIS = 5;
+	private static final int DEFENSE_CHEVAL_DE_FRISE = 2;
+	private static final int DEFENSE_MOAT = 3;
+	private static final int DEFENSE_RAMPARTS = 4;
+	private static final int DEFENSE_DRAWBRIDGE = 5;
+	private static final int DEFENSE_SALLY_PORT = 6;
+	private static final int DEFENSE_ROCK_WALL = 7;
+	private static final int DEFENSE_ROUGH_TERRAIN = 8;
+	private static final int DEFENSE_PORTCULLIS = 9;
 
 	//Field Dimension constants.
 	public static final double PLATFORM_WIDTH = 52.5;
@@ -257,25 +271,89 @@ public class Auto {
 					break;
 				case ACTION_UTURN:
 					dt.rotateTo(turnLogic(paramTargetPlatform, paramStartingPlatform));  // Initiate first turn
-					autoRunState = AUTO_UTURN;
+					autoRunState = AUTO_UTURN_STEP_1;
 					break;
 				case ACTION_SHOOT:
-					autoRunState = AUTO_SHOOT;
+					dt.rotateTo(turnLogic(ABSOLUTE_CASTLE_X, paramStartingPlatform));
+					autoRunState = AUTO_SHOOT_STEP_1;
+					break;
+				case ACTION_TOWER_ALIGN:
+					dt.rotateTo(turnLogic(paramTargetPlatform, paramStartingPlatform));  // Initiate first turn
+					autoRunState = AUTO_TOWER_ALIGN_STEP_1;
 					break;
 				}
-				break;
-			case AUTO_UTURN:
-				dt.autoDrive();
-				if (dt.driveComplete()) {
-					driveState = AUTO_STOP;
-				}				
-				break;
-			case AUTO_SHOOT:
-				
 				break;
 			case AUTO_STOP:
 				dt.baseDrive(0.0, 0.0);
 				break;
+			case AUTO_UTURN_STEP_1:
+				dt.autoDrive();
+				if (dt.driveComplete()) {
+					dt.driveDistance(xDrive(xAbs(paramStartingPlatform, PLATFORM_WIDTH, shieldDistance), xPlatformTarget(paramTargetPlatform, PLATFORM_WIDTH, shieldDistance)));
+					autoRunState = AUTO_UTURN_STEP_2;
+				}				
+				break;
+			case AUTO_UTURN_STEP_2:
+				dt.autoDrive();
+				if (dt.driveComplete()) {
+					dt.rotateTo(turnLogic(paramTargetPlatform, paramStartingPlatform));
+					autoRunState = AUTO_UTURN_STEP_3;
+				}
+				break;
+			case AUTO_UTURN_STEP_3:
+				dt.autoDrive();
+				if (dt.driveComplete()) { 
+					dt.setDriveSpeed(.6);
+					autoRunState  = AUTO_UTURN_STEP_4;
+				}
+				break;
+			case AUTO_UTURN_STEP_4:
+				dt.autoDrive();
+				if (shieldReturn()) {
+					autoRunState = AUTO_STOP;
+				}
+				break;
+			case AUTO_SHOOT_STEP_1:
+				dt.autoDrive();
+				if (dt.driveComplete()) {
+					dt.driveDistance(xDrive(xAbs(paramStartingPlatform, PLATFORM_WIDTH, shieldDistance), xCastleTarget(ABSOLUTE_CASTLE_X, xAbs(paramStartingPlatform, PLATFORM_WIDTH, shieldDistance))));
+					autoRunState = AUTO_SHOOT_STEP_2;
+				}
+			case AUTO_SHOOT_STEP_2:
+				dt.autoDrive();
+				if (dt.driveComplete()) {
+					dt.rotateTo(turnLogic(ABSOLUTE_CASTLE_X, paramStartingPlatform)* -1);
+					autoRunState = AUTO_SHOOT_STEP_2;
+				}
+				break;
+			case AUTO_SHOOT_STEP_3:
+				dt.autoDrive();
+				if (dt.driveComplete()) {
+					t.state.prepThrow(); 
+					autoRunState = AUTO_SHOOT_STEP_4;
+				}
+				break;
+			case AUTO_SHOOT_STEP_4:
+				t.state.throwBall();
+				autoRunState = AUTO_STOP;
+				break;
+			case AUTO_TOWER_ALIGN_STEP_1:
+				dt.autoDrive();
+				if (dt.driveComplete()) {
+					dt.driveDistance(xDrive(xAbs(paramStartingPlatform, PLATFORM_WIDTH, shieldDistance), xCastleTarget(ABSOLUTE_CASTLE_X, xAbs(paramStartingPlatform, PLATFORM_WIDTH, shieldDistance))));
+					autoRunState = AUTO_TOWER_ALIGN_STEP_2;
+				}
+					break;
+			case AUTO_TOWER_ALIGN_STEP_2:
+				dt.autoDrive();
+				if (dt.driveComplete()) {
+					dt.rotateTo(turnLogic(ABSOLUTE_CASTLE_X, paramStartingPlatform)* -1);
+				}
+			case AUTO_TOWER_ALIGN_STEP_3:
+				dt.autoDrive();
+				if (dt.driveComplete()) {
+					autoRunState = AUTO_STOP;
+				}
 		}
 	}
 				
@@ -353,7 +431,7 @@ public class Auto {
 		
 	//Determines right or left turn based on starting platform and target platform.
 	public double turnLogic(double target, int startingPlatform) {
-		if ( target > startingPlatform) {
+		if (target > startingPlatform) {
 			return 90;
 		} else {
 			return -90;

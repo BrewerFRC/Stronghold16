@@ -47,11 +47,12 @@ public class Robot extends SampleRobot {
         	*/
 
         	bat.update();
+    		Common.dashNum("GyroAngle", dt.heading.getAngle());
+	   		Common.dashNum("TargetAngle", dt.heading.getTargetAngle());
 
-
-        	Common.dashNum("Shield Crossed State", auto.shieldState);
-        	Common.dashNum("Last Shield Distance", auto.shieldDistance);
-        	Common.dashNum("Sonar", bat.getDistance());
+        	//Common.dashNum("Shield Crossed State", auto.shieldState);
+        	//Common.dashNum("Last Shield Distance", auto.shieldDistance);
+        	//Common.dashNum("Sonar", bat.getDistance());
 
     		
     		//Delay timer
@@ -73,7 +74,6 @@ public class Robot extends SampleRobot {
     	long delay = 0;
     	thrower.state.currentState = 0;
     	while (isOperatorControl() && isEnabled()) {
-     		Common.dashNum("Flywheel encoder", thrower.encoder.get() );
     		//Calculate loop timer.
     		long time = Common.time();
     		delay = (long)(time + (1000/Constants.REFRESH_RATE));
@@ -102,7 +102,6 @@ public class Robot extends SampleRobot {
      		thrower.state.update();
      		
      		//TapeWinch
-        	Common.dashNum("Reflector Volatge", w.reflectorVoltage());
      		w.setWinchMotor(j.rightY());
      		if (j.whenSelect()) {
      			w.unlockWinch();
@@ -116,7 +115,7 @@ public class Robot extends SampleRobot {
      		} else {
      			arm.stopArm();
      		}
-     		Common.dashNum("Distance", dt.encoder.getDistance());
+     		//Common.dashNum("Distance", dt.encoder.getDistance());
      		Common.dashNum("Sonic", bat.getDistance());
     		/*
     		bat.update();
@@ -140,7 +139,7 @@ public class Robot extends SampleRobot {
     		if (j.whenDpadRight()) {
     			dt.heading.setTarget(dt.heading.getTarget()+10);
     		}
-    		
+    		Common.dashNum("Reflector Volatge", w.reflectorVoltage());
     		dt.heading.setPID(table.getNumber("gyroP", 0), table.getNumber("gyroI", 0), table.getNumber("gyroD", 0));
     		dt.distancePID.setP(table.getNumber("distanceP", 0));
     		dt.distancePID.setI(table.getNumber("distanceI", 0));
@@ -148,14 +147,12 @@ public class Robot extends SampleRobot {
     		Common.dashNum("Gyro P", Constants.GYRO_P);
     		Common.dashNum("Gyro I", Constants.GYRO_I);
     		Common.dashNum("Gyro D", Constants.GYRO_D);
-    		Common.dashNum("GyroAngle", dt.heading.getAngle());
     		Common.dashNum("GyroHeading", dt.heading.getHeading());
-    		Common.dashNum("TargetAngle", dt.heading.getTarget());
     		Common.dashBool("HeadingHold", dt.heading.isHeadingHold());
     		Common.dashNum("Error", dt.heading.getAngle()-dt.heading.getTarget());
     		Common.dashNum("Encoder", dt.encoder.get());*/
-    		
-    		Common.dashNum("Thrower State", thrower.state.currentState);
+     		//Common.dashNum("Flywheel encoder", thrower.encoder.get() );
+    		//Common.dashNum("Thrower State", thrower.state.currentState);
     		//Common.dashNum("Front Right motor value", DriveTrain.FrontR.get());
     		//Common.dashNum("Front Left motor value", DriveTrain.FrontL.get());
     		//Common.dashNum("Winch (tape) motor value", w.tapeMotor.get());

@@ -56,6 +56,7 @@ public class DriveTrain extends RobotDrive {
 	// Call driveComplete() to determine if turn is completed.
 	public boolean rotateTo(double heading) {
 		if (driveComplete()) {
+			Common.debug("DriveComplete");
 			this.heading.setHeading(heading);
 			actionHandler.setTargetReachedFunction(
 				() -> {
@@ -82,7 +83,6 @@ public class DriveTrain extends RobotDrive {
 			this.heading.relTurn(degrees);
 			actionHandler.setTargetReachedFunction(
 				() -> {
-					
 					boolean complete = Math.abs(this.heading.getTargetAngle() - this.heading.getAngle()) <= 2;
 					if (!complete) {
 						actionHandler.setTurning(true);
@@ -105,7 +105,10 @@ public class DriveTrain extends RobotDrive {
 			autoDriveSpeed = 0.0;  //Disable non-PID drive speed
 			this.distancePID.setTarget(this.encoder.getDistance() + inches);
 			actionHandler.setTargetReachedFunction(
-				() -> Math.abs(this.distancePID.getTarget() - this.encoder.getDistance()) <= 2
+				() -> {
+					Common.debug(new Boolean(Math.abs(this.distancePID.getTarget() - this.encoder.getDistance()) <= 2).toString());
+					return Math.abs(this.distancePID.getTarget() - this.encoder.getDistance()) <= 2;
+				}
 			);
 			return true;
 		}
