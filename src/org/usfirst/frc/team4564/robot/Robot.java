@@ -26,27 +26,37 @@ public class Robot extends SampleRobot {
     
     public void autonomous() {
         auto.init();
-		dt.setPIDDrive(true);
-        //dt.driveDistance(2);
-		dt.rotateTo(45);
+		dt.setHeadingHold(true);
+
 		boolean driven = false;
         while(isAutonomous() && isEnabled()) {
-        	//Loop delay timer
+           	//Loop delay timer
         	long time = Common.time();
     		long delay = (long)(time + (1000/Constants.REFRESH_RATE));
-        	dt.pidDrive();
-        	boolean complete = dt.driveComplete();
+    		
+        	//if (auto.shieldCrossed()) {
+        	//	dt.setDriveSpeed(0);
+        	//} else { 
+        	//	dt.setDriveSpeed(0.5);
+        	//}
+    		//auto.driveDefense(1);
+        	auto.autoRun();
+        	/*boolean complete = dt.driveComplete();
         	Common.dashBool("DriveComplete", complete);
         	if (complete && !driven) {
         		System.out.println("Drive");
         		dt.driveDistance(20);
         		driven = true;
         	}
-        	//bat.update();
-        	//auto.updateGate();
-        	//Common.dashNum("currentState", auto.currentState);
-        	//Common.dashNum("Sonar", bat.getDistance());
-        	//Common.dashBool("IsComplete", dt.driveComplete());
+        	*/
+
+        	bat.update();
+
+
+        	Common.dashNum("Shield Crossed State", auto.shieldState);
+        	Common.dashNum("Last Shield Distance", auto.shieldDistance);
+        	Common.dashNum("Sonar", bat.getDistance());
+
     		
     		//Delay timer
     		double wait = (delay-Common.time())/1000.0;
@@ -55,14 +65,15 @@ public class Robot extends SampleRobot {
     		}
     		Timer.delay(wait);
         }
-        dt.setPIDDrive(false);
+        dt.setHeadingHold(false);
     }
     
     public void operatorControl() {
     	Common.debug("Starting Teleop...");
-    	dt.heading.reset();
-    	dt.heading.setHeadingHold(false);
+    	//dt.heading.reset();
+    	//dt.heading.setHeadingHold(false);
     	dt.init(); 
+    	dt.setHeadingHold(false);
     	long delay = 0;
     	thrower.state.currentState = 0;
     	while (isOperatorControl() && isEnabled()) {
@@ -72,7 +83,7 @@ public class Robot extends SampleRobot {
     		delay = (long)(time + (1000/Constants.REFRESH_RATE));
     		
     		//Drivetrain  
-    		dt.baseDrive(j.leftY(), j.leftX());
+    		dt.baseDrive(-j.leftY(), j.leftX());
     		
     		//Thrower / Intake
     		if (j.whenA()) {
