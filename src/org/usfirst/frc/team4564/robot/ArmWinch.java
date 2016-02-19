@@ -17,25 +17,22 @@ public class ArmWinch {
 	private double target;
 	private double speed;
 	
-	public void updateAutoControl() {
-		if (!autoControl) {
-			return;
-		}
-		if (!(Math.abs(getPotentiometerPosition() - target) <= Constants.ARM_WINCH_ERROR)) {
-			stopArm();
-			autoControl = false;
-			return;
-		}
-		if (getPotentiometerPosition() > target) {
-			moveDown();
-		}
-		else {
-			moveUp();
-		}
-	}
-	
 	public void update() {
+		if (autoControl) {
+			if (!(Math.abs(getPotentiometerPosition() - target) <= Constants.ARM_WINCH_ERROR)) {
+				calcStop();
+				autoControl = false;
+				return;
+			}
+			if (getPotentiometerPosition() > target) {
+				calcDown();
+			}
+			else {
+				calcUp();
+			}
+		}
 		setWinchMotor(speed);
+		speed = 0.0;
 	}
 
 	public double getPotentiometerPosition() {
@@ -67,7 +64,7 @@ public class ArmWinch {
 		armMotor.set(power);
 	}
 		
-	public void moveUp(){
+	private void calcUp(){
 		if (slowArm) {
 			speed = 0;
 		}
@@ -76,7 +73,7 @@ public class ArmWinch {
 		}
 	}
 	
-	public void moveDown(){
+	private void calcDown(){
 		if (slowArm) {
 			speed = -0.25;
 		}
@@ -85,8 +82,23 @@ public class ArmWinch {
 		}
 	}
 	
-	public void stopArm(){
+	private void calcStop(){
 		speed = -0.13;
+	}
+	
+	public void moveUp() {
+		autoControl = false;
+		calcUp();
+	}
+	
+	public void moveDown() {
+		autoControl = false;
+		calcDown();
+	}
+	
+	public void stopArm() {
+		autoControl = false;
+		calcStop();
 	}
 	
 	public static void setSlowArm(boolean slow) {

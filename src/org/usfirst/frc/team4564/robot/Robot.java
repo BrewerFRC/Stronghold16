@@ -27,8 +27,6 @@ public class Robot extends SampleRobot {
     public void autonomous() {
         auto.init();
 		dt.setHeadingHold(true);
-
-		boolean driven = false;
         while(isAutonomous() && isEnabled()) {
            	//Loop delay timer
         	long time = Common.time();
@@ -119,13 +117,10 @@ public class Robot extends SampleRobot {
      		else {
      			ArmWinch.setSlowArm(false);
      		}
-     		arm.updateAutoControl();
      		if (j.dpadUp()) {
      			arm.moveUp();
      		} else if (j.dpadDown()) {
      			arm.moveDown();     			
-     		} else {
-     			arm.stopArm();
      		}
      		arm.update();
      		
