@@ -12,6 +12,7 @@ public class ArmWinch {
 	
 	private static final boolean LOW_LIMIT_REACHED = false;
 	private static final boolean HIGH_LIMIT_REACHED = false;
+	private static final double STOP_POWER = -0.15;
 	private static boolean slowArm = false;
 	private static boolean autoControl = false;
 	private double target;
@@ -32,7 +33,7 @@ public class ArmWinch {
 			}
 		}
 		setWinchMotor(speed);
-		speed = 0.0;
+		speed = STOP_POWER;
 	}
 
 	public double getPotentiometerPosition() {
@@ -53,12 +54,12 @@ public class ArmWinch {
 	public void setWinchMotor(double power){
 		if (power > 0) {
 			if (winchLimitHigh.get() == HIGH_LIMIT_REACHED) {
-				power = 0;
+				power = STOP_POWER;
 			}
 		}
 		if (power < 0) {
 			if (winchLimitLow.get() == LOW_LIMIT_REACHED) {
-				power = 0;
+				power = STOP_POWER;
 			}
 		}
 		armMotor.set(power);
@@ -75,7 +76,7 @@ public class ArmWinch {
 	
 	private void calcDown(){
 		if (slowArm) {
-			speed = -0.25;
+			speed = -0.3;
 		}
 		else {
 			speed = -0.5;
@@ -83,7 +84,7 @@ public class ArmWinch {
 	}
 	
 	private void calcStop(){
-		speed = -0.13;
+		speed = STOP_POWER;
 	}
 	
 	public void moveUp() {

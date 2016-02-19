@@ -19,7 +19,7 @@ public class DriveTrain extends RobotDrive {
 	public PID distancePID = new PID(Constants.DRIVE_P, Constants.DRIVE_I, Constants.DRIVE_D, false, "distance");
 	
 	//Gyro definition
-	public Heading heading = new Heading(Constants.ANA_GYRO, Constants.GYRO_P, Constants.GYRO_I, Constants.GYRO_D, Constants.GYRO_SENSITIVITY);
+	public Heading heading = new Heading(Constants.GYRO_P, Constants.GYRO_I, Constants.GYRO_D, Constants.GYRO_SENSITIVITY);
 	
 	//Object to handle tracking and controlling current autonomous actions.
 	public ActionHandler actionHandler = new ActionHandler();

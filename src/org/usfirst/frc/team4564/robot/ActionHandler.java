@@ -21,10 +21,10 @@ public class ActionHandler {
 	
 	public boolean isComplete() {
 		if (targetReached.get()) {
-			completeCounter++;
-			if (completeCounter >= 5) {
+		//	completeCounter++;
+		//	if (completeCounter >= 5) {
 				return true;
-			}
+		//	}
 		}
 		else {
 			completeCounter = 0;

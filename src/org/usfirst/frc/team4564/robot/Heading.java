@@ -8,7 +8,7 @@ public class Heading {
 	private PID pid;
 	private boolean headingHold;
 	
-	public Heading(int pin, double p, double i, double d, double sensitivity) {
+	public Heading(double p, double i, double d, double sensitivity) {
 		pid = new PID(Constants.TURN_P, Constants.TURN_I, Constants.TURN_D, false, "gyro");
 		//PID is dealing with error; an error of 0 is always desired.
 		pid.setTarget(0.0);

@@ -72,6 +72,7 @@ public class Auto {
 	//Field Dimension constants.
 	public static final double PLATFORM_WIDTH = 52.5;
 	public static final double ABSOLUTE_CASTLE_X = 170.6113;
+	public static final double ROBOT_WIDTH = 35.0;
 	
 	//State variables for Shield, Drive, and AutoRun
 	public int shieldState = AUTO_INIT;
@@ -79,9 +80,11 @@ public class Auto {
 	private int autoRunState = AUTO_SETUP;
 
 	//Misc variables
-	public long detectTime;		//Start time of Sheild detect
-	public double shieldDistance;  //The ultrasonic sensor distance upon exit of a defense
-	
+	public long detectTime;		       //Start time of Shield detect.
+	public double shieldDistance;      //The ultrasonic sensor distance upon exit of a defense.
+	public double xAbs;                //Absolute x position of the robot after clearing a defense. 
+	public double xTargetCenter;       //Inches to center of target platform relative to left wall.
+	public double xDistanceToTarget;   //Inches to target platform relative from center of robot.
 	
 	//Auto constructor
 	public Auto(DriveTrain dt, Bat bat) {
@@ -155,6 +158,7 @@ public class Auto {
 			    
 			case DEFENSE_CLEARED:
 				isCleared = true;
+				
 				break;
 		}
 		return isCleared;
@@ -234,6 +238,7 @@ public class Auto {
 
 				case DEFENSE_CROSSED:
 					defenseCleared = true;
+					xAbs = paramStartingPlatform * PLATFORM_WIDTH - shieldDistance - ROBOT_WIDTH / 2;
 					break;
 					
 				}
@@ -283,13 +288,15 @@ public class Auto {
 					break;
 				}
 				break;
-			case AUTO_STOP:
-				dt.baseDrive(0.0, 0.0);
-				break;
+
 			case AUTO_UTURN_STEP_1:
 				dt.autoDrive();
 				if (dt.driveComplete()) {
-					dt.driveDistance(xDrive(xAbs(paramStartingPlatform, PLATFORM_WIDTH, shieldDistance), xPlatformTarget(paramTargetPlatform, PLATFORM_WIDTH, shieldDistance)));
+					Common.dashNum("Robot Absolute X", xAbs);
+					//Calculate absolute x center of target platform.
+					xTargetCenter = paramTargetPlatform * PLATFORM_WIDTH - (PLATFORM_WIDTH * .5);
+					xDistanceToTarget = xAbs - xTargetCenter;
+					dt.driveDistance(xDistanceToTarget);
 					autoRunState = AUTO_UTURN_STEP_2;
 				}				
 				break;
@@ -303,8 +310,8 @@ public class Auto {
 			case AUTO_UTURN_STEP_3:
 				dt.autoDrive();
 				if (dt.driveComplete()) { 
-					dt.setDriveSpeed(.6);
-					autoRunState  = AUTO_UTURN_STEP_4;
+					//dt.setDriveSpeed(.6);
+					autoRunState  = AUTO_STOP;
 				}
 				break;
 			case AUTO_UTURN_STEP_4:
@@ -354,6 +361,9 @@ public class Auto {
 				if (dt.driveComplete()) {
 					autoRunState = AUTO_STOP;
 				}
+			case AUTO_STOP:
+				dt.baseDrive(0.0, 0.0);
+				break;
 		}
 	}
 				
@@ -438,12 +448,12 @@ public class Auto {
 		}
 	}
 	
-	//Find absolute robot position on field after crossing intial defense.
+	//Find absolute robot position on field after crossing initial defense relative to left field wall.
 	public double xAbs(int startingPlatform, double PLATFORM_WIDTH, double shieldDistance) {
-		return (startingPlatform * PLATFORM_WIDTH - shieldDistance);
+		return (paramStartingPlatform * PLATFORM_WIDTH - shieldDistance - ROBOT_WIDTH / 2);
 	}
 	
-	//Drive to selected platform based on starting position.
+	//Calculate absolute x center of target platform.
 	public double xPlatformTarget(int targetPlatform, double PLATFORM_WIDTH, double shieldDistance) {
 		return (targetPlatform * PLATFORM_WIDTH - (PLATFORM_WIDTH * .5));
 	}
