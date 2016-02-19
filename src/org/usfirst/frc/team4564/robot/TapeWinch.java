@@ -43,12 +43,14 @@ public class TapeWinch {
 		
 		public void lockWinch() {
 			lock = true;
-			ratchet.setAngle(90);		
+			ratchet.setAngle(90);	
+			ArmWinch.setSlowArm(true);
 		}
 		
 		public void unlockWinch() {
 			lock = false;
 			ratchet.setAngle(-90);
+			ArmWinch.setSlowArm(false);
 		}
  	}
 

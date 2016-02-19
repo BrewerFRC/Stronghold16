@@ -20,11 +20,13 @@ public class Robot extends SampleRobot {
     	auto = new Auto (dt, bat);
     }
     
+    public void disabled() {
+    	ArmWinch.setSlowArm(false);
+    }
+    
     public void autonomous() {
         auto.init();
 		dt.setHeadingHold(true);
-
-		boolean driven = false;
         while(isAutonomous() && isEnabled()) {
            	//Loop delay timer
         	long time = Common.time();
@@ -108,17 +110,23 @@ public class Robot extends SampleRobot {
      		}
      		
      		//ArmWinch
+     		if (j.start()) {
+     			ArmWinch.setSlowArm(true);
+     		}
+     		else {
+     			ArmWinch.setSlowArm(false);
+     		}
      		if (j.dpadUp()) {
      			arm.moveUp();
      		} else if (j.dpadDown()) {
      			arm.moveDown();     			
-     		} else {
-     			arm.stopArm();
      		}
-     		//Common.dashNum("Distance", dt.encoder.getDistance());
+     		arm.update();
+
      		Common.dashNum("Sonic", bat.getDistance());
     		/*
     		bat.update();
+    		//Common.dashNum("Distance", dt.encoder.getDistance());
     		Common.dashNum("Sonar Distance", bat.getDistance());
     		Common.dashNum("Sonar Volts", bat.sonicRight.getVoltage());
 			Common.dashBool("raw output from limit switch", w.winchLimit.get());
