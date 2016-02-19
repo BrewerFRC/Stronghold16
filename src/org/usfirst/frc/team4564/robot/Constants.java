@@ -26,7 +26,7 @@ public class Constants {
 	//Analog Ports
 	//public static final int ANA_GYRO = 0;
 	public static final int ANA_SONIC_RIGHT = 0;
-	public static final int ANA_GYRO = 1;
+	public static final int ANA_ARM_WINCH_POT = 1;
 	public static final int ANA_TAPE_WINCH_EXTEND_LIMIT = 2;
 	
 	//Drive PID constants
@@ -46,6 +46,10 @@ public class Constants {
 	public static double GYRO_D = 0.003;
 	public static final double GYRO_SENSITIVITY = 0.00669;
 	
+	//ArmWinch constants
+	public static double ARM_WINCH_POT_LOW_VOLTAGE = 1.0;
+	public static double ARM_WINCH_POT_RANGE = 2.8;
+	public static double ARM_WINCH_ERROR = 0.1;
 	
 	//Robot loop speed
 	public static final double REFRESH_RATE = 50;

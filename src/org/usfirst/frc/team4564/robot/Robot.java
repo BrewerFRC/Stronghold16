@@ -119,6 +119,7 @@ public class Robot extends SampleRobot {
      		else {
      			ArmWinch.setSlowArm(false);
      		}
+     		arm.updateAutoControl();
      		if (j.dpadUp()) {
      			arm.moveUp();
      		} else if (j.dpadDown()) {
@@ -126,6 +127,8 @@ public class Robot extends SampleRobot {
      		} else {
      			arm.stopArm();
      		}
+     		arm.update();
+     		
      		Common.dashNum("Distance", dt.encoder.getDistance());
      		Common.dashNum("Sonic", bat.getDistance());
     		/*
