@@ -20,6 +20,10 @@ public class Robot extends SampleRobot {
     	auto = new Auto (dt, bat);
     }
     
+    public void disabled() {
+    	ArmWinch.setSlowArm(false);
+    }
+    
     public void autonomous() {
         auto.init();
 		dt.setPIDDrive(true);
@@ -98,6 +102,12 @@ public class Robot extends SampleRobot {
      		}
      		
      		//ArmWinch
+     		if (j.start()) {
+     			ArmWinch.setSlowArm(true);
+     		}
+     		else {
+     			ArmWinch.setSlowArm(false);
+     		}
      		if (j.dpadUp()) {
      			arm.moveUp();
      		} else if (j.dpadDown()) {
