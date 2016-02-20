@@ -120,8 +120,8 @@ public class Xbox extends Joystick {
 				return true;
 			}
 		} else {
-			prevRightBumper = true;
-			return true;
+			prevRightBumper = false;
+			return false;
 		}
 	}
 	
@@ -138,8 +138,8 @@ public class Xbox extends Joystick {
 				return true;
 			}
 		} else {
-			prevLeftBumper = true;
-			return true;
+			prevLeftBumper = false;
+			return false;
 		}
 	}
 	

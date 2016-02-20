@@ -4,7 +4,8 @@ public class Auto {
 
 	DriveTrain dt;
 	Bat bat;
-	Thrower t;
+	Thrower thrower;
+	ArmWinch arm;
 	
 	//Shield detection states for driving through a defense
 	public static final int AUTO_INIT = 0;						// Auto mode has to be initialized
@@ -27,6 +28,7 @@ public class Auto {
 	public static final int NOT_DRIVING = 0;					//Ready to start
 	public static final int DRIVING = 1;						//Robot moving, waiting to clear Shield
 	public static final int DEFENSE_CROSSED = 2;				//Robot cleared shield and now stopped.
+	public static final int LOWER_ARM = 3;						//Wait for arm to reach a position
 
 	//autoRun states
 	private static final int AUTO_SETUP = 1;					//Prep start of autoRun
@@ -87,9 +89,11 @@ public class Auto {
 	public double xDistanceToTarget;   //Inches to target platform relative from center of robot.
 	
 	//Auto constructor
-	public Auto(DriveTrain dt, Bat bat) {
+	public Auto(DriveTrain dt, Bat bat, ArmWinch arm, Thrower thrower) {
+		this.arm = arm;
 		this.dt = dt;
 		this.bat = bat;
+		this.thrower = thrower;
 	}
 	
 	// Prepare for auto run
@@ -210,8 +214,9 @@ public class Auto {
 				switch(driveState) {
 
 					case NOT_DRIVING:
-						driveState = DRIVING;
+						arm.setArmPosition(3);
 						dt.setDriveSpeed(0.6);
+						driveState = DRIVING;
 						break;
 					
 					case DRIVING:
@@ -231,17 +236,33 @@ public class Auto {
 				switch(driveState) {
 				
 				case NOT_DRIVING:
+					arm.setArmPosition(0);
+					driveState = LOWER_ARM;
 					break;
 				
+				case LOWER_ARM:
+					if (arm.moveCompleted()) {
+						dt.setDriveSpeed(.45);
+						thrower.setExternalIntake(-1.0);
+						driveState = DRIVING;
+					}
 				case DRIVING:
+					if (shieldCrossed()) {
+						arm.setArmPosition(2);
+						dt.setDriveSpeed(0.0);
+						thrower.setExternalIntake(0.0);
+						driveState = DEFENSE_CROSSED;
+					}
 					break;
 
 				case DEFENSE_CROSSED:
 					defenseCleared = true;
-					xAbs = paramStartingPlatform * PLATFORM_WIDTH - shieldDistance - ROBOT_WIDTH / 2;
 					break;
 					
 				}
+		}
+		if (defenseCleared) {
+			xAbs = paramStartingPlatform * PLATFORM_WIDTH - shieldDistance - ROBOT_WIDTH / 2;
 		}
 		return defenseCleared;
 	}
@@ -267,7 +288,6 @@ public class Auto {
 				if (driveDefense(paramDefenseType)) {
 					autoRunState = AUTO_NEXT_ACTION;
 				}	
-				dt.autoDrive();
 				break;
 			case AUTO_NEXT_ACTION:
 				switch (paramSelectedAction) {
@@ -290,7 +310,6 @@ public class Auto {
 				break;
 
 			case AUTO_UTURN_STEP_1:
-				dt.autoDrive();
 				if (dt.driveComplete()) {
 					Common.dashNum("Robot Absolute X", xAbs);
 					//Calculate absolute x center of target platform.
@@ -301,70 +320,65 @@ public class Auto {
 				}				
 				break;
 			case AUTO_UTURN_STEP_2:
-				dt.autoDrive();
 				if (dt.driveComplete()) {
-					dt.rotateTo(turnLogic(paramTargetPlatform, paramStartingPlatform));
+					dt.rotateTo(180);
 					autoRunState = AUTO_UTURN_STEP_3;
 				}
 				break;
 			case AUTO_UTURN_STEP_3:
-				dt.autoDrive();
 				if (dt.driveComplete()) { 
-					//dt.setDriveSpeed(.6);
-					autoRunState  = AUTO_STOP;
+					dt.setDriveSpeed(.45);
+					shieldState = DETECT_RETURN;
+					autoRunState = AUTO_UTURN_STEP_4;
 				}
 				break;
 			case AUTO_UTURN_STEP_4:
-				dt.autoDrive();
 				if (shieldReturn()) {
 					autoRunState = AUTO_STOP;
 				}
 				break;
 			case AUTO_SHOOT_STEP_1:
-				dt.autoDrive();
 				if (dt.driveComplete()) {
 					dt.driveDistance(xDrive(xAbs(paramStartingPlatform, PLATFORM_WIDTH, shieldDistance), xCastleTarget(ABSOLUTE_CASTLE_X, xAbs(paramStartingPlatform, PLATFORM_WIDTH, shieldDistance))));
 					autoRunState = AUTO_SHOOT_STEP_2;
 				}
 			case AUTO_SHOOT_STEP_2:
-				dt.autoDrive();
 				if (dt.driveComplete()) {
 					dt.rotateTo(turnLogic(ABSOLUTE_CASTLE_X, paramStartingPlatform)* -1);
 					autoRunState = AUTO_SHOOT_STEP_2;
 				}
 				break;
 			case AUTO_SHOOT_STEP_3:
-				dt.autoDrive();
 				if (dt.driveComplete()) {
-					t.state.prepThrow(); 
+					thrower.state.prepThrow(); 
 					autoRunState = AUTO_SHOOT_STEP_4;
 				}
 				break;
 			case AUTO_SHOOT_STEP_4:
-				t.state.throwBall();
+				thrower.state.throwBall();
 				autoRunState = AUTO_STOP;
 				break;
 			case AUTO_TOWER_ALIGN_STEP_1:
-				dt.autoDrive();
 				if (dt.driveComplete()) {
 					dt.driveDistance(xDrive(xAbs(paramStartingPlatform, PLATFORM_WIDTH, shieldDistance), xCastleTarget(ABSOLUTE_CASTLE_X, xAbs(paramStartingPlatform, PLATFORM_WIDTH, shieldDistance))));
 					autoRunState = AUTO_TOWER_ALIGN_STEP_2;
 				}
 					break;
 			case AUTO_TOWER_ALIGN_STEP_2:
-				dt.autoDrive();
 				if (dt.driveComplete()) {
 					dt.rotateTo(turnLogic(ABSOLUTE_CASTLE_X, paramStartingPlatform)* -1);
 				}
 			case AUTO_TOWER_ALIGN_STEP_3:
-				dt.autoDrive();
 				if (dt.driveComplete()) {
 					autoRunState = AUTO_STOP;
 				}
 			case AUTO_STOP:
-				dt.baseDrive(0.0, 0.0);
+				dt.setDriveSpeed(0.0);
+				dt.setHeadingHold(false);
 				break;
 		}
+		arm.update();
+		dt.autoDrive();
 	}
 				
 					

@@ -154,8 +154,8 @@ public class Thrower {
 					setExternalIntakeSpeed(0);
 					break;
 				case BACK_OUT:
-					setInternalIntakeSpeed(-.15);
-					setExternalIntakeSpeed(-.15);
+					setInternalIntakeSpeed(-.2);
+					setExternalIntakeSpeed(-.2);
 					if (hasBall() != true ) {
 						setInternalIntakeSpeed(0);
 						setExternalIntakeSpeed(0);

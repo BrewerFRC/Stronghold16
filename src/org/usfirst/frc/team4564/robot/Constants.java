@@ -13,10 +13,11 @@ public class Constants {
 	public static final int PWM_TAPE_WINCH_LOCK = 2;
 	
 	//DIO Port
-	public static final int DIO_LEFT_SONIC_ENABLE = 0;
+	//public static final int DIO_LEFT_SONIC_ENABLE = 0;
 	public static final int DIO_DRIVE_FR_ENCODER_A = 1;
 	public static final int DIO_DRIVE_FR_ENCODER_B = 2;
-	public static final int DIO_ARM_WINCH_LOW_LIMIT = 3;
+	public static final int DIO_ARM_WINCH_LOW_LIMIT = 0;
+
 	public static final int DIO_ARM_WINCH_HIGH_LIMIT = 4;
 	public static final int DIO_FLYWHEEL_ENCODER_A = 5;
 	public static final int DIO_FLYWHEEL_ENCODER_B = 6;

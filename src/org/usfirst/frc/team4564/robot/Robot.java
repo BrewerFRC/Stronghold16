@@ -17,7 +17,7 @@ public class Robot extends SampleRobot {
     	Common.debug("Robot Init...");
     	table = NetworkTable.getTable("dashTable");
     	dt = new DriveTrain();
-    	auto = new Auto (dt, bat);
+    	auto = new Auto (dt, bat, arm, thrower);
     }
     
     public void disabled() {
@@ -31,7 +31,6 @@ public class Robot extends SampleRobot {
            	//Loop delay timer
         	long time = Common.time();
     		long delay = (long)(time + (1000/Constants.REFRESH_RATE));
-    		
         	//if (auto.shieldCrossed()) {
         	//	dt.setDriveSpeed(0);
         	//} else { 
@@ -39,6 +38,7 @@ public class Robot extends SampleRobot {
         	//}
     		//auto.driveDefense(1);
         	auto.autoRun();
+        	dt.autoDrive();
         	/*boolean complete = dt.driveComplete();
         	Common.dashBool("DriveComplete", complete);
         	if (complete && !driven) {
@@ -51,8 +51,7 @@ public class Robot extends SampleRobot {
         	bat.update();
     		Common.dashNum("GyroAngle", dt.heading.getAngle());
 	   		Common.dashNum("TargetAngle", dt.heading.getTargetAngle());
-
-        	//Common.dashNum("Shield Crossed State", auto.shieldState);
+        	Common.dashNum("Shield Crossed State", auto.shieldState);
         	//Common.dashNum("Last Shield Distance", auto.shieldDistance);
         	//Common.dashNum("Sonar", bat.getDistance());
 
@@ -121,9 +120,17 @@ public class Robot extends SampleRobot {
      		} else if (j.dpadDown()) {
      			arm.moveDown();     			
      		}
+     		if (j.whenRightBumper()) {
+     			arm.setArmPosition(3);
+     		}
+     		if (j.whenLeftBumper()) {
+     			arm.setArmPosition(1);
+     		}
      		arm.update();
 
      		Common.dashNum("Sonic", bat.getDistance());
+     		Common.dashNum("Potentiometer values", arm.getPotentiometerPosition());
+     		Common.dashNum("Potentiometer Target", arm.target);
     		/*
     		bat.update();
     		//Common.dashNum("Distance", dt.encoder.getDistance());

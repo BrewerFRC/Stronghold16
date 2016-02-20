@@ -28,7 +28,7 @@ public class DriveTrain extends RobotDrive {
 	double driveSpeed = 0;
 	double turnSpeed = 0;
 	double driveAccel = .05;
-	double turnAccel = .05;
+	double turnAccel = 1;
 	
 	//Auto drive variables
 	private boolean driveByPID = false;	  //True if distance based driving enabled, false is driving by set motor power
@@ -150,7 +150,7 @@ public class DriveTrain extends RobotDrive {
 			speed = 0.0;
 		} else if (driveByPID) {  // Distance drive is enabled, so calculate speed based on distance PID
 			distancePID.update();
-			speed = distancePID.calc(encoder.getDistance());
+			speed = -distancePID.calc(encoder.getDistance());
 			// Scale the speed to overcome motor deadzone
 			if (speed >= .01) {
 				speed = speed + 0.15;
