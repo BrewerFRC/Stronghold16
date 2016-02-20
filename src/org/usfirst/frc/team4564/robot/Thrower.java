@@ -3,6 +3,7 @@ package org.usfirst.frc.team4564.robot;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Talon;
 
 public class Thrower {
@@ -11,6 +12,7 @@ public class Thrower {
 	private Talon flywheel = new Talon(Constants.PWM_THROWER_FLYWHEEL);
 	private Talon internalIntake = new Talon(Constants.PWM_THROWER_INT_INTAKE);
 	private Talon externalIntake = new Talon(Constants.PWM_THROWER_EXT_INTAKE);
+	private static Relay flashlight = new Relay(1, Relay.Direction.kForward);
 	//Normally closed
 	private DigitalInput ballDetect = new DigitalInput(Constants.DIO_THROWER_BALL_DETECT);
 	
@@ -133,6 +135,7 @@ public class Thrower {
 					if (hasBall()) {
 						currentState = BALL_DETECTED;
 					} else {
+						flashlight.set(Relay.Value.kOff);
 	 					setFlywheelSpeed(0.0);
 						setInternalIntakeSpeed(0.09);
 						setExternalIntakeSpeed(0.09);
@@ -165,6 +168,7 @@ public class Thrower {
 					break;
 				case SPIN_UP:
 					//TODO: Velocity control
+					flashlight.set(Relay.Value.kOn);
 					setFlywheelSpeed(.8);
 					if (Common.time() >= spinUpTimer) {
 						currentState = READY_TO_FIRE;
@@ -172,7 +176,7 @@ public class Thrower {
 					break;
 				case READY_TO_FIRE:
 					setFlywheelSpeed(.8);
-					fireTimer = Common.time() + 750; //fireTimer set for .75 seconds.
+					fireTimer = Common.time() + 1000; //fireTimer set for 1 second
 					break;
 				case FIRE:
 					setInternalIntakeSpeed(.4);
