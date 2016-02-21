@@ -100,6 +100,13 @@ public class Thrower {
 			currentState = START_EJECT;
 		}
 		
+		public boolean readyToThrow() {
+			if (currentState == READY_TO_FIRE) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 		//Positive speed runs intakes inward.
 		private void setInternalIntakeSpeed(double speed) {
 			thrower.setInternalIntake(speed);
@@ -167,7 +174,7 @@ public class Thrower {
 						setInternalIntakeSpeed(0);
 						setExternalIntakeSpeed(0);
 						currentState = SPIN_UP;
-						spinUpTimer = Common.time() + 1000; //SpinUpTimer for 1 second;
+						spinUpTimer = Common.time() + 2250; //SpinUpTimer for 2.25 second;
 					}
 					break;
 				case SPIN_UP:
@@ -179,7 +186,7 @@ public class Thrower {
 					break;
 				case READY_TO_FIRE:
 					setFlywheelSpeed(.8);
-					fireTimer = Common.time() + 1000; //fireTimer set for 1 second
+					fireTimer = Common.time() + 1000; //fireTimer set for 2.25 second
 					break;
 				case FIRE:
 					setInternalIntakeSpeed(.4);

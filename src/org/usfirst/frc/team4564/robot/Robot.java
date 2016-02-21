@@ -48,13 +48,18 @@ public class Robot extends SampleRobot {
         		driven = true;
         	}
         	*/
-
         	bat.update();
+        	Common.dashNum("Starting Platform", auto.paramStartingPlatform);
+        	Common.dashNum("Target Platform", auto.paramTargetPlatform);
+        	Common.dashNum("Defense Type", auto.paramDefenseType);
+        	Common.dashNum("Selected Action", auto.paramSelectedAction);
     		//Common.dashNum("GyroAngle", dt.heading.getAngle());
      		Common.dashNum("Sonic", bat.getDistance());
 	   		//Common.dashNum("TargetAngle", dt.heading.getTargetAngle());
         	Common.dashNum("Shield Crossed State", auto.shieldState);
         	Common.dashStr("Name", teamName);
+        	Common.dashNum("Potentiometer values", arm.getPotentiometerPosition());
+        	Common.dashNum("Potentiometer Target", arm.target);
         	//Common.dashNum("Last Shield Distance", auto.shieldDistance);
         	//Common.dashNum("Sonar", bat.getDistance());
 
@@ -129,6 +134,8 @@ public class Robot extends SampleRobot {
      		Common.dashNum("Shield State", auto.shieldState);
         	Common.dashStr("Name", teamName);
         	Common.dashStr("blank",blank);
+        	Common.dashNum("Potentiometer values", arm.getPotentiometerPosition());
+        	Common.dashNum("Potentiometer Target", arm.target);
      		//Common.dashNum("Potentiometer values", arm.getPotentiometerPosition());
      		//Common.dashNum("Potentiometer Target", arm.target);
      		//Common.dashNum("Reflector Volatge", w.reflectorVoltage());
