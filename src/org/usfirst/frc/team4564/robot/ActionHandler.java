@@ -23,7 +23,7 @@ public class ActionHandler {
 		if (targetReached.get()) {
 		//	completeCounter++;
 		//	if (completeCounter >= 5) {
-				return true;
+			return true;
 		//	}
 		}
 		else {

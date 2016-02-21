@@ -26,6 +26,7 @@ public class Robot extends SampleRobot {
     }
     
     public void autonomous() {
+    	Common.debug("Starting Auto...");
         auto.init();
         while(isAutonomous() && isEnabled()) {
            	//Loop delay timer
@@ -49,8 +50,9 @@ public class Robot extends SampleRobot {
         	*/
 
         	bat.update();
-    		Common.dashNum("GyroAngle", dt.heading.getAngle());
-	   		Common.dashNum("TargetAngle", dt.heading.getTargetAngle());
+    		//Common.dashNum("GyroAngle", dt.heading.getAngle());
+     		Common.dashNum("Sonic", bat.getDistance());
+	   		//Common.dashNum("TargetAngle", dt.heading.getTargetAngle());
         	Common.dashNum("Shield Crossed State", auto.shieldState);
         	Common.dashStr("Name", teamName);
         	//Common.dashNum("Last Shield Distance", auto.shieldDistance);
@@ -122,11 +124,11 @@ public class Robot extends SampleRobot {
      		}
 
      		arm.update();
-     		Common.dashStr("blank",blank);
-     		Common.dashBool("Servo Lock:   ", w.lock);
      		Common.dashNum("Sonic", bat.getDistance());
+     		Common.dashBool("Servo Lock:   ", w.lock);
      		Common.dashNum("Shield State", auto.shieldState);
         	Common.dashStr("Name", teamName);
+        	Common.dashStr("blank",blank);
      		//Common.dashNum("Potentiometer values", arm.getPotentiometerPosition());
      		//Common.dashNum("Potentiometer Target", arm.target);
      		//Common.dashNum("Reflector Volatge", w.reflectorVoltage());

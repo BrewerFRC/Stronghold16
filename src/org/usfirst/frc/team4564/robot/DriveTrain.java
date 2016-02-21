@@ -55,6 +55,9 @@ public class DriveTrain extends RobotDrive {
 	// Call setPIDDrive(true) to enable and call PIDDrive() from a robot loop to update.
 	// Call driveComplete() to determine if turn is completed.
 	public boolean rotateTo(double heading) {
+		Common.debug("rotateTo: Setting heading to "+ heading);
+		Common.debug("rotateTo: driveComplete" + driveComplete());
+		distancePID.setTarget(encoder.getDistance());  //Force distancePID to current target current encoder distance
 		if (driveComplete()) {
 			this.heading.setHeading(heading);
 			actionHandler.setTargetReachedFunction(
@@ -76,6 +79,7 @@ public class DriveTrain extends RobotDrive {
 	}
 	
 	public boolean relTurn(double degrees) {
+		distancePID.setTarget(encoder.getDistance());
 		if (driveComplete()) {
 			this.heading.relTurn(degrees);
 			actionHandler.setTargetReachedFunction(
@@ -91,12 +95,14 @@ public class DriveTrain extends RobotDrive {
 					return complete;
 				}
 			);
+			
 			return true;
 		}
 		return false;
 	}
 	
 	public boolean driveDistance(double inches) {
+		// distancePID.setTarget(encoder.getDistance());  //Force distancePID to current target current encoder distance
 		if (driveComplete()) {
 			driveByPID = true;     //Note that we are performing distance drive
 			autoDriveSpeed = 0.0;  //Disable non-PID drive speed

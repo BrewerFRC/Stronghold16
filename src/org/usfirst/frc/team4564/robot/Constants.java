@@ -37,7 +37,7 @@ public class Constants {
 	public static final double COUNTS_PER_INCH = 88.95; //83.39;
 	
 	//Turn PID constants
-	public static final double TURN_P = 0.12;
+	public static final double TURN_P = 0.1;
 	public static final double TURN_I = 0;
 	public static final double TURN_D = 0;
 	
