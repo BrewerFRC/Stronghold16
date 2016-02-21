@@ -56,17 +56,14 @@ public class DriveTrain extends RobotDrive {
 	// Call driveComplete() to determine if turn is completed.
 	public boolean rotateTo(double heading) {
 		if (driveComplete()) {
-			Common.debug("DriveComplete");
 			this.heading.setHeading(heading);
 			actionHandler.setTargetReachedFunction(
 				() -> {
-					boolean complete = Math.abs(this.heading.getTargetAngle() - this.heading.getAngle()) <= 2;
+					boolean complete = Math.abs(this.heading.getTargetAngle() - this.heading.getAngle()) <= 1;
 					if (!complete) {
-						System.out.println("IsTurning");
 						actionHandler.setTurning(true);
 					}
 					else if (actionHandler.isTurning()) {
-						System.out.println("ResetTarget");
 						actionHandler.setTurning(false);
 						distancePID.setTarget(encoder.getDistance());
 					}
@@ -83,7 +80,7 @@ public class DriveTrain extends RobotDrive {
 			this.heading.relTurn(degrees);
 			actionHandler.setTargetReachedFunction(
 				() -> {
-					boolean complete = Math.abs(this.heading.getTargetAngle() - this.heading.getAngle()) <= 2;
+					boolean complete = Math.abs(this.heading.getTargetAngle() - this.heading.getAngle()) <= 1;
 					if (!complete) {
 						actionHandler.setTurning(true);
 					}
@@ -106,7 +103,6 @@ public class DriveTrain extends RobotDrive {
 			this.distancePID.setTarget(this.encoder.getDistance() + inches);
 			actionHandler.setTargetReachedFunction(
 				() -> {
-					Common.debug(new Boolean(Math.abs(this.distancePID.getTarget() - this.encoder.getDistance()) <= 2).toString());
 					return Math.abs(this.distancePID.getTarget() - this.encoder.getDistance()) <= 2;
 				}
 			);
@@ -202,7 +198,7 @@ public class DriveTrain extends RobotDrive {
 	    		turnSpeed = target;
 	    	}
 	    return turnSpeed;
-		}
+	}
 	
 	// Set drive motors.  
 	private void setDrive(double drive, double turn) {
@@ -213,6 +209,7 @@ public class DriveTrain extends RobotDrive {
 	public void baseDrive(double drive, double turn) {
 		drive = driveAccelCurve(drive, driveAccel );
 		turn = turnAccelCurve(turn, turnAccel);
+		Common.dashNum("Drive Power", drive);
 		setDrive(drive, turn);
 	}
 

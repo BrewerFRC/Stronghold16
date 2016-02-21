@@ -75,9 +75,10 @@ public class Auto {
 	private static final int DEFENSE_PORTCULLIS = 9;
 
 	//Field Dimension constants.
-	public static final double PLATFORM_WIDTH = 52.5;
+	public static final double PLATFORM_WIDTH = 53.0;
 	public static final double ABSOLUTE_CASTLE_X = 170.6113;  // X position of the center of the castle
 	public static final double ROBOT_WIDTH = 35.0;
+	public static final double ROBOT_LENGHT = 36.5;
 	
 	//State variables for Shield, Drive, and AutoRun
 	public int shieldState = AUTO_INIT;
@@ -215,30 +216,9 @@ public class Auto {
 		//ROUGH TERRAIN
 			case DEFENSE_ROUGH_TERRAIN:
 				switch(driveState) {
-				case NOT_DRIVING:
-					arm.setArmPosition(3);
-					dt.setDriveSpeed(0.6);
-					driveState = DRIVING;
-					break;
-				
-				case DRIVING:
-					if (shieldCrossed()) {
-						dt.setDriveSpeed(0.0);
-						driveState = DEFENSE_CROSSED;
-					}
-					break;
-				
-				case DEFENSE_CROSSED:
-					defenseCleared = true;
-					break;
-			}
-			//LOWBAR
-			case DEFENSE_LOWBAR: 
-				switch(driveState) {
-
 					case NOT_DRIVING:
-						arm.setArmPosition(0);
-						dt.setDriveSpeed(0.3);
+						arm.setArmPosition(3);
+						dt.setDriveSpeed(0.6);
 						driveState = DRIVING;
 						break;
 					
@@ -253,121 +233,157 @@ public class Auto {
 						defenseCleared = true;
 						break;
 				}
+				break;
+			
+			//LOWBAR
+			case DEFENSE_LOWBAR: 
+				switch(driveState) {
+
+					case NOT_DRIVING:
+						arm.setArmPosition(0);
+						driveState = LOWER_ARM;
+						break;
+					
+					case LOWER_ARM:
+						if (arm.moveCompleted()) {
+							dt.setDriveSpeed(0.5);
+							driveState = DRIVING;
+						}
+					case DRIVING:
+						if (shieldCrossed()) {
+							dt.setDriveSpeed(0.0);
+							driveState = DEFENSE_CROSSED;
+						}
+						break;
+					
+					case DEFENSE_CROSSED:
+						defenseCleared = true;
+						break;
+				}
+				break;
+				
 			//PORTCULLIS
 			case DEFENSE_PORTCULLIS:
 				switch(driveState) {
 				
-				case NOT_DRIVING:
-					arm.setArmPosition(0);
-					driveState = LOWER_ARM;
-					break;
-				
-				case LOWER_ARM:
-					if (arm.moveCompleted()) {
-						dt.setDriveSpeed(.45);
-						thrower.setExternalIntake(-1.0);
-						driveState = DRIVING;
-					}
-				case DRIVING:
-					if (shieldCrossed()) {
-						arm.setArmPosition(2);
-						dt.setDriveSpeed(0.0);
-						thrower.setExternalIntake(0.0);
-						driveState = DEFENSE_CROSSED;
-					}
-					break;
-
-				case DEFENSE_CROSSED:
-					defenseCleared = true;
-					break;
+					case NOT_DRIVING:
+						arm.setArmPosition(0);
+						driveState = LOWER_ARM;
+						break;
 					
+					case LOWER_ARM:
+						if (arm.moveCompleted()) {
+							dt.setDriveSpeed(.45);
+							thrower.setExternalIntake(-1.0);
+							driveState = DRIVING;
+						}
+						break;
+					case DRIVING:
+						if (shieldCrossed()) {
+							arm.setArmPosition(2);
+							dt.setDriveSpeed(0.0);
+							thrower.setExternalIntake(0.0);
+							driveState = DEFENSE_CROSSED;
+						}
+						break;
+	
+					case DEFENSE_CROSSED:
+						defenseCleared = true;
+						break;
 				}
+				break;
+				
 			//CHEVAL DE FRISE
 			case DEFENSE_CHEVAL_DE_FRISE:
 				switch(driveState) {
-				case NOT_DRIVING:
-					arm.setArmPosition(3);
-					dt.driveDistance(24);
-					driveState = DRIVING;
-					break;
-				
-				case DRIVING:
-					if (dt.driveComplete()) {
-						dt.setDriveSpeed(0.0);
-						driveState = LOWER_ARM;
-					}
-					break;
-				case LOWER_ARM:
-					arm.setArmPosition(0);
-					driveState = DRIVE_STEP_ONE;
-				case DRIVE_STEP_ONE:
-					if (arm.moveCompleted()) {
-						dt.setDriveSpeed(.3);
-						driveState = DRIVE_STEP_TWO;
-					}
-				case DRIVE_STEP_TWO:
-					if (shieldCrossed()) {
-						dt.setDriveSpeed(0.0);
-						driveState = DEFENSE_CROSSED;
-					}
+					case NOT_DRIVING:
+						Common.debug("Cheval Not Driving");
+						dt.driveDistance(44);
+						driveState = DRIVING;
+						break;
 					
-				case DEFENSE_CROSSED:
-					defenseCleared = true;
-					break;
-			}
+					case DRIVING:
+						Common.debug("Cheval Driving");
+						if (dt.driveComplete()) {
+							dt.setDriveSpeed(0.0);
+							arm.setArmPosition(0);
+							driveState = LOWER_ARM;
+						}
+						break;
+					case LOWER_ARM:
+						Common.debug("Cheval Lower Arm");
+						if (arm.moveCompleted()) {
+							dt.setDriveSpeed(.3);
+							driveState = DRIVE_STEP_ONE;
+						}
+						break;
+					case DRIVE_STEP_ONE:
+						Common.debug("Cheval Drive Step");
+						if (shieldCrossed()) {
+							dt.setDriveSpeed(0.0);
+							arm.setArmPosition(2);
+							driveState = DEFENSE_CROSSED;
+						}
+						break;
+					case DEFENSE_CROSSED:
+						Common.debug("Cheval Defense Crossed");
+						defenseCleared = true;
+						break;
+				}
+				break;
+				
 			//MOAT
 			case DEFENSE_MOAT:
 				switch(driveState) {
-				case NOT_DRIVING:
-					arm.setArmPosition(3);
-					dt.setDriveSpeed(0.75);
-					driveState = DRIVING;
-					break;
+					case NOT_DRIVING:
+						arm.setArmPosition(3);
+						dt.setDriveSpeed(0.75);
+						driveState = DRIVING;
+						break;
+					
+					case DRIVING:
+						if (shieldCrossed()) {
+							dt.setDriveSpeed(0.0);
+							driveState = DEFENSE_CROSSED;
+						}
+						break;
+					
+					case DEFENSE_CROSSED:
+						defenseCleared = true;
+						break;
+				}
+				break;
 				
-				case DRIVING:
-					if (shieldCrossed()) {
-						dt.setDriveSpeed(0.0);
-						driveState = DEFENSE_CROSSED;
-					}
-					break;
-				
-				case DEFENSE_CROSSED:
-					defenseCleared = true;
-					break;
-			}
 			//ROCK WALL
 			case DEFENSE_ROCK_WALL:
 				switch(driveState) {
-				case NOT_DRIVING:
-					arm.setArmPosition(3);
-					dt.setDriveSpeed(0.75);
-					driveState = DRIVING;
-					break;
+					case NOT_DRIVING:
+						arm.setArmPosition(3);
+						dt.setDriveSpeed(0.75);
+						driveState = DRIVING;
+						break;
+					
+					case DRIVING:
+						if (shieldCrossed()) {
+							dt.setDriveSpeed(0.0);
+							driveState = DEFENSE_CROSSED;
+						}
+						break;
+					
+					case DEFENSE_CROSSED:
+						defenseCleared = true;
+						break;
+				}
+				break;
 				
-				case DRIVING:
-					if (shieldCrossed()) {
-						dt.setDriveSpeed(0.0);
-						driveState = DEFENSE_CROSSED;
-					}
-					break;
-				
-				case DEFENSE_CROSSED:
-					defenseCleared = true;
-					break;
-			}
 			//RAMPARTS
-			case DEFENSE_RAMPARTS:
+			/*case DEFENSE_RAMPARTS:
 				switch(driveState) {
-				case PRE_DEFENSE_ALIGN:
-					dt.rotateTo(330);
-					driveState = NOT_DRIVING;
-					break;
-				case NOT_DRIVING:
-					if (dt.driveComplete()) {
+					case NOT_DRIVING:
+						dt.rotateTo(330);
 						arm.setArmPosition(3);
 						dt.setDriveSpeed(.5);
 						driveState = DRIVING;
-					}
 					break;
 				case DRIVING:
 					if (shieldCrossed()) {
@@ -383,7 +399,7 @@ public class Auto {
 				case DEFENSE_CROSSED:
 					defenseCleared = true;
 					break;
-			}
+			} */
 		}
 		if (defenseCleared) {
 			xAbs = paramStartingPlatform * PLATFORM_WIDTH - shieldDistance - ROBOT_WIDTH / 2;
@@ -395,9 +411,9 @@ public class Auto {
 	//Call this method from a robot loop, multiple times per second.
 	public void autoRun() {
 		// TESTING ONLY *****************
-		paramStartingPlatform = 5;
+		paramStartingPlatform = 1;
 		paramDefenseType = DEFENSE_LOWBAR;
-		paramTargetPlatform = 4;
+		paramTargetPlatform = 2;
 		paramSelectedAction = ACTION_UTURN;
 		Common.dashNum("autoRun State", autoRunState);
 		//***********************
@@ -408,27 +424,29 @@ public class Auto {
 				}
 				break;
 			case AUTO_DRIVE:
+				Common.debug("Autorun Drive Defense #" + paramDefenseType);
 				if (driveDefense(paramDefenseType)) {
 					autoRunState = AUTO_NEXT_ACTION;
 				}	
 				break;
 			case AUTO_NEXT_ACTION:
 				switch (paramSelectedAction) {
-				case ACTION_STOP:
-					autoRunState = AUTO_STOP;
-					break;
-				case ACTION_UTURN:
-					dt.rotateTo(turnLogic(paramTargetPlatform, paramStartingPlatform));  // Initiate first turn
-					autoRunState = AUTO_UTURN_STEP_1;
-					break;
-				case ACTION_SHOOT:
-					dt.rotateTo(turnLogic(ABSOLUTE_CASTLE_X, paramStartingPlatform));
-					autoRunState = AUTO_SHOOT_STEP_1;
-					break;
-				case ACTION_TOWER_ALIGN:
-					dt.rotateTo(turnLogic(paramTargetPlatform, paramStartingPlatform));  // Initiate first turn
-					autoRunState = AUTO_TOWER_ALIGN_STEP_1;
-					break;
+					case ACTION_STOP:
+						autoRunState = AUTO_STOP;
+						break;
+					case ACTION_UTURN:
+						dt.rotateTo(turnLogic(paramTargetPlatform, paramStartingPlatform));  // Initiate first turn
+						autoRunState = AUTO_UTURN_STEP_1;
+						break;
+					case ACTION_SHOOT:
+						dt.rotateTo(turnLogic(ABSOLUTE_CASTLE_X, paramStartingPlatform));
+						autoRunState = AUTO_SHOOT_STEP_1;
+						break;
+					case ACTION_TOWER_ALIGN:
+						// *** this turn logic is not correct
+						dt.rotateTo(turnLogic(ABSOLUTE_CASTLE_X, paramStartingPlatform));  // Initiate first turn
+						autoRunState = AUTO_TOWER_ALIGN_STEP_1;
+						break;
 				}
 				break;
 			//AUTO UTURN
@@ -467,6 +485,7 @@ public class Auto {
 					dt.driveDistance(xDistanceToCastleCenter);
 					autoRunState = AUTO_SHOOT_STEP_2;
 				}
+				break;
 			case AUTO_SHOOT_STEP_2:
 				if (dt.driveComplete()) {
 					dt.rotateTo(turnLogic(ABSOLUTE_CASTLE_X, paramStartingPlatform)* -1);

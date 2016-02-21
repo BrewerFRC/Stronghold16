@@ -14,7 +14,7 @@ public class ArmWinch {
 	private static final boolean HIGH_LIMIT_REACHED = false;
 	private static final double STOP_POWER = -0.15;
 	private static final double ARM_POT_LOW = 3.58;
-	private static final double ARM_POT_HIGH = 2.33;
+	private static final double ARM_POT_HIGH = 2.2;
 	private static final double ARM_ALLOWABLE_ERROR = 0.05;  //Amount of error arm can be off from target before completing move.
 	private static boolean slowArm = false;
 	private static boolean autoControl = false;

@@ -75,7 +75,6 @@ public class Heading {
 		double changeRight = (360 - (getHeading() - heading)) % 360;
 		double change = (Math.abs(changeLeft) < Math.abs(changeRight)) ? changeLeft : changeRight;
 		pid.setTarget(getAngle() + change);
-		Common.debug("" + pid.getTarget());
 	}
 	
 	//Turn a number of degrees relative to current heading

@@ -27,7 +27,7 @@ public class TapeWinch {
 				}
 			}
 			//Limit on extension
-			if (power < 0) {
+			/*if (power < 0) {
 				if (lock) {
 					power = 0;
 				}
@@ -36,7 +36,7 @@ public class TapeWinch {
 					power = 0;
 				}
 
-			}
+			}*/
 			tapeMotor.set(power);
 		}
 

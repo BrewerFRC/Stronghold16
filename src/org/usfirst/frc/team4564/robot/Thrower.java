@@ -28,7 +28,7 @@ public class Thrower {
 		return flywheel.get();
 	}
 	public void setFlywheel(double speed){
-		flywheel.set(Math.abs(speed));
+		flywheel.set(speed);
 	}
 	public double getInternalIntakePower() {
 		return internalIntake.get();
@@ -112,6 +112,11 @@ public class Thrower {
 		//Positive speed runs flywheel in throwing direction.
 		private void setFlywheelSpeed(double speed) {
 			thrower.setFlywheel(speed);
+			if (speed > 0) {
+				flashlight.set(Relay.Value.kOn);
+			} else {
+				flashlight.set(Relay.Value.kOff);
+			}
 		}
 		
 		public void startPortcullis() {
@@ -135,7 +140,6 @@ public class Thrower {
 					if (hasBall()) {
 						currentState = BALL_DETECTED;
 					} else {
-						flashlight.set(Relay.Value.kOff);
 	 					setFlywheelSpeed(0.0);
 						setInternalIntakeSpeed(0.09);
 						setExternalIntakeSpeed(0.09);
@@ -168,7 +172,6 @@ public class Thrower {
 					break;
 				case SPIN_UP:
 					//TODO: Velocity control
-					flashlight.set(Relay.Value.kOn);
 					setFlywheelSpeed(.8);
 					if (Common.time() >= spinUpTimer) {
 						currentState = READY_TO_FIRE;

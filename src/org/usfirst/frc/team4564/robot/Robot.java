@@ -12,9 +12,10 @@ public class Robot extends SampleRobot {
 	Auto auto;
 	TapeWinch w = new TapeWinch();
 	ArmWinch arm = new ArmWinch();
+	String teamName = "Orange Chaos";
+	String blank = "blank";
 	
     public void robotInit () {
-    	Common.debug("Robot Init...");
     	table = NetworkTable.getTable("dashTable");
     	dt = new DriveTrain();
     	auto = new Auto (dt, bat, arm, thrower);
@@ -26,7 +27,6 @@ public class Robot extends SampleRobot {
     
     public void autonomous() {
         auto.init();
-		dt.setHeadingHold(true);
         while(isAutonomous() && isEnabled()) {
            	//Loop delay timer
         	long time = Common.time();
@@ -52,6 +52,7 @@ public class Robot extends SampleRobot {
     		Common.dashNum("GyroAngle", dt.heading.getAngle());
 	   		Common.dashNum("TargetAngle", dt.heading.getTargetAngle());
         	Common.dashNum("Shield Crossed State", auto.shieldState);
+        	Common.dashStr("Name", teamName);
         	//Common.dashNum("Last Shield Distance", auto.shieldDistance);
         	//Common.dashNum("Sonar", bat.getDistance());
 
@@ -107,30 +108,28 @@ public class Robot extends SampleRobot {
      		if (j.whenSelect()) {
      			w.unlockWinch();
      		}
+     		if (j.start()) {
+     			w.lockWinch();
+     		}
      		
      		//ArmWinch
-     		if (j.start()) {
-     			ArmWinch.setSlowArm(true);
-     		}
-     		else {
-     			ArmWinch.setSlowArm(false);
-     		}
-     		if (j.dpadUp()) {
-     			arm.moveUp();
-     		} else if (j.dpadDown()) {
-     			arm.moveDown();     			
-     		}
-     		if (j.whenRightBumper()) {
-     			arm.setArmPosition(3);
-     		}
-     		if (j.whenLeftBumper()) {
-     			arm.setArmPosition(1);
-     		}
-     		arm.update();
 
+     		if (j.rightBumper()) {
+     			arm.moveUp();
+     		}
+     		if (j.leftBumper()) {
+     			arm.moveDown();    
+     		}
+
+     		arm.update();
+     		Common.dashStr("blank",blank);
+     		Common.dashBool("Servo Lock:   ", w.lock);
      		Common.dashNum("Sonic", bat.getDistance());
-     		Common.dashNum("Potentiometer values", arm.getPotentiometerPosition());
-     		Common.dashNum("Potentiometer Target", arm.target);
+     		Common.dashNum("Shield State", auto.shieldState);
+        	Common.dashStr("Name", teamName);
+     		//Common.dashNum("Potentiometer values", arm.getPotentiometerPosition());
+     		//Common.dashNum("Potentiometer Target", arm.target);
+     		//Common.dashNum("Reflector Volatge", w.reflectorVoltage());
     		/*
     		bat.update();
     		//Common.dashNum("Distance", dt.encoder.getDistance());
@@ -154,7 +153,6 @@ public class Robot extends SampleRobot {
     		if (j.whenDpadRight()) {
     			dt.heading.setTarget(dt.heading.getTarget()+10);
     		}
-    		Common.dashNum("Reflector Volatge", w.reflectorVoltage());
     		dt.heading.setPID(table.getNumber("gyroP", 0), table.getNumber("gyroI", 0), table.getNumber("gyroD", 0));
     		dt.distancePID.setP(table.getNumber("distanceP", 0));
     		dt.distancePID.setI(table.getNumber("distanceI", 0));
