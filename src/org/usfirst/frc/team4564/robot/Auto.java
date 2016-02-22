@@ -351,13 +351,15 @@ public class Auto {
 			case DEFENSE_MOAT:
 				switch(driveState) {
 					case NOT_DRIVING:
-						arm.setArmPosition(3);
+						arm.setArmPosition(4);
 						dt.setDriveSpeed(0.92);
+						driveTime = Common.time();
 						driveState = DRIVING;
 						break;
 					
 					case DRIVING:
-						if (shieldCrossed()) {
+						//Drive until shield is crossed or 2.0secs has passed
+						if (shieldCrossed() || (Common.time() - driveTime) >= 2000) {
 							dt.setDriveSpeed(0.0);
 							driveState = DEFENSE_CROSSED;
 						}
@@ -365,7 +367,7 @@ public class Auto {
 					
 					case DEFENSE_CROSSED:
 						defenseCleared = true;
-						yAbs = ABSOLUTE_OUTERWORKS_Y - 36; 
+						yAbs = ABSOLUTE_OUTERWORKS_Y - 48; 
 						break;
 				}
 				break;
