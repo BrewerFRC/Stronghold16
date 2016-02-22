@@ -88,11 +88,11 @@ public class Robot extends SampleRobot {
     		delay = (long)(time + (1000/Constants.REFRESH_RATE));
     		
     		//Drivetrain
-    		if (j.whenLeftClick()) {
-    			dt.baseDrive(j.leftY(), j.leftX());
+    		if (j.leftClick()) {
+    			dt.baseDrive(-j.leftY(), j.leftX());
     		}
     		else {
-    			dt.baseDrive(-j.leftY(), j.leftX());
+    			dt.baseDrive(j.leftY(), j.leftX());
     		}
     		
     		//Thrower / Intake
