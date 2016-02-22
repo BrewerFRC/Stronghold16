@@ -352,14 +352,19 @@ public class Auto {
 				switch(driveState) {
 					case NOT_DRIVING:
 						arm.setArmPosition(4);
-						dt.setDriveSpeed(0.92);
-						driveTime = Common.time();
 						driveState = DRIVING;
 						break;
 					
 					case DRIVING:
+						if (arm.moveCompleted()) {
+							dt.setDriveSpeed(1.0);
+							driveTime = Common.time();
+							driveState = DRIVE_STEP_ONE;
+						}
+						break;
+					case DRIVE_STEP_ONE:
 						//Drive until shield is crossed or 2.0secs has passed
-						if (shieldCrossed() || (Common.time() - driveTime) >= 2000) {
+						if (shieldCrossed() || (Common.time() - driveTime) >= 2250) {
 							dt.setDriveSpeed(0.0);
 							driveState = DEFENSE_CROSSED;
 						}
