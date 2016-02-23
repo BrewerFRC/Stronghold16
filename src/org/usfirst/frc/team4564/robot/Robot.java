@@ -28,6 +28,7 @@ public class Robot extends SampleRobot {
     public void autonomous() {
     	Common.debug("Starting Auto...");
         auto.init();
+    	Common.debug("Defense Type" + auto.paramDefenseType);
         while(isAutonomous() && isEnabled()) {
            	//Loop delay timer
         	long time = Common.time();
@@ -51,7 +52,6 @@ public class Robot extends SampleRobot {
         	bat.update();
         	Common.dashNum("Starting Platform", auto.paramStartingPlatform);
         	Common.dashNum("Target Platform", auto.paramTargetPlatform);
-        	Common.dashNum("Defense Type", auto.paramDefenseType);
         	Common.dashNum("Selected Action", auto.paramSelectedAction);
     		//Common.dashNum("GyroAngle", dt.heading.getAngle());
      		Common.dashNum("Sonic", bat.getDistance());
@@ -89,10 +89,10 @@ public class Robot extends SampleRobot {
     		
     		//Drivetrain
     		if (j.leftClick()) {
-    			dt.baseDrive(-j.leftY(), j.leftX());
+    			dt.baseDrive(j.leftY(), j.leftX());
     		}
     		else {
-    			dt.baseDrive(j.leftY(), j.leftX());
+    			dt.baseDrive(-j.leftY(), j.leftX());
     		}
     		
     		//Thrower / Intake
@@ -120,7 +120,7 @@ public class Robot extends SampleRobot {
      		if (j.whenSelect()) {
      			w.unlockWinch();
      		}
-     		if (j.start()) {
+     		if (j.whenRightClick()) {
      			w.lockWinch();
      		}
      		
@@ -132,6 +132,9 @@ public class Robot extends SampleRobot {
      		if (j.leftBumper()) {
      			arm.moveDown();    
      		}
+     		if (j.leftTrigger() > 0) {
+     			arm.setWinchMotor(j.leftTrigger());
+     		}
 
      		arm.update();
      		Common.dashNum("Sonic", bat.getDistance());
@@ -141,12 +144,12 @@ public class Robot extends SampleRobot {
         	Common.dashStr("blank",blank);
         	Common.dashNum("Potentiometer values", arm.getPotentiometerPosition());
         	Common.dashNum("Potentiometer Target", arm.target);
+        	Common.dashNum("Distance", dt.encoder.getDistance());
      		//Common.dashNum("Potentiometer values", arm.getPotentiometerPosition());
      		//Common.dashNum("Potentiometer Target", arm.target);
      		//Common.dashNum("Reflector Volatge", w.reflectorVoltage());
     		/*
     		bat.update();
-    		//Common.dashNum("Distance", dt.encoder.getDistance());
     		Common.dashNum("Sonar Distance", bat.getDistance());
     		Common.dashNum("Sonar Volts", bat.sonicRight.getVoltage());
 			Common.dashBool("raw output from limit switch", w.winchLimit.get());

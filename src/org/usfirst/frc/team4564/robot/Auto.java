@@ -48,9 +48,6 @@ public class Auto {
 	private static final int AUTO_SHOOT_STEP_4 = 11;	
 	private static final int AUTO_SHOOT_STEP_5 = 12;		
 	private static final int AUTO_SHOOT_STEP_6 = 13;		
-	private static final int AUTO_TOWER_ALIGN_STEP_1 = 14;		
-	private static final int AUTO_TOWER_ALIGN_STEP_2 = 15;	
-	private static final int AUTO_TOWER_ALIGN_STEP_3 = 16;
 	private static final int AUTO_STOP = 17;						//autoRun complete; robot stopped.
 	
 	//autoRun parameters loaded from networktables
@@ -94,6 +91,7 @@ public class Auto {
 	public long driveTime; 					//drive time
 	public long detectTime;		     	    //Start time of Shield detect.
 	public double shieldDistance;    	    //The ultrasonic sensor distance upon exit of a defense.
+	public long lowerTime;
 	public double xAbs;              	    //Absolute x position of the robot after clearing a defense. 
 	public double yAbs;
 	public double xTargetCenter;      		//Inches to center of target platform relative to left wall.
@@ -266,7 +264,7 @@ public class Auto {
 					
 					case DEFENSE_CROSSED:
 						defenseCleared = true;
-						yAbs = ABSOLUTE_OUTERWORKS_Y - 36; 
+						yAbs = ABSOLUTE_OUTERWORKS_Y - 25 - ROBOT_LENGTH/2; 
 						break;
 				}
 				break;
@@ -285,7 +283,7 @@ public class Auto {
 						if (arm.moveCompleted()) {
 							Common.debug("driveDefense: Opening Portcullis");
 							dt.setDriveSpeed(.45);
-							thrower.setExternalIntake(-1.0);
+							thrower.state.startPortcullis();
 							driveState = DRIVING;
 						}
 						break;
@@ -294,14 +292,14 @@ public class Auto {
 							Common.debug("driveDefense: Defense Crossed");
 							arm.setArmPosition(2);
 							dt.setDriveSpeed(0.0);
-							thrower.setExternalIntake(0.0);
+							thrower.state.stopPortcullis();
 							driveState = DEFENSE_CROSSED;
 						}
 						break;
 	
 					case DEFENSE_CROSSED:
 						defenseCleared = true;
-						yAbs = ABSOLUTE_OUTERWORKS_Y - 36; 
+						yAbs = ABSOLUTE_OUTERWORKS_Y - 18 - ROBOT_LENGTH/2; 
 						break;
 				}
 				break;
@@ -317,19 +315,21 @@ public class Auto {
 					case DRIVING:
 						if (dt.driveComplete()) {
 							dt.setDriveSpeed(0.0);
-							arm.setArmPosition(1);
+							arm.setArmPosition(0);
+							detectTime = Common.time() + 3000;
 							driveState = LOWER_ARM;
 						}
 						break;
 					case LOWER_ARM:
-						if (arm.moveCompleted()) {
+						if (Common.time() >= detectTime ) {
 							dt.setDriveSpeed(.55);
 							driveTime = Common.time();
 							driveState = DRIVE_STEP_ONE;
 						}
 						break;
 					case DRIVE_STEP_ONE:
-						if (Common.time() - driveTime >= 250) {
+						//Wait for robot to begin crossing the defense before raising arms.
+						if (Common.time() - driveTime >= 500) {
 							arm.setArmPosition(4);
 							driveState = DRIVE_STEP_TWO;
 							}
@@ -342,7 +342,7 @@ public class Auto {
 						break;
 					case DEFENSE_CROSSED:
 						defenseCleared = true;
-						yAbs = ABSOLUTE_OUTERWORKS_Y - 36; 
+						yAbs = ABSOLUTE_OUTERWORKS_Y - 22 - ROBOT_LENGTH/2; 
 						break;
 				}
 				break;
@@ -372,7 +372,7 @@ public class Auto {
 					
 					case DEFENSE_CROSSED:
 						defenseCleared = true;
-						yAbs = ABSOLUTE_OUTERWORKS_Y - 48; 
+						yAbs = ABSOLUTE_OUTERWORKS_Y - 48 - ROBOT_LENGTH/2; 
 						break;
 				}
 				break;
@@ -382,7 +382,7 @@ public class Auto {
 				switch(driveState) {
 					case NOT_DRIVING:
 						arm.setArmPosition(3);
-						dt.setDriveSpeed(0.75);
+						dt.setDriveSpeed(0.85);
 						driveState = DRIVING;
 						break;
 					
@@ -395,7 +395,7 @@ public class Auto {
 					
 					case DEFENSE_CROSSED:
 						defenseCleared = true;
-						yAbs = ABSOLUTE_OUTERWORKS_Y - 36; 
+						yAbs = ABSOLUTE_OUTERWORKS_Y - 55 - ROBOT_LENGTH/2; 
 						break;
 				}
 				break;
@@ -404,13 +404,13 @@ public class Auto {
 			case DEFENSE_RAMPARTS:
 				switch(driveState) {
 					case NOT_DRIVING:
-						dt.rotateTo(350);
+						dt.rotateTo(0);
 						arm.setArmPosition(3);
 						driveState = PRE_DEFENSE_ALIGN;
 						break;
 					case PRE_DEFENSE_ALIGN:
 						if (dt.driveComplete()) {
-							dt.setDriveSpeed(.5);
+							dt.setDriveSpeed(.85);
 							driveState = DRIVING;
 						}
 						break;
@@ -428,7 +428,7 @@ public class Auto {
 						break;
 					case DEFENSE_CROSSED:
 						defenseCleared = true;
-						yAbs = ABSOLUTE_OUTERWORKS_Y - 36; 
+						yAbs = ABSOLUTE_OUTERWORKS_Y - 36 - ROBOT_LENGTH/2; 
 						break;
 				} 
 				break;
@@ -483,9 +483,8 @@ public class Auto {
 						break;
 					case ACTION_TOWER_ALIGN:
 						Common.debug("autoRun: ACTION_TOWER_ALIGN");
-						// *** this turn logic is not correct
-						dt.rotateTo(absoluteTurnLogic(ABSOLUTE_CASTLE_X, xAbs));  // Initiate first turn
-						autoRunState = AUTO_TOWER_ALIGN_STEP_1;
+						dt.rotateTo(absoluteTurnLogic(ABSOLUTE_CASTLE_X, xAbs));
+						autoRunState = AUTO_SHOOT_STEP_1;
 						break;
 				}
 				break;
@@ -551,9 +550,13 @@ public class Auto {
 				break;
 			case AUTO_SHOOT_STEP_4:
 				if (dt.driveComplete()) {
-					Common.debug("autoRun: AUTO_SHOOT Starting thrower motor");
-					thrower.state.prepThrow(); 
-					autoRunState = AUTO_SHOOT_STEP_5;
+					if (paramSelectedAction == ACTION_SHOOT) {
+						Common.debug("autoRun: AUTO_SHOOT Starting thrower motor");
+						thrower.state.prepThrow(); 
+						autoRunState = AUTO_SHOOT_STEP_5;
+					} else {
+						autoRunState = AUTO_STOP;
+					}
 				}
 				break;
 			case AUTO_SHOOT_STEP_5:
@@ -570,31 +573,6 @@ public class Auto {
 					autoRunState = AUTO_STOP;
 				}
 
-				break;
-			//AUTO CASTLE ALIGN
-			case AUTO_TOWER_ALIGN_STEP_1:
-				if (dt.driveComplete()) {
-					Common.debug("autoRun: AUTO_TOWER_ALIGN first turn complete");
-					xDistanceToCastleCenter = ABSOLUTE_CASTLE_X - xAbs;
-					dt.driveDistance(xDistanceToCastleCenter);
-					autoRunState = AUTO_TOWER_ALIGN_STEP_2;
-				}
-				break;
-			case AUTO_TOWER_ALIGN_STEP_2:
-				if (dt.driveComplete()) {
-					Common.debug("autoRun: AUTO_TOWER_ALIGN distance drive complete");
-					//dt.rotateTo(uTurnLogic(ABSOLUTE_CASTLE_X, paramStartingPlatform)* -1);
-				}
-				break;
-			case AUTO_TOWER_ALIGN_STEP_3:
-				if (dt.driveComplete()) {
-					Common.debug("autoRun: AUTO_TOWER_ALIGN second turn complete");
-					autoRunState = AUTO_STOP;
-				}
-				break;
-			case AUTO_STOP:
-				dt.setDriveSpeed(0.0);
-				dt.setHeadingHold(false);
 				break;
 		}
 		arm.update();
