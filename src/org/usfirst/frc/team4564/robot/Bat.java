@@ -1,6 +1,6 @@
 package org.usfirst.frc.team4564.robot;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalOutput;
+
 public class Bat {
 	// 10 cycles per second update rate
 	int cycleDelay = (int)Constants.REFRESH_RATE/10;
@@ -16,12 +16,16 @@ public class Bat {
 		return sonicRight.getVoltage() / VOLTS_PER_INCH - OFFSET;
 	}	   
 	
-	public void update() {
+/* Don't need
+ 	//Use if you need to coordinate firing sensors at different times
+ 	public void update() {
 		currentCycle++;
 		if (currentCycle >= cycleDelay) {
-//			sonicRightEnable.set(true);
-//			sonicRightEnable.set(false);
+			sonicRightEnable.set(true);
+			sonicRightEnable.set(false);
 			currentCycle = 0;
 		}
 	}
+*/
+
 }

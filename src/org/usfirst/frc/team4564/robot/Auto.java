@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4564.robot;
-import edu.wpi.first.wpilibj.Timer;
+
+@SuppressWarnings("unused")
 public class Auto {
 
 	DriveTrain dt;
@@ -113,8 +114,8 @@ public class Auto {
 		autoRunState = AUTO_SETUP;   //set initial autoRun state
 		// Setup drivetrain
 		dt.init();
-    		dt.setSafetyEnabled(false);
-        	dt.setHeadingHold(true);
+    	dt.setSafetyEnabled(false);
+        dt.setHeadingHold(true);
 		// Get initial auto parameters from network tables.  They'll default to zero if not specified.
 		paramStartingPlatform = (int) Robot.table.getNumber("platform", 0);
 		paramDefenseType = (int) Robot.table.getNumber("defense", 0);
@@ -491,11 +492,12 @@ public class Auto {
 			//AUTO UTURN
 			case AUTO_UTURN_STEP_1:
 				if (dt.driveComplete()) {
-					Common.dashNum("Robot Absolute X", xAbs);
+					Common.debug("autoRun: UTURN xAbs " + xAbs);
 					Common.debug("autoRun: UTURN first turn complete");
 					//Calculate absolute x center of target platform.
 					xTargetCenter = paramTargetPlatform * PLATFORM_WIDTH - (PLATFORM_WIDTH * .5);
 					xDistanceToTarget = Math.abs(xAbs - xTargetCenter);
+					Common.debug("autoRun: UTURN distance to target " + xDistanceToTarget);
 					dt.driveDistance(xDistanceToTarget);
 					autoRunState = AUTO_UTURN_STEP_2;
 				}				
@@ -572,7 +574,10 @@ public class Auto {
 					Common.debug("autoRun: AUTO_SHOOT Waiting time for throw to finish");
 					autoRunState = AUTO_STOP;
 				}
-
+				break;
+			case AUTO_STOP:
+				dt.setDriveSpeed(0.0);
+				dt.setHeadingHold(false);
 				break;
 		}
 		arm.update();

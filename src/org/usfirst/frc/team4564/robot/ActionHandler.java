@@ -2,6 +2,7 @@ package org.usfirst.frc.team4564.robot;
 
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public class ActionHandler {
 
 	private Supplier<Boolean> targetReached;

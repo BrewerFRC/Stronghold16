@@ -21,7 +21,7 @@ public class ArmWinch {
 	public double target;
 	private double speed;
 
-	public double getPotentiometerPosition() {
+	public double getPotentiometerVoltage() {
 		return potentiometer.getVoltage();
 	}
 	
@@ -90,6 +90,10 @@ public class ArmWinch {
 		calcStop();
 	}
 	
+	public boolean getSlowArm() {
+		return slowArm;
+	}
+	
 	public static void setSlowArm(boolean slow) {
 		slowArm = slow;
 	}
@@ -100,11 +104,11 @@ public class ArmWinch {
 	
 	public void update() {
 		if (autoControl) {
-			if ((Math.abs(getPotentiometerPosition() - target) <= ARM_ALLOWABLE_ERROR)) {
+			if ((Math.abs(getPotentiometerVoltage() - target) <= ARM_ALLOWABLE_ERROR)) {
 				stopArm();
 				return;
 			}
-			if (getPotentiometerPosition() < target) {
+			if (getPotentiometerVoltage() < target) {
 				calcDown();
 			}
 			else {

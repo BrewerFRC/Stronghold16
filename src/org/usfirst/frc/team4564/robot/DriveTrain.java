@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 public class DriveTrain extends RobotDrive {
 	
 	//Drive Motors
-	static Talon FrontL = new Talon(Constants.PWM_DRIVE_L);
-	static Talon FrontR = new Talon(Constants.PWM_DRIVE_R);
+	private static Talon FrontL = new Talon(Constants.PWM_DRIVE_L);
+	private static Talon FrontR = new Talon(Constants.PWM_DRIVE_R);
 	
 	// Encoder Definitions
 	public Encoder encoder = new Encoder(Constants.DIO_DRIVE_FR_ENCODER_A, Constants.DIO_DRIVE_FR_ENCODER_B, 
@@ -45,9 +45,9 @@ public class DriveTrain extends RobotDrive {
 		encoder.setDistancePerPulse(1.0/Constants.COUNTS_PER_INCH);
 		encoder.reset();
 		heading.reset();
-		distancePID.setMin(-0.50);
-		distancePID.setMax(0.50);
-
+		distancePID.setMin(-0.60);
+		distancePID.setMax(0.60);
+		actionHandler = new ActionHandler();
 	}
 	
 	// Set a target heading for robot to rotate to.
@@ -102,7 +102,7 @@ public class DriveTrain extends RobotDrive {
 	}
 	
 	public boolean driveDistance(double inches) {
-		// distancePID.setTarget(encoder.getDistance());  //Force distancePID to current target current encoder distance
+		distancePID.setTarget(encoder.getDistance());  //Force distancePID to current target current encoder distance
 		if (driveComplete()) {
 			driveByPID = true;     //Note that we are performing distance drive
 			autoDriveSpeed = 0.0;  //Disable non-PID drive speed
@@ -208,6 +208,8 @@ public class DriveTrain extends RobotDrive {
 	
 	// Set drive motors.  
 	private void setDrive(double drive, double turn) {
+		Common.dashNum("dt.setDrive() Power", drive);
+		Common.dashNum("dt.setDrive() Turn", turn);
 		arcadeDrive(-drive, -turn);
 	}
 
@@ -215,7 +217,6 @@ public class DriveTrain extends RobotDrive {
 	public void baseDrive(double drive, double turn) {
 		drive = driveAccelCurve(drive, driveAccel );
 		turn = turnAccelCurve(turn, turnAccel);
-		Common.dashNum("Drive Power", drive);
 		setDrive(drive, turn);
 	}
 

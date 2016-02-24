@@ -23,7 +23,8 @@ public class Thrower {
 		state = new ThrowerState(this);
 		encoder.setDistancePerPulse(1/1024);
 	}
-
+	
+	
 	public double getFlywheelPower() {
 		return flywheel.get();
 	}
@@ -63,7 +64,7 @@ public class Thrower {
 		private static final int START_PORTCULLIS = 12; //starts portcullis
 		
 		private Thrower thrower;
-		public int currentState;
+		private int currentState;
 		private long spinUpTimer;
 		private long fireTimer;
 		private long ejectTimer;
@@ -71,6 +72,14 @@ public class Thrower {
 		public ThrowerState(Thrower thrower) {
 			currentState = READY;
 			this.thrower = thrower;
+		}
+		
+		public void init() {
+			currentState = READY;
+		}
+		
+		public int getCurrentState() {
+			return this.currentState;
 		}
 		
 		// Returns true when ball is pressing limit switch.
@@ -107,6 +116,7 @@ public class Thrower {
 				return false;
 			}
 		}
+		
 		//Positive speed runs intakes inward.
 		private void setInternalIntakeSpeed(double speed) {
 			thrower.setInternalIntake(speed);
@@ -146,6 +156,7 @@ public class Thrower {
 				case READY:
 					if (hasBall()) {
 						currentState = BALL_DETECTED;
+						Common.debug("Thrower: update - started with ball");
 					} else {
 	 					setFlywheelSpeed(0.0);
 						setInternalIntakeSpeed(0.09);
@@ -154,6 +165,7 @@ public class Thrower {
 					break;
 				case INTAKE:
 					if (hasBall()) {
+						Common.debug("Thrower: update - Intake has ball");
 						currentState = BALL_DETECTED;
 					}
 					setInternalIntakeSpeed(0.75);
@@ -161,6 +173,7 @@ public class Thrower {
 					break;
 				case BALL_DETECTED:
 					if (!hasBall()) {
+						Common.debug("Thrower: update - lost ball");
 						currentState = READY;
 						break;
 					}
@@ -170,7 +183,8 @@ public class Thrower {
 				case BACK_OUT:
 					setInternalIntakeSpeed(-.2);
 					setExternalIntakeSpeed(-.2);
-					if (hasBall() != true ) {
+					if (!hasBall()) {
+						Common.debug("Thrower: update - ball backout");
 						setInternalIntakeSpeed(0);
 						setExternalIntakeSpeed(0);
 						currentState = SPIN_UP;
@@ -181,17 +195,20 @@ public class Thrower {
 					//TODO: Velocity control
 					setFlywheelSpeed(.8);
 					if (Common.time() >= spinUpTimer) {
+						Common.debug("Thrower: update - Spun up and ready to fire");
+						setFlywheelSpeed(.8);
+						fireTimer = Common.time() + 1000; //fireTimer set for 1 second
 						currentState = READY_TO_FIRE;
 					}
 					break;
 				case READY_TO_FIRE:
-					setFlywheelSpeed(.8);
-					fireTimer = Common.time() + 1000; //fireTimer set for 2.25 second
+					fireTimer = Common.time() + 1000;
 					break;
 				case FIRE:
 					setInternalIntakeSpeed(.4);
 					setExternalIntakeSpeed(1.0);
 					if (Common.time() >= fireTimer) {
+						Common.debug("Thrower: update - returned to ready");
 						currentState = READY;
 					}
 					break;

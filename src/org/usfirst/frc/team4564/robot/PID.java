@@ -19,6 +19,7 @@ public class PID {
 	private double previousError;
 	private double sumError;
 	private double output;
+	private double lastCalc;
 	
 	public PID(double p, double i, double d, boolean forward, String name) {
 		this.p = p;
@@ -68,6 +69,9 @@ public class PID {
 		sumError = 0;
 		previousError = 0;
 	}
+	public double getLastCalc() {
+		return this.lastCalc;
+	}
 	
 	public double calc(double input) {
 		
@@ -88,6 +92,7 @@ public class PID {
 		else {
 			this.output = output;
 		}
+		lastCalc = this.output;
 		return this.output;
 	}
 }
