@@ -1,4 +1,5 @@
 package org.usfirst.frc.team4564.robot;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
@@ -19,6 +20,10 @@ public class Robot extends SampleRobot {
     	table = NetworkTable.getTable("dashTable");
     	dt = new DriveTrain();
     	auto = new Auto (dt, bat, arm, thrower);
+    	//Enable USB camera
+    	CameraServer server = CameraServer.getInstance();
+    	server.setQuality(50);
+    	server.startAutomaticCapture("cam1");
     }
     
     public void disabled() {
@@ -56,7 +61,7 @@ public class Robot extends SampleRobot {
     	dt.init(); 
     	dt.setHeadingHold(false);
     	thrower.state.init();
-
+    	boolean driveToggle = false;  //When true, robot will drive from backwards orientation
     	//Setup robot loop timer
     	long delay = 0;
     	while (isOperatorControl() && isEnabled()) {
@@ -65,7 +70,10 @@ public class Robot extends SampleRobot {
     		delay = (long)(time + (1000/Constants.REFRESH_RATE));
     		
     		//Drivetrain
-    		if (j.leftClick()) {  //Drive backwards
+    		if (j.whenLeftClick()) {  //Toggle drive direction
+    			driveToggle = !driveToggle;
+    		}
+    		if (driveToggle) { // Drive backwards
     			dt.baseDrive(j.leftY(), j.leftX());
     		}
     		else {  //Drive forwards

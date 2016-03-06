@@ -102,7 +102,7 @@ public class DriveTrain extends RobotDrive {
 	}
 	
 	public boolean driveDistance(double inches) {
-		distancePID.setTarget(encoder.getDistance());  //Force distancePID to current target current encoder distance
+		distancePID.setTarget(encoder.getDistance());  //Force distancePID to start relative to current encoder distance
 		if (driveComplete()) {
 			driveByPID = true;     //Note that we are performing distance drive
 			autoDriveSpeed = 0.0;  //Disable non-PID drive speed

@@ -544,9 +544,9 @@ public class Auto {
 			case AUTO_SHOOT_STEP_3:
 				if (dt.driveComplete()) {
 					Common.debug("autoRun: AUTO_SHOOT Second turn complete");
-					dt.driveDistance(-(yAbs - BATTER_DEPTH ));
+					dt.driveDistance(-(yAbs - BATTER_DEPTH - ROBOT_LENGTH / 2));
 					Common.debug("autoRun: AUTO_SHOOT: yAbs: " + yAbs);
-					Common.debug("autoRun: AUTO_SHOOT Drive towards battery in inches " +  (-(yAbs - BATTER_DEPTH)));
+					Common.debug("autoRun: AUTO_SHOOT Drive towards battery in inches " +  (-(yAbs - BATTER_DEPTH - ROBOT_LENGTH / 2)));
 					autoRunState = AUTO_SHOOT_STEP_4;
 				}
 				break;

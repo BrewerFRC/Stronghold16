@@ -38,10 +38,6 @@ public class PID {
 		this.p = Robot.table.getNumber(name + "P", this.p);
 		this.i = Robot.table.getNumber(name + "I", this.i);
 		this.d = Robot.table.getNumber(name + "D", this.d);
-		
-		Common.dashNum(name + "P", this.p);
-		Common.dashNum(name + "I", this.i);
-		Common.dashNum(name + "D", this.d);
 	}
 	
 	public void setMin(double min) {
