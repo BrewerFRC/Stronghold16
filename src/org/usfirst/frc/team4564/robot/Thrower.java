@@ -188,7 +188,7 @@ public class Thrower {
 						setInternalIntakeSpeed(0);
 						setExternalIntakeSpeed(0);
 						currentState = SPIN_UP;
-						spinUpTimer = Common.time() + 2250; //SpinUpTimer for 2.25 second;
+						spinUpTimer = Common.time() + 1750; //SpinUpTimer for 2.25 second;
 					}
 					break;
 				case SPIN_UP:

@@ -15,15 +15,14 @@ public class ActionHandler {
 	}
 	
 	public void setTargetReachedFunction(Supplier<Boolean> targetReached) {
-		if (isComplete()) {
-			this.targetReached = targetReached;
-		}
+		this.targetReached = targetReached;
 	}
 	
 	public boolean isComplete() {
 		if (targetReached.get()) {
 		//	completeCounter++;
 		//	if (completeCounter >= 5) {
+			setTargetReachedFunction(() -> true);
 			return true;
 		//	}
 		}
