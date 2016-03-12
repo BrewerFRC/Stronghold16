@@ -25,6 +25,7 @@ public class TapeWinch {
 				if (winchLimit.get() == RETRACT_LIMIT_REACHED) {
 					power = 0;
 				}
+				lockWinch();
 			}
 			//Limit on extension
 			/*if (power < 0) {

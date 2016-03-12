@@ -283,7 +283,7 @@ public class Auto {
 					case LOWER_ARM:
 						if (arm.moveCompleted()) {
 							Common.debug("driveDefense: Opening Portcullis");
-							dt.setDriveSpeed(.45);
+							dt.setDriveSpeed(.52);
 							thrower.state.startPortcullis();
 							driveState = DRIVING;
 						}
@@ -300,7 +300,7 @@ public class Auto {
 	
 					case DEFENSE_CROSSED:
 						defenseCleared = true;
-						yAbs = ABSOLUTE_OUTERWORKS_Y - 18 - ROBOT_LENGTH/2; 
+						yAbs = ABSOLUTE_OUTERWORKS_Y - 8 - ROBOT_LENGTH/2; 
 						break;
 				}
 				break;
@@ -317,7 +317,7 @@ public class Auto {
 						if (dt.driveComplete()) {
 							dt.setDriveSpeed(0.0);
 							arm.setArmPosition(0);
-							detectTime = Common.time() + 3000;
+							detectTime = Common.time() + 2750;
 							driveState = LOWER_ARM;
 						}
 						break;
