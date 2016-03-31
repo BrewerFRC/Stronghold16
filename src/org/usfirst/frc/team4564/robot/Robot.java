@@ -11,8 +11,8 @@ public class Robot extends SampleRobot {
 	public static Xbox j = new Xbox(0);
 	public static NetworkTable table;
 	Auto auto;
-	TapeWinch tape = new TapeWinch();
 	ArmWinch arm = new ArmWinch();
+	TapeWinch tape = new TapeWinch(arm);
 	String teamName = "Orange Chaos";
 	String blank = "blank";
 	
@@ -62,6 +62,7 @@ public class Robot extends SampleRobot {
     	dt.setHeadingHold(false);
     	thrower.state.init();
     	boolean driveToggle = false;  //When true, robot will drive from backwards orientation
+    	boolean climbDrive = false;  //When true, robot will move forward at predetermined speed for climbing.
     	//Setup robot loop timer
     	long delay = 0;
     	while (isOperatorControl() && isEnabled()) {
@@ -73,13 +74,16 @@ public class Robot extends SampleRobot {
     		if (j.whenLeftClick()) {  //Toggle drive direction
     			driveToggle = !driveToggle;
     		}
-    		if (driveToggle) { // Drive backwards
-    			dt.baseDrive(j.leftY(), j.leftX());
-    		}
-    		else {  //Drive forwards
-    			dt.baseDrive(-j.leftY(), j.leftX());
-    		}
-    		
+     		if (j.dpadUp()) {
+     			dt.baseDrive(.35, 0);
+     		} else {
+	    		if (driveToggle) { // Drive backwards
+	    			dt.baseDrive(j.leftY(), j.leftX());
+	    		}
+	    		else {  //Drive forwards
+	    			dt.baseDrive(-j.leftY(), j.leftX());
+	    		}
+     		}
     		//Thrower / Intake
     		if (j.whenA()) {
     			if (thrower.state.hasBall()) {  //If we have the ball then prep to throw
@@ -107,7 +111,6 @@ public class Robot extends SampleRobot {
      		if (j.whenRightClick()) {
      			tape.lockWinch();
      		}
-     		
      		//ArmWinch
      		if (j.rightBumper()) {
      			arm.moveUp();

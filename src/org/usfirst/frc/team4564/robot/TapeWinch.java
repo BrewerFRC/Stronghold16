@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Talon;
 	
 public class TapeWinch {
+	private ArmWinch arm;
 
 	public static final boolean RETRACT_LIMIT_REACHED = false;
 	public static final boolean EXTEND_LIMIT_REACHED = false;
@@ -14,6 +15,9 @@ public class TapeWinch {
 	public Talon tapeMotor = new Talon(Constants.PWM_TAPE_WINCH);
 	public Servo ratchet = new Servo(Constants.PWM_TAPE_WINCH_LOCK);
 	
+		public TapeWinch(ArmWinch arm) {
+			this.arm = arm;
+		}
 		
 		public double reflectorVoltage() {
 			return irReflector.getVoltage();
@@ -26,6 +30,7 @@ public class TapeWinch {
 					power = 0;
 				}
 				lockWinch();
+				arm.setForClimb();
 			}
 			//Limit on extension
 			/*if (power < 0) {

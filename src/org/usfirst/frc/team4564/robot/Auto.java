@@ -48,8 +48,9 @@ public class Auto {
 	private static final int AUTO_SHOOT_STEP_3 = 10;		
 	private static final int AUTO_SHOOT_STEP_4 = 11;	
 	private static final int AUTO_SHOOT_STEP_5 = 12;		
-	private static final int AUTO_SHOOT_STEP_6 = 13;		
-	private static final int AUTO_STOP = 17;						//autoRun complete; robot stopped.
+	private static final int AUTO_SHOOT_STEP_6 = 13;
+	private static final int AUTO_STOP_ACTION = 14;               // Stop after defense crossing; rotate to 180; lower arm to 0
+	private static final int AUTO_COMPLETE = 17;						//autoRun complete; robot stopped.
 	
 	//autoRun parameters loaded from networktables
 	public int paramStartingPlatform;
@@ -224,7 +225,7 @@ public class Auto {
 				switch(driveState) {
 					case NOT_DRIVING:
 						arm.setArmPosition(3);
-						dt.setDriveSpeed(0.65);
+						dt.setDriveSpeed(0.70);
 						driveState = DRIVING;
 						break;
 					
@@ -253,7 +254,7 @@ public class Auto {
 					
 					case LOWER_ARM:
 						if (arm.moveCompleted()) {
-							dt.setDriveSpeed(0.6);
+							dt.setDriveSpeed(0.65);
 							driveState = DRIVING;
 						}
 					case DRIVING:
@@ -455,20 +456,23 @@ public class Auto {
 			case AUTO_SETUP:
 				Common.debug("autoRun: AUTO_SETUP");
 				if (paramStartingPlatform > 0 && paramDefenseType > 0) {
+					Common.debug("autoRun: AUTO_DRIVE - Starting Drive Defense");
 					autoRunState = AUTO_DRIVE;
 				}
 				break;
 			case AUTO_DRIVE:
 				if (driveDefense(paramDefenseType)) {
+					Common.debug("autoRun: AUTO_DRIVE - Completed Drive Defense");
 					autoRunState = AUTO_NEXT_ACTION;
-					Common.debug("autoRun: AUTO_DRIVE - Driving Defense");
 				}	
 				break;
 			case AUTO_NEXT_ACTION:
 				switch (paramSelectedAction) {
 					case ACTION_STOP:
 						Common.debug("autoRun: ACTION_STOP");
-						autoRunState = AUTO_STOP;
+						dt.rotateTo(180);
+						arm.setArmPosition(0);
+						autoRunState = AUTO_STOP_ACTION;
 						break;
 					case ACTION_UTURN:
 						Common.debug("autoRun: ACTION_UTURN");
@@ -520,7 +524,7 @@ public class Auto {
 			case AUTO_UTURN_STEP_4:
 				if (shieldReturn()) {
 					Common.debug("autoRun: UTURN Return shield reached");
-					autoRunState = AUTO_STOP;
+					autoRunState = AUTO_COMPLETE;
 				}
 				break;
 			//AUTO SHOOT
@@ -557,7 +561,7 @@ public class Auto {
 						thrower.state.prepThrow(); 
 						autoRunState = AUTO_SHOOT_STEP_5;
 					} else {
-						autoRunState = AUTO_STOP;
+						autoRunState = AUTO_COMPLETE;
 					}
 				}
 				break;
@@ -565,17 +569,22 @@ public class Auto {
 				if (thrower.state.readyToThrow()) {
 					thrower.state.throwBall();
 					Common.debug("autoRun: AUTO_SHOOT Ball thrown");
-					autoRunState = AUTO_STOP;
+					autoRunState = AUTO_COMPLETE;
 				}
 
 				break;
 			case AUTO_SHOOT_STEP_6:
 				if (thrower.state.readyToThrow()) {
 					Common.debug("autoRun: AUTO_SHOOT Waiting time for throw to finish");
-					autoRunState = AUTO_STOP;
+					autoRunState = AUTO_COMPLETE;
 				}
 				break;
-			case AUTO_STOP:
+			case AUTO_STOP_ACTION:
+				if (dt.driveComplete() && arm.moveCompleted()) {
+					Common.debug("autoRun: AUTO_STOP_ACTION Completed");
+					autoRunState = AUTO_COMPLETE;
+				}
+			case AUTO_COMPLETE:
 				dt.setDriveSpeed(0.0);
 				dt.setHeadingHold(false);
 				break;
