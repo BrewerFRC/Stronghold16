@@ -47,8 +47,7 @@ public class Auto {
 	private static final int AUTO_SHOOT_STEP_2 = 9;		
 	private static final int AUTO_SHOOT_STEP_3 = 10;		
 	private static final int AUTO_SHOOT_STEP_4 = 11;	
-	private static final int AUTO_SHOOT_STEP_5 = 12;		
-	private static final int AUTO_SHOOT_STEP_6 = 13;
+	private static final int AUTO_SHOOT_STEP_5 = 12;
 	private static final int AUTO_STOP_ACTION = 14;               // Stop after defense crossing; rotate to 180; lower arm to 0
 	private static final int AUTO_COMPLETE = 17;						//autoRun complete; robot stopped.
 	
@@ -558,7 +557,7 @@ public class Auto {
 				if (dt.driveComplete()) {
 					if (paramSelectedAction == ACTION_SHOOT) {
 						Common.debug("autoRun: AUTO_SHOOT Starting thrower motor");
-						thrower.state.prepThrow(); 
+						thrower.state.prepThrow();
 						autoRunState = AUTO_SHOOT_STEP_5;
 					} else {
 						autoRunState = AUTO_COMPLETE;
@@ -567,16 +566,10 @@ public class Auto {
 				break;
 			case AUTO_SHOOT_STEP_5:
 				if (thrower.state.readyToThrow()) {
-					thrower.state.throwBall();
-					Common.debug("autoRun: AUTO_SHOOT Ball thrown");
-					autoRunState = AUTO_COMPLETE;
-				}
-
-				break;
-			case AUTO_SHOOT_STEP_6:
-				if (thrower.state.readyToThrow()) {
-					Common.debug("autoRun: AUTO_SHOOT Waiting time for throw to finish");
-					autoRunState = AUTO_COMPLETE;
+					if (dt.autoAim()) {
+						Common.debug("autoRun: AUTO_SHOOT Ball thrown");
+						autoRunState = AUTO_COMPLETE;
+					}
 				}
 				break;
 			case AUTO_STOP_ACTION:

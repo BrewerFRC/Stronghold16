@@ -5,11 +5,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Robot extends SampleRobot {
-	Thrower thrower = new Thrower();
+	public static Thrower thrower = new Thrower();
 	DriveTrain dt;
 	Bat bat = new Bat();
-	public static Xbox j = new Xbox(0);
+	public static Xbox j0 = new Xbox(0);
+	public static Xbox j1 = new Xbox(1);
 	public static NetworkTable table;
+	public static NetworkTable visionTable;
 	Auto auto;
 	ArmWinch arm = new ArmWinch();
 	TapeWinch tape = new TapeWinch(arm);
@@ -18,6 +20,7 @@ public class Robot extends SampleRobot {
 	
     public void robotInit () {
     	table = NetworkTable.getTable("dashTable");
+    	visionTable = NetworkTable.getTable("visionTracking");
     	dt = new DriveTrain();
     	auto = new Auto (dt, bat, arm, thrower);
     	//Enable USB camera
@@ -62,7 +65,9 @@ public class Robot extends SampleRobot {
     	dt.setHeadingHold(false);
     	thrower.state.init();
     	boolean driveToggle = false;  //When true, robot will drive from backwards orientation
-    	boolean climbDrive = false;  //When true, robot will move forward at predetermined speed for climbing.
+    	
+    	Xbox j = j0;
+    	
     	//Setup robot loop timer
     	long delay = 0;
     	while (isOperatorControl() && isEnabled()) {
@@ -70,20 +75,40 @@ public class Robot extends SampleRobot {
     		long time = Common.time();
     		delay = (long)(time + (1000/Constants.REFRESH_RATE));
     		
-    		//Drivetrain
-    		if (j.whenLeftClick()) {  //Toggle drive direction
-    			driveToggle = !driveToggle;
+    		//Y button on joystick 0 toggles active joystick.
+    		if (j0.Y()) {
+    			j = j1;
     		}
-     		if (j.dpadUp()) {
-     			dt.baseDrive(.35, 0);
-     		} else {
-	    		if (driveToggle) { // Drive backwards
-	    			dt.baseDrive(j.leftY(), j.leftX());
-	    		}
-	    		else {  //Drive forwards
-	    			dt.baseDrive(-j.leftY(), j.leftX());
-	    		}
-     		}
+    		else {
+    			j = j0;
+    		}
+    		
+    		//Drivetrain
+    		if (j.leftTriggerPressed()) {
+    			double turn = visionTable.getNumber("targetTurn", 0);
+    			if (turn == 999) {
+    				thrower.state.throwBall();
+    				dt.baseDrive(0, 0);
+    			}
+    			else {
+    				dt.baseDrive(0, turn);
+    			}
+    		}
+    		else {
+	    		//if (j.whenLeftClick()) {  //Toggle drive direction
+	    		//	driveToggle = !driveToggle;
+	    		//}
+	    		if (j.leftClick()) {
+	     			dt.baseDrive(.43, 0);
+	     		} else {
+		    		if (driveToggle) { // Drive backwards
+		    			dt.baseDrive(j.leftY(), j.leftX());
+		    		}
+		    		else {  //Drive forwards
+		    			dt.baseDrive(-j.leftY(), j.leftX());
+		    		}
+	     		}
+    		}
     		//Thrower / Intake
     		if (j.whenA()) {
     			if (thrower.state.hasBall()) {  //If we have the ball then prep to throw

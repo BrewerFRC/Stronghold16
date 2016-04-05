@@ -179,6 +179,19 @@ public class DriveTrain extends RobotDrive {
 		//Common.dashNum("TurnError", heading.getTargetAngle() - heading.getAngle());
 	}
 	
+	public boolean autoAim() {
+		double turn = Robot.visionTable.getNumber("targetTurn", 0);
+		if (turn == 999) {
+			Robot.thrower.state.throwBall();
+			baseDrive(0, 0);
+			return true;
+		}
+		else {
+			baseDrive(0, turn);
+		}
+		return false;
+	}
+	
 	//target = target speed (desired speed), driveSpeed = current speed
 	 public double driveAccelCurve(double target, double driveAccel) {
 		 if (Math.abs(driveSpeed - target) > driveAccel) {
