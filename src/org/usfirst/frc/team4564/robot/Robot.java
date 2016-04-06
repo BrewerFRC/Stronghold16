@@ -8,10 +8,10 @@ public class Robot extends SampleRobot {
 	public static Thrower thrower = new Thrower();
 	DriveTrain dt;
 	Bat bat = new Bat();
+	public static VisionTracking vision;
 	public static Xbox j0 = new Xbox(0);
 	public static Xbox j1 = new Xbox(1);
 	public static NetworkTable table;
-	public static NetworkTable visionTable;
 	Auto auto;
 	ArmWinch arm = new ArmWinch();
 	TapeWinch tape = new TapeWinch(arm);
@@ -20,8 +20,8 @@ public class Robot extends SampleRobot {
 	
     public void robotInit () {
     	table = NetworkTable.getTable("dashTable");
-    	visionTable = NetworkTable.getTable("visionTracking");
     	dt = new DriveTrain();
+    	vision = new VisionTracking(dt);
     	auto = new Auto (dt, bat, arm, thrower);
     	//Enable USB camera
     	CameraServer server = CameraServer.getInstance();
@@ -85,14 +85,7 @@ public class Robot extends SampleRobot {
     		
     		//Drivetrain
     		if (j.leftTriggerPressed()) {
-    			double turn = visionTable.getNumber("targetTurn", 0);
-    			if (turn == 999) {
-    				thrower.state.throwBall();
-    				dt.baseDrive(0, 0);
-    			}
-    			else {
-    				dt.baseDrive(0, turn);
-    			}
+    			vision.autoAim();
     		}
     		else {
 	    		//if (j.whenLeftClick()) {  //Toggle drive direction

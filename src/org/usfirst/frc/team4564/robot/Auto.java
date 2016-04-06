@@ -566,7 +566,7 @@ public class Auto {
 				break;
 			case AUTO_SHOOT_STEP_5:
 				if (thrower.state.readyToThrow()) {
-					if (dt.autoAim()) {
+					if (Robot.vision.autoAim()) {
 						Common.debug("autoRun: AUTO_SHOOT Ball thrown");
 						autoRunState = AUTO_COMPLETE;
 					}
