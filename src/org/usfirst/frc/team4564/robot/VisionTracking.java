@@ -17,11 +17,13 @@ public class VisionTracking {
 		if (counter % 6 <= 2) {
 			double turn = visionTable.getNumber("targetTurn", 0);
 			if (turn == 999) {
+				Common.debug("autoAim: taking shot");
 				Robot.thrower.state.throwBall();
 				dt.baseDrive(0, 0);
 				thrown = true;
 			}
 			else {
+				Common.debug("autoAim: turning to target");
 				dt.baseDrive(0, turn);
 			}
 		}
@@ -32,4 +34,8 @@ public class VisionTracking {
 		return thrown;
 	}
 	
+	public void takePicture() {
+		Common.debug("AutoAim: taking picture");
+		visionTable.putNumber("takePicture", 1);
+	}
 }

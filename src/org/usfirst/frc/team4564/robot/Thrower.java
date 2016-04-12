@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4564.robot;
 
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Relay;
@@ -22,7 +23,7 @@ public class Thrower {
 	public Thrower() {
 		state = new ThrowerState(this);
 		encoder.setDistancePerPulse(1/1024);
-	}
+}
 	
 	
 	public double getFlywheelPower() {
@@ -102,6 +103,8 @@ public class Thrower {
 		public void throwBall() {
 			if (currentState == READY_TO_FIRE) {
 				currentState = FIRE;
+				Common.debug("Thrower: throwBall: taking picture");
+				Robot.vision.takePicture();
 			}
 		}
 		

@@ -64,6 +64,7 @@ public class Robot extends SampleRobot {
     	dt.init(); 
     	dt.setHeadingHold(false);
     	thrower.state.init();
+    	tape.unlockWinch();
     	boolean driveToggle = false;  //When true, robot will drive from backwards orientation
     	
     	Xbox j = j0;
