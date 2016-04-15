@@ -86,9 +86,10 @@ public class Robot extends SampleRobot {
     		
     		//Drivetrain
     		if (j.leftTriggerPressed()) {
+    			thrower.state.overrideFlashlight(true);
     			vision.autoAim();
-    		}
-    		else {
+    		} else {
+    			thrower.state.overrideFlashlight(false);    			
 	    		//if (j.whenLeftClick()) {  //Toggle drive direction
 	    		//	driveToggle = !driveToggle;
 	    		//}

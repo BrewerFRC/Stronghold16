@@ -18,7 +18,7 @@
 
   <!-- By default the target is set to 10.TE.AM.2 -->
   <!--property name="target" value=""/-->
-  <property name="target" value="10.45.64.22"/> 
+  <property name="target" value="10.45.64.2"/> 
 
   <!-- Any other property in build.properties can also be overridden. -->
   

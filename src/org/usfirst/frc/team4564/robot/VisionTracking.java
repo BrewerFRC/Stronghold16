@@ -13,9 +13,9 @@ public class VisionTracking {
 	}
 
 	public boolean autoAim() {
+		double turn = visionTable.getNumber("targetTurn", 0);
 		boolean thrown = false;
 		if (counter % 6 <= 2) {
-			double turn = visionTable.getNumber("targetTurn", 0);
 			if (turn == 999) {
 				Common.debug("autoAim: taking shot");
 				Robot.thrower.state.throwBall();
@@ -24,11 +24,13 @@ public class VisionTracking {
 			}
 			else {
 				Common.debug("autoAim: turning to target");
-				dt.baseDrive(0, turn);
+				dt.baseDrive(-.3, turn);
 			}
 		}
 		else {
-			dt.baseDrive(0, 0);
+			if (turn <= 1.0) {
+				dt.baseDrive(-.3, turn * 0.3);
+			}
 		}
 		counter++;
 		return thrown;

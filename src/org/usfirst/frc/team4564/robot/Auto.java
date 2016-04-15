@@ -79,7 +79,10 @@ public class Auto {
 	public static final double ABSOLUTE_CASTLE_X = 170.6113;  // X position of the center of the castle
 	public static final double ABSOLUTE_OUTERWORKS_Y = 191.0;  // Y position of the outerworks on coutyard side.
 	public static final double BATTER_DEPTH = 68.0;
+	public static final double GOAL_DEPTH = 36.6;
 	public static final double DISTANCE_TO_BATTER = ABSOLUTE_OUTERWORKS_Y - BATTER_DEPTH; // Distance of outerworks from batter
+	public static final double LEFT_GOAL_X = 112.5;
+	public static final double RIGHT_GOAL_X = 235.0;
 	public static final double ROBOT_WIDTH = 35.0;
 	public static final double ROBOT_LENGTH = 36.5;
 	
@@ -323,7 +326,7 @@ public class Auto {
 						break;
 					case LOWER_ARM:
 						if (Common.time() >= detectTime ) {
-							dt.setDriveSpeed(.55);
+							dt.setDriveSpeed(.60);
 							driveTime = Common.time();
 							driveState = DRIVE_STEP_ONE;
 						}
@@ -529,11 +532,18 @@ public class Auto {
 			//AUTO SHOOT
 			case AUTO_SHOOT_STEP_1:
 				if (dt.driveComplete()) {
-					Common.debug("autoRun: AUTO_SHOOT First turn complete");
-					xDistanceToCastleCenter = Math.abs(ABSOLUTE_CASTLE_X - xAbs);
-					Common.debug("autoRun: distanceToCastleCenter " + xDistanceToCastleCenter);
-					dt.driveDistance(xDistanceToCastleCenter);
-					autoRunState = AUTO_SHOOT_STEP_2;
+					// New code for side shooting
+				/*	if (paramStartingPlatform == 1 || paramStartingPlatform == 5) {
+						xDistanceToCastleCenter = Math.abs(Side_GOAL_X - xAbs);
+						dt.driveDistance(xDistanceToCastleCenter);
+						autoRunState = AUTO_SHOOT_STEP_2;
+					} else {
+				*/	//End new code
+						Common.debug("autoRun: AUTO_SHOOT First turn complete");
+						xDistanceToCastleCenter = Math.abs(ABSOLUTE_CASTLE_X - xAbs);
+						Common.debug("autoRun: distanceToCastleCenter " + xDistanceToCastleCenter);
+						dt.driveDistance(xDistanceToCastleCenter);
+						autoRunState = AUTO_SHOOT_STEP_2;
 				}
 				break;
 			case AUTO_SHOOT_STEP_2:
@@ -545,25 +555,41 @@ public class Auto {
 				}
 				break;
 			case AUTO_SHOOT_STEP_3:
-				if (dt.driveComplete()) {
+				if (dt.driveComplete()) {				
 					Common.debug("autoRun: AUTO_SHOOT Second turn complete");
 					dt.driveDistance(-(yAbs - BATTER_DEPTH - ROBOT_LENGTH / 2));
 					Common.debug("autoRun: AUTO_SHOOT: yAbs: " + yAbs);
 					Common.debug("autoRun: AUTO_SHOOT Drive towards battery in inches " +  (-(yAbs - BATTER_DEPTH - ROBOT_LENGTH / 2)));
-					autoRunState = AUTO_SHOOT_STEP_4;
-				}
-				break;
-			case AUTO_SHOOT_STEP_4:
-				if (dt.driveComplete()) {
+// added code
 					if (paramSelectedAction == ACTION_SHOOT) {
 						Common.debug("autoRun: AUTO_SHOOT Starting thrower motor");
 						thrower.state.prepThrow();
+						thrower.state.overrideFlashlight(true);
+						autoRunState = AUTO_SHOOT_STEP_4;						
+					} else {
+						autoRunState = AUTO_COMPLETE;
+					}
+				}
+				break;
+// end added code
+/* Removed this code
+					autoRunState = AUTO_SHOOT_STEP_4;
+				}
+				break;
+*/
+			case AUTO_SHOOT_STEP_4:
+				if (dt.driveComplete()) {
+					if (paramSelectedAction == ACTION_SHOOT) {
+						Common.debug("autoRun: AUTO_SHOOT Drive to tower complete");
+//						thrower.state.prepThrow();
+//						thrower.state.overrideFlashlight(true);
 						autoRunState = AUTO_SHOOT_STEP_5;
 					} else {
 						autoRunState = AUTO_COMPLETE;
 					}
 				}
 				break;
+
 			case AUTO_SHOOT_STEP_5:
 				if (thrower.state.readyToThrow()) {
 					if (Robot.vision.autoAim()) {

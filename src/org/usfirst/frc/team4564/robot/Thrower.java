@@ -63,6 +63,8 @@ public class Thrower {
 		private static final int EJECT = 11; //Set intake backwards full speed unitl ejectTimer is complete; set currentStae to READY.
 		//States for Portcullis
 		private static final int START_PORTCULLIS = 12; //starts portcullis
+		//flashlight override boolean for auto aim
+		private boolean flashlightOverride = false;
 		
 		private Thrower thrower;
 		private int currentState;
@@ -132,11 +134,15 @@ public class Thrower {
 		//Positive speed runs flywheel in throwing direction.
 		private void setFlywheelSpeed(double speed) {
 			thrower.setFlywheel(speed);
-			if (speed > 0) {
+			if (speed > 0 && flashlightOverride == false) {
 				flashlight.set(Relay.Value.kOn);
 			} else {
 				flashlight.set(Relay.Value.kOff);
 			}
+		}
+		
+		public void overrideFlashlight(boolean override){
+			flashlightOverride = override;
 		}
 		
 		public void startPortcullis() {
@@ -205,6 +211,7 @@ public class Thrower {
 					}
 					break;
 				case READY_TO_FIRE:
+					setFlywheelSpeed(.8);
 					fireTimer = Common.time() + 1000;
 					break;
 				case FIRE:
