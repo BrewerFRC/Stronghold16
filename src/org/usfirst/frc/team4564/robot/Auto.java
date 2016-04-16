@@ -45,10 +45,13 @@ public class Auto {
 	private static final int AUTO_UTURN_STEP_4 = 7;	
 	private static final int AUTO_SHOOT_STEP_1 = 8;				//Drive to tower and shoot
 	private static final int AUTO_SHOOT_STEP_2 = 9;		
-	private static final int AUTO_SHOOT_STEP_3 = 10;		
-	private static final int AUTO_SHOOT_STEP_4 = 11;	
-	private static final int AUTO_SHOOT_STEP_5 = 12;
-	private static final int AUTO_STOP_ACTION = 14;               // Stop after defense crossing; rotate to 180; lower arm to 0
+	private static final int AUTO_SHOOT_STEP_3_CENTER = 10;	
+	private static final int AUTO_SHOOT_STEP_3_RIGHT = 11;
+	private static final int AUTO_SHOOT_STEP_4 = 12;	
+	private static final int AUTO_SHOOT_STEP_4_RIGHT = 13;
+	private static final int AUTO_SHOOT_STEP_4_ROTATE = 14;
+	private static final int AUTO_SHOOT_STEP_5 = 15;
+	private static final int AUTO_STOP_ACTION = 16;               // Stop after defense crossing; rotate to 180; lower arm to 0
 	private static final int AUTO_COMPLETE = 17;						//autoRun complete; robot stopped.
 	
 	//autoRun parameters loaded from networktables
@@ -77,12 +80,11 @@ public class Auto {
 	//Field Dimension constants.
 	public static final double PLATFORM_WIDTH = 53.0;
 	public static final double ABSOLUTE_CASTLE_X = 170.6113;  // X position of the center of the castle
-	public static final double ABSOLUTE_OUTERWORKS_Y = 191.0;  // Y position of the outerworks on coutyard side.
+	public static final double ABSOLUTE_OUTERWORKS_Y = 191.0;  // Y position of the outerworks on coutyard side
+	public static final double RIGHT_GOAL_LINE_Y = ABSOLUTE_OUTERWORKS_Y - 151.0; // From the center of 5th platform
 	public static final double BATTER_DEPTH = 68.0;
 	public static final double GOAL_DEPTH = 36.6;
 	public static final double DISTANCE_TO_BATTER = ABSOLUTE_OUTERWORKS_Y - BATTER_DEPTH; // Distance of outerworks from batter
-	public static final double LEFT_GOAL_X = 112.5;
-	public static final double RIGHT_GOAL_X = 235.0;
 	public static final double ROBOT_WIDTH = 35.0;
 	public static final double ROBOT_LENGTH = 36.5;
 	
@@ -320,7 +322,7 @@ public class Auto {
 						if (dt.driveComplete()) {
 							dt.setDriveSpeed(0.0);
 							arm.setArmPosition(0);
-							detectTime = Common.time() + 2750;
+							detectTime = Common.time() + 2500; // was 2750
 							driveState = LOWER_ARM;
 						}
 						break;
@@ -484,9 +486,14 @@ public class Auto {
 						autoRunState = AUTO_UTURN_STEP_1;
 						break;
 					case ACTION_SHOOT:
-						Common.debug("autoRun: ACTION_SHOOT");
-						dt.rotateTo(absoluteTurnLogic(ABSOLUTE_CASTLE_X, xAbs));
-						autoRunState = AUTO_SHOOT_STEP_1;
+						Common.debug("autoRun: ACTION_SHOOT");  
+						if (paramStartingPlatform == 5) {  //Skip to step 3 for Right side shoot
+							autoRunState = AUTO_SHOOT_STEP_3_RIGHT;
+						} else {
+							//Normal Shoot steps
+							dt.rotateTo(absoluteTurnLogic(ABSOLUTE_CASTLE_X, xAbs));
+							autoRunState = AUTO_SHOOT_STEP_1;
+						}
 						break;
 					case ACTION_TOWER_ALIGN:
 						Common.debug("autoRun: ACTION_TOWER_ALIGN");
@@ -551,16 +558,16 @@ public class Auto {
 					Common.debug("autoRun: AUTO_SHOOT Distance drive complete");
 					arm.setArmPosition(0);
 					dt.rotateTo(180);
-					autoRunState = AUTO_SHOOT_STEP_3;
+					autoRunState = AUTO_SHOOT_STEP_3_CENTER;
 				}
 				break;
-			case AUTO_SHOOT_STEP_3:
-				if (dt.driveComplete()) {				
+			case AUTO_SHOOT_STEP_3_CENTER: // Initiate drive across field to align center, for shoot or align actions
+				if (dt.driveComplete()) {
 					Common.debug("autoRun: AUTO_SHOOT Second turn complete");
 					dt.driveDistance(-(yAbs - BATTER_DEPTH - ROBOT_LENGTH / 2));
 					Common.debug("autoRun: AUTO_SHOOT: yAbs: " + yAbs);
 					Common.debug("autoRun: AUTO_SHOOT Drive towards battery in inches " +  (-(yAbs - BATTER_DEPTH - ROBOT_LENGTH / 2)));
-// added code
+					// Start shooter spin-up if we are going to shoot
 					if (paramSelectedAction == ACTION_SHOOT) {
 						Common.debug("autoRun: AUTO_SHOOT Starting thrower motor");
 						thrower.state.prepThrow();
@@ -571,16 +578,20 @@ public class Auto {
 					}
 				}
 				break;
-// end added code
-/* Removed this code
-					autoRunState = AUTO_SHOOT_STEP_4;
-				}
+				
+			case AUTO_SHOOT_STEP_3_RIGHT: // Initiate Drive to right goal line, which is takes us to the batter
+				Common.debug("autoRun: AUTO_SHOOT: yAbs: " + yAbs);
+				Common.debug("autoRun: AUTO_SHOOT Drive towards right goal " +  (yAbs - RIGHT_GOAL_LINE_Y));
+				dt.driveDistance(yAbs - RIGHT_GOAL_LINE_Y - 10);  // We'll go 10 inches short to make turning easier
+				arm.setArmPosition(1);
+				autoRunState = AUTO_SHOOT_STEP_4_RIGHT;
 				break;
-*/
-			case AUTO_SHOOT_STEP_4:
+
+			case AUTO_SHOOT_STEP_4:  //Test for center tower approach complete and then move on to shoot, if that action is selected
 				if (dt.driveComplete()) {
+					Common.debug("autoRun: AUTO_SHOOT Drive to tower complete");
 					if (paramSelectedAction == ACTION_SHOOT) {
-						Common.debug("autoRun: AUTO_SHOOT Drive to tower complete");
+						Common.debug("autoRun: AUTO_SHOOT_STEP_4 Ready to aim at center for shot");
 //						thrower.state.prepThrow();
 //						thrower.state.overrideFlashlight(true);
 						autoRunState = AUTO_SHOOT_STEP_5;
@@ -589,8 +600,25 @@ public class Auto {
 					}
 				}
 				break;
+				
+			case AUTO_SHOOT_STEP_4_RIGHT:  //Test for tower approach complete and begin rotate and enable thrower
+				if (dt.driveComplete()) {
+					Common.debug("autoRun: AUTO_SHOOT_STEP_4 Starting rotation to heading of 120");
+					dt.rotateTo(120);
+					thrower.state.prepThrow();
+					thrower.state.overrideFlashlight(true);
+					autoRunState = AUTO_SHOOT_STEP_4_ROTATE;
+				}
+				break;
 
-			case AUTO_SHOOT_STEP_5:
+			case AUTO_SHOOT_STEP_4_ROTATE:  //Wait for rotate to goal to finish and then shoot
+				if (dt.driveComplete()) {
+					Common.debug("autoRun: AUTO_SHOOT_STEP_4_ROTATE Rotation done, ready to aim");
+					autoRunState = AUTO_SHOOT_STEP_5;
+				}
+				break;
+				
+			case AUTO_SHOOT_STEP_5:  //Wait for flywheel to spin-up and then autoaim to shoot
 				if (thrower.state.readyToThrow()) {
 					if (Robot.vision.autoAim()) {
 						Common.debug("autoRun: AUTO_SHOOT Ball thrown");
