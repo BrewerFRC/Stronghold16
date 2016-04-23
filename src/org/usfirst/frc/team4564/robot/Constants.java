@@ -29,6 +29,8 @@ public class Constants {
 	public static final int ANA_SONIC_RIGHT = 0;
 	public static final int ANA_ARM_WINCH_POT = 1;
 	public static final int ANA_TAPE_WINCH_EXTEND_LIMIT = 2;
+	public static final int ANA_SONIC_BACK = 3;  // Ultrasonic sensor on back for shooter distance
+	
 	
 	//Drive PID constants
 	public static final double DRIVE_P = 0.05;

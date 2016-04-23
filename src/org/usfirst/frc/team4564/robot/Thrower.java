@@ -197,7 +197,7 @@ public class Thrower {
 						setInternalIntakeSpeed(0);
 						setExternalIntakeSpeed(0);
 						currentState = SPIN_UP;
-						spinUpTimer = Common.time() + 1750; //SpinUpTimer for 2.25 second;
+						spinUpTimer = Common.time() + 1750; //Time require to full spinup;
 					}
 					break;
 				case SPIN_UP:
@@ -206,13 +206,13 @@ public class Thrower {
 					if (Common.time() >= spinUpTimer) {
 						Common.debug("Thrower: update - Spun up and ready to fire");
 						setFlywheelSpeed(.8);
-						fireTimer = Common.time() + 1000; //fireTimer set for 1 second
+						fireTimer = Common.time() + 1000; //Time that flywheel will run once shot is fired
 						currentState = READY_TO_FIRE;
 					}
 					break;
 				case READY_TO_FIRE:
 					setFlywheelSpeed(.8);
-					fireTimer = Common.time() + 1000;
+					fireTimer = Common.time() + 1000; //(changed from 1000 4/19/16) 
 					break;
 				case FIRE:
 					setInternalIntakeSpeed(.4);

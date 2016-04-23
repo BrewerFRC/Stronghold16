@@ -33,6 +33,8 @@ public class DriveTrain extends RobotDrive {
 	//Auto drive variables
 	private boolean driveByPID = false;	  //True if distance based driving enabled, false is driving by set motor power
 	private double autoDriveSpeed = 0.0;  //Motor power for non-PID driving
+	private double autoTurnSpeed = 0.0;  //Motor power for non-PID turning
+	
 	
 	//DriveTrain constructor
 	public DriveTrain() {
@@ -59,6 +61,7 @@ public class DriveTrain extends RobotDrive {
 		Common.debug("rotateTo: driveComplete" + driveComplete());
 		distancePID.setTarget(encoder.getDistance());  //Force distancePID to current target current encoder distance
 		if (driveComplete()) {
+			autoTurnSpeed = 0.0;	//Disable non-PID turn speed
 			this.heading.setHeading(heading);
 			actionHandler.setTargetReachedFunction(
 				() -> {
@@ -81,6 +84,7 @@ public class DriveTrain extends RobotDrive {
 	public boolean relTurn(double degrees) {
 		distancePID.setTarget(encoder.getDistance());
 		if (driveComplete()) {
+			autoTurnSpeed = 0.0;	//Disable non-PID turn speed
 			this.heading.relTurn(degrees);
 			actionHandler.setTargetReachedFunction(
 				() -> {
@@ -142,6 +146,11 @@ public class DriveTrain extends RobotDrive {
 		autoDriveSpeed = speed;
 	}
 	
+	// Set a non-PID based turning speed
+	public void setTurnSpeed(double speed) {
+		setHeadingHold(false);
+		autoTurnSpeed = speed;
+	}
 	
 	// Process both distance and heading PIDs and then power robot drive accordingly.
 	// Call this method repeatedly from the robot loop.
@@ -162,9 +171,14 @@ public class DriveTrain extends RobotDrive {
 		} else {  // Otherwise, drive based on the set motor drive speed
 			speed = autoDriveSpeed;
 		}
-		// Determine turn rate			
-		heading.update();
-		double turn = heading.turnRate();
+		// Determine turn rate
+		double turn;
+		if (heading.isHeadingHold()) {
+			heading.update();
+			turn = heading.turnRate();
+		} else {
+			turn = autoTurnSpeed;
+		}
 		// Drive the robot
 		baseDrive(speed, turn);
 

@@ -47,12 +47,16 @@ public class Auto {
 	private static final int AUTO_SHOOT_STEP_2 = 9;		
 	private static final int AUTO_SHOOT_STEP_3_CENTER = 10;	
 	private static final int AUTO_SHOOT_STEP_3_RIGHT = 11;
-	private static final int AUTO_SHOOT_STEP_4 = 12;	
-	private static final int AUTO_SHOOT_STEP_4_RIGHT = 13;
-	private static final int AUTO_SHOOT_STEP_4_ROTATE = 14;
-	private static final int AUTO_SHOOT_STEP_5 = 15;
-	private static final int AUTO_STOP_ACTION = 16;               // Stop after defense crossing; rotate to 180; lower arm to 0
-	private static final int AUTO_COMPLETE = 17;						//autoRun complete; robot stopped.
+	private static final int AUTO_SHOOT_STEP_3_LEFT = 12;
+	private static final int AUTO_SHOOT_STEP_4 = 13;	
+	private static final int AUTO_SHOOT_STEP_4_RIGHT = 14;
+	private static final int AUTO_SHOOT_STEP_4_LEFT = 15;
+	private static final int AUTO_SHOOT_STEP_4_RIGHT_ROTATE = 16;
+	private static final int AUTO_SHOOT_STEP_4_LEFT_ROTATE = 17;
+	private static final int AUTO_SHOOT_STEP_5 = 18;
+	private static final int AUTO_SHOOT_STEP_5_LEFT = 19;
+	private static final int AUTO_STOP_ACTION = 20;               // Stop after defense crossing; rotate to 180; lower arm to 0
+	private static final int AUTO_COMPLETE = 21;						//autoRun complete; robot stopped.
 	
 	//autoRun parameters loaded from networktables
 	public int paramStartingPlatform;
@@ -82,6 +86,7 @@ public class Auto {
 	public static final double ABSOLUTE_CASTLE_X = 170.6113;  // X position of the center of the castle
 	public static final double ABSOLUTE_OUTERWORKS_Y = 191.0;  // Y position of the outerworks on coutyard side
 	public static final double RIGHT_GOAL_LINE_Y = ABSOLUTE_OUTERWORKS_Y - 151.0; // From the center of 5th platform
+	public static final double LEFT_GOAL_LINE_Y = ABSOLUTE_OUTERWORKS_Y - 105.0; // From the center of 1st platform
 	public static final double BATTER_DEPTH = 68.0;
 	public static final double GOAL_DEPTH = 36.6;
 	public static final double DISTANCE_TO_BATTER = ABSOLUTE_OUTERWORKS_Y - BATTER_DEPTH; // Distance of outerworks from batter
@@ -126,6 +131,7 @@ public class Auto {
 		paramDefenseType = (int) Robot.table.getNumber("defense", 0);
 		paramTargetPlatform = (int) Robot.table.getNumber("targetPlatform", 0);
 		paramSelectedAction = (int) Robot.table.getNumber("action", 0);
+		thrower.state.init();
 	}
 	
 	// Using the ultrasonic sensor, this logic determines when the robot passes through a shield.
@@ -288,7 +294,7 @@ public class Auto {
 					case LOWER_ARM:
 						if (arm.moveCompleted()) {
 							Common.debug("driveDefense: Opening Portcullis");
-							dt.setDriveSpeed(.52);
+							dt.setDriveSpeed(0.60);
 							thrower.state.startPortcullis();
 							driveState = DRIVING;
 						}
@@ -487,10 +493,15 @@ public class Auto {
 						break;
 					case ACTION_SHOOT:
 						Common.debug("autoRun: ACTION_SHOOT");  
-						if (paramStartingPlatform == 5) {  //Skip to step 3 for Right side shoot
+						Common.debug("autoRun: ACTION_SHOOT: Starting thrower motor");
+						thrower.state.prepThrow();
+						thrower.state.overrideFlashlight(true);						
+						if (paramStartingPlatform == 5) {  			//Approach right-hand goal
 							autoRunState = AUTO_SHOOT_STEP_3_RIGHT;
-						} else {
-							//Normal Shoot steps
+						} else if (paramStartingPlatform == 1) {  	//Approach left-hand goal
+							autoRunState = AUTO_SHOOT_STEP_3_LEFT;
+						} else {  									//Approach center goal
+							// Start rotate so we can drive across field
 							dt.rotateTo(absoluteTurnLogic(ABSOLUTE_CASTLE_X, xAbs));
 							autoRunState = AUTO_SHOOT_STEP_1;
 						}
@@ -536,16 +547,10 @@ public class Auto {
 					autoRunState = AUTO_COMPLETE;
 				}
 				break;
+				
 			//AUTO SHOOT
-			case AUTO_SHOOT_STEP_1:
+			case AUTO_SHOOT_STEP_1:  // Once turn is complete, initiate drive across field to align with center goal
 				if (dt.driveComplete()) {
-					// New code for side shooting
-				/*	if (paramStartingPlatform == 1 || paramStartingPlatform == 5) {
-						xDistanceToCastleCenter = Math.abs(Side_GOAL_X - xAbs);
-						dt.driveDistance(xDistanceToCastleCenter);
-						autoRunState = AUTO_SHOOT_STEP_2;
-					} else {
-				*/	//End new code
 						Common.debug("autoRun: AUTO_SHOOT First turn complete");
 						xDistanceToCastleCenter = Math.abs(ABSOLUTE_CASTLE_X - xAbs);
 						Common.debug("autoRun: distanceToCastleCenter " + xDistanceToCastleCenter);
@@ -553,15 +558,17 @@ public class Auto {
 						autoRunState = AUTO_SHOOT_STEP_2;
 				}
 				break;
-			case AUTO_SHOOT_STEP_2:
+				
+			case AUTO_SHOOT_STEP_2:  // Once on goal centerline, turn shooter to face center goal
 				if (dt.driveComplete()) {
-					Common.debug("autoRun: AUTO_SHOOT Distance drive complete");
+					Common.debug("autoRun: AUTO_SHOOT Distance drive to centerline complete");
 					arm.setArmPosition(0);
 					dt.rotateTo(180);
 					autoRunState = AUTO_SHOOT_STEP_3_CENTER;
 				}
 				break;
-			case AUTO_SHOOT_STEP_3_CENTER: // Initiate drive across field to align center, for shoot or align actions
+				
+			case AUTO_SHOOT_STEP_3_CENTER: //Once facing center goal, begin approach
 				if (dt.driveComplete()) {
 					Common.debug("autoRun: AUTO_SHOOT Second turn complete");
 					dt.driveDistance(-(yAbs - BATTER_DEPTH - ROBOT_LENGTH / 2));
@@ -569,9 +576,6 @@ public class Auto {
 					Common.debug("autoRun: AUTO_SHOOT Drive towards battery in inches " +  (-(yAbs - BATTER_DEPTH - ROBOT_LENGTH / 2)));
 					// Start shooter spin-up if we are going to shoot
 					if (paramSelectedAction == ACTION_SHOOT) {
-						Common.debug("autoRun: AUTO_SHOOT Starting thrower motor");
-						thrower.state.prepThrow();
-						thrower.state.overrideFlashlight(true);
 						autoRunState = AUTO_SHOOT_STEP_4;						
 					} else {
 						autoRunState = AUTO_COMPLETE;
@@ -586,14 +590,17 @@ public class Auto {
 				arm.setArmPosition(1);
 				autoRunState = AUTO_SHOOT_STEP_4_RIGHT;
 				break;
-
-			case AUTO_SHOOT_STEP_4:  //Test for center tower approach complete and then move on to shoot, if that action is selected
+				
+			case AUTO_SHOOT_STEP_3_LEFT:
+				dt.driveDistance(yAbs - LEFT_GOAL_LINE_Y);
+				autoRunState = AUTO_SHOOT_STEP_4_LEFT;
+				break;
+				
+			case AUTO_SHOOT_STEP_4:  //Test for center tower approach to complete and then move on to shoot, if that action is selected
 				if (dt.driveComplete()) {
 					Common.debug("autoRun: AUTO_SHOOT Drive to tower complete");
 					if (paramSelectedAction == ACTION_SHOOT) {
 						Common.debug("autoRun: AUTO_SHOOT_STEP_4 Ready to aim at center for shot");
-//						thrower.state.prepThrow();
-//						thrower.state.overrideFlashlight(true);
 						autoRunState = AUTO_SHOOT_STEP_5;
 					} else {
 						autoRunState = AUTO_COMPLETE;
@@ -601,40 +608,69 @@ public class Auto {
 				}
 				break;
 				
-			case AUTO_SHOOT_STEP_4_RIGHT:  //Test for tower approach complete and begin rotate and enable thrower
+			case AUTO_SHOOT_STEP_4_RIGHT:  //Test for goal line approach complete and begin to rotate shooter to goal
 				if (dt.driveComplete()) {
-					Common.debug("autoRun: AUTO_SHOOT_STEP_4 Starting rotation to heading of 120");
+					Common.debug("autoRun: AUTO_SHOOT_STEP_4_RIGHT Starting rotation to heading of 120");
 					dt.rotateTo(120);
-					thrower.state.prepThrow();
-					thrower.state.overrideFlashlight(true);
-					autoRunState = AUTO_SHOOT_STEP_4_ROTATE;
+					autoRunState = AUTO_SHOOT_STEP_4_RIGHT_ROTATE;
 				}
 				break;
-
-			case AUTO_SHOOT_STEP_4_ROTATE:  //Wait for rotate to goal to finish and then shoot
+				
+			case AUTO_SHOOT_STEP_4_LEFT:  //Test for goal line approach complete and begin to rotate shooter to goal
 				if (dt.driveComplete()) {
-					Common.debug("autoRun: AUTO_SHOOT_STEP_4_ROTATE Rotation done, ready to aim");
+					Common.debug("autoRun: AUTO_SHOOT_STEP_4_LEFT Starting rotation to heading of 240");
+					dt.rotateTo(240);
+					autoRunState = AUTO_SHOOT_STEP_4_LEFT_ROTATE;
+				}
+				break;
+				
+			case AUTO_SHOOT_STEP_4_LEFT_ROTATE:  //Rotate for rotate to goal to complete and than start to drive backwards toward goal.
+				if (dt.driveComplete()) {
+					Common.debug("autoRun: AUTO_SHOOT_STEP_4_LEFT_ROTATE Rotation done, ready to aim");
+					dt.driveDistance(-104);   // Need distance between point of intersection and center of batter
+					autoRunState = AUTO_SHOOT_STEP_5_LEFT;
+				}
+				break;
+				
+			case AUTO_SHOOT_STEP_4_RIGHT_ROTATE:  //Wait for rotate to goal to finish and then shoot
+				if (dt.driveComplete()) {
+					Common.debug("autoRun: AUTO_SHOOT_STEP_4_RIGHT_ROTATE Rotation done, ready to aim");
 					autoRunState = AUTO_SHOOT_STEP_5;
 				}
 				break;
 				
-			case AUTO_SHOOT_STEP_5:  //Wait for flywheel to spin-up and then autoaim to shoot
+			case AUTO_SHOOT_STEP_5: //Wait for flywheel to spin-up and then autoaim to shoot
 				if (thrower.state.readyToThrow()) {
 					if (Robot.vision.autoAim()) {
 						Common.debug("autoRun: AUTO_SHOOT Ball thrown");
-						autoRunState = AUTO_COMPLETE;
+						autoRunState = AUTO_COMPLETE;					
 					}
 				}
 				break;
+				
+			case AUTO_SHOOT_STEP_5_LEFT:
+				if (dt.driveComplete()) {
+					if (thrower.state.readyToThrow()) {
+						if (Robot.vision.autoAim()) {
+							Common.debug("autoRun: AUTO_SHOOT Ball thrown");
+							autoRunState = AUTO_COMPLETE;
+						}
+					}
+				}
+				break;
+				
 			case AUTO_STOP_ACTION:
 				if (dt.driveComplete() && arm.moveCompleted()) {
 					Common.debug("autoRun: AUTO_STOP_ACTION Completed");
 					autoRunState = AUTO_COMPLETE;
 				}
+				break;
+				
 			case AUTO_COMPLETE:
 				dt.setDriveSpeed(0.0);
-				dt.setHeadingHold(false);
+				dt.setTurnSpeed(0.0);
 				break;
+				
 		}
 		arm.update();
 		dt.autoDrive();
@@ -657,26 +693,6 @@ public class Auto {
 			return 270;
 		}
 	}
-	/*
-	//Find absolute robot position on field after crossing initial defense relative to left field wall.
-	public double xAbs(int startingPlatform, double PLATFORM_WIDTH, double shieldDistance) {
-		return (paramStartingPlatform * PLATFORM_WIDTH - shieldDistance - ROBOT_WIDTH / 2);
-	}
-	
-	//Calculate absolute x center of target platform.
-	public double xPlatformTarget(int targetPlatform, double PLATFORM_WIDTH, double shieldDistance) {
-		return (targetPlatform * PLATFORM_WIDTH - (PLATFORM_WIDTH * .5));
-	}
-	
-	//Drive to castle based on starting position.
-	public double xCastleTarget(double ABSOLUTE_CASTLE_X, double xABS){
-		return (Math.abs(xABS - ABSOLUTE_CASTLE_X));
-	}
-	
-	//Drive to target on field based on current position.
-	public double xDrive (double xAbs, double xTarget) {
-		return (xAbs - xTarget);
-	}
-	*/
+
 	
 }

@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 public class Robot extends SampleRobot {
 	public static Thrower thrower = new Thrower();
 	DriveTrain dt;
-	Bat bat = new Bat();
+	public static Bat bat = new Bat();
 	public static VisionTracking vision;
 	public static Xbox j0 = new Xbox(0);
 	public static Xbox j1 = new Xbox(1);
@@ -88,6 +88,7 @@ public class Robot extends SampleRobot {
     		if (j.leftTriggerPressed()) {
     			thrower.state.overrideFlashlight(true);
     			vision.autoAim();
+    			dt.autoDrive();
     		} else {
     			thrower.state.overrideFlashlight(false);    			
 	    		//if (j.whenLeftClick()) {  //Toggle drive direction
@@ -177,6 +178,10 @@ public class Robot extends SampleRobot {
     	Common.dashNum("Tape IR Voltage", tape.reflectorVoltage());
     	Common.dashBool("Tape Locked", tape.lock);
     	
+    	//Ultrasonics
+    	Common.dashNum("Ultrasonic Defense distance", bat.getDistance());    	
+    	Common.dashNum("Ultrasonic Shooter distance", bat.getShooterDistance());    	
+     	
     	//Autonomous
     	Common.dashNum("Starting Platform", auto.paramStartingPlatform);
     	Common.dashNum("Target Platform", auto.paramTargetPlatform);
