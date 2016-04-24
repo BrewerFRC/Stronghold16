@@ -57,6 +57,10 @@ public class Auto {
 	private static final int AUTO_SHOOT_STEP_5_LEFT = 19;
 	private static final int AUTO_STOP_ACTION = 20;               // Stop after defense crossing; rotate to 180; lower arm to 0
 	private static final int AUTO_COMPLETE = 21;						//autoRun complete; robot stopped.
+	private static final int AUTO_GOAL_LINE_APPROACH = 22;
+	private static final int AUTO_ROTATE_TO_GOAL = 23;
+	private static final int AUTO_AIM_TOWARD_GOAL = 24;
+	private static final int AUTO_DRIVE_BY_SHOOTING = 25;
 	
 	//autoRun parameters loaded from networktables
 	public int paramStartingPlatform;
@@ -104,10 +108,12 @@ public class Auto {
 	public double shieldDistance;    	    //The ultrasonic sensor distance upon exit of a defense.
 	public long lowerTime;
 	public double xAbs;              	    //Absolute x position of the robot after clearing a defense. 
-	public double yAbs;
+	public double yAbs;						//Inches from defensive line to center of robot, courtyard side
 	public double xTargetCenter;      		//Inches to center of target platform relative to left wall.
 	public double xDistanceToTarget;   		//Inches to target platform relative from center of robot.
 	public double xDistanceToCastleCenter;  //Inches to castle center relative to robot center
+	public double distance;                 //Temporary variable for calculating drive distances;
+	public double heading;					//Temporary variable for calculating heading
 	
 	//Auto constructor
 	public Auto(DriveTrain dt, Bat bat, ArmWinch arm, Thrower thrower) {
@@ -143,7 +149,7 @@ public class Auto {
 		switch (shieldState) {
 
 			case AUTO_INIT:
-				shieldState = DETECT_APPROACH;
+				shieldState = DETECT_APPROACH;				
 				break;
 			
 			case DETECT_APPROACH:
@@ -248,7 +254,7 @@ public class Auto {
 					
 					case DEFENSE_CROSSED:
 						defenseCleared = true;
-						yAbs = ABSOLUTE_OUTERWORKS_Y - 36 - ROBOT_LENGTH/2; 
+						yAbs = 36 + ROBOT_LENGTH/2; 
 						break;
 				}
 				break;
@@ -276,7 +282,7 @@ public class Auto {
 					
 					case DEFENSE_CROSSED:
 						defenseCleared = true;
-						yAbs = ABSOLUTE_OUTERWORKS_Y - 25 - ROBOT_LENGTH/2; 
+						yAbs = 25 + ROBOT_LENGTH/2; 
 						break;
 				}
 				break;
@@ -311,7 +317,7 @@ public class Auto {
 	
 					case DEFENSE_CROSSED:
 						defenseCleared = true;
-						yAbs = ABSOLUTE_OUTERWORKS_Y - 8 - ROBOT_LENGTH/2; 
+						yAbs = 8 + ROBOT_LENGTH/2; 
 						break;
 				}
 				break;
@@ -354,7 +360,7 @@ public class Auto {
 						break;
 					case DEFENSE_CROSSED:
 						defenseCleared = true;
-						yAbs = ABSOLUTE_OUTERWORKS_Y - 22 - ROBOT_LENGTH/2; 
+						yAbs = 22 + ROBOT_LENGTH/2; 
 						break;
 				}
 				break;
@@ -384,7 +390,7 @@ public class Auto {
 					
 					case DEFENSE_CROSSED:
 						defenseCleared = true;
-						yAbs = ABSOLUTE_OUTERWORKS_Y - 48 - ROBOT_LENGTH/2; 
+						yAbs = 48 + ROBOT_LENGTH/2; 
 						break;
 				}
 				break;
@@ -407,7 +413,7 @@ public class Auto {
 					
 					case DEFENSE_CROSSED:
 						defenseCleared = true;
-						yAbs = ABSOLUTE_OUTERWORKS_Y - 55 - ROBOT_LENGTH/2; 
+						yAbs = 55 + ROBOT_LENGTH/2; 
 						break;
 				}
 				break;
@@ -440,7 +446,7 @@ public class Auto {
 						break;
 					case DEFENSE_CROSSED:
 						defenseCleared = true;
-						yAbs = ABSOLUTE_OUTERWORKS_Y - 36 - ROBOT_LENGTH/2; 
+						yAbs = 36 + ROBOT_LENGTH/2; 
 						break;
 				} 
 				break;
@@ -492,8 +498,12 @@ public class Auto {
 						autoRunState = AUTO_UTURN_STEP_1;
 						break;
 					case ACTION_SHOOT:
-						Common.debug("autoRun: ACTION_SHOOT");  
-						Common.debug("autoRun: ACTION_SHOOT: Starting thrower motor");
+						autoRunState = AUTO_GOAL_LINE_APPROACH;
+						Common.debug("autoRun: ACTION_SHOOT: Starting thrower motor and raising arm");  
+						arm.setArmPosition(3);
+						thrower.state.prepThrow();
+						thrower.state.overrideFlashlight(true);	
+						/*	Common.debug("autoRun: ACTION_SHOOT: Starting thrower motor");
 						thrower.state.prepThrow();
 						thrower.state.overrideFlashlight(true);						
 						if (paramStartingPlatform == 5) {  			//Approach right-hand goal
@@ -505,7 +515,7 @@ public class Auto {
 							dt.rotateTo(absoluteTurnLogic(ABSOLUTE_CASTLE_X, xAbs));
 							autoRunState = AUTO_SHOOT_STEP_1;
 						}
-						break;
+					*/	break;
 					case ACTION_TOWER_ALIGN:
 						Common.debug("autoRun: ACTION_TOWER_ALIGN");
 						dt.rotateTo(absoluteTurnLogic(ABSOLUTE_CASTLE_X, xAbs));
@@ -548,8 +558,61 @@ public class Auto {
 				}
 				break;
 				
+			case AUTO_GOAL_LINE_APPROACH:
+				if (paramStartingPlatform == 1) {
+					distance = 108 - yAbs;
+				} else if (paramStartingPlatform == 2) {
+					distance = 139 - yAbs;
+				} else if (paramStartingPlatform == 3) {
+					distance = 0;
+				} else if (paramStartingPlatform == 4) {
+					distance = 0;
+				} else {
+					distance = 151 - yAbs;
+				}
+				Common.debug("autoRun: Starting goal line approach "  + distance);
+				dt.driveDistance(distance);
+				autoRunState = AUTO_ROTATE_TO_GOAL;
+				break;
+				
+			case AUTO_ROTATE_TO_GOAL:
+				if (dt.driveComplete()) {
+					if (paramStartingPlatform == 1) {
+						heading = 240;
+					} else if (paramStartingPlatform == 2) {
+						heading = 240;
+					} else if (paramStartingPlatform == 3) {
+						heading = 208;
+					} else if (paramStartingPlatform == 4) {
+						heading = 168;
+					} else {
+						heading = 120;
+					}
+					Common.debug("autoRun: Completed drive, starting turn to goal, and lowering arms "  + heading);
+					dt.rotateTo(heading);
+					arm.setArmPosition(0);
+					autoRunState = AUTO_AIM_TOWARD_GOAL;
+				} 
+				break;
+				
+			case AUTO_AIM_TOWARD_GOAL:
+				if (dt.driveComplete()) {
+					Common.debug("autoRun: Completed turn to goal, starting auto aim");
+					autoRunState = AUTO_DRIVE_BY_SHOOTING;
+				}
+				break;
+				
+			case AUTO_DRIVE_BY_SHOOTING:
+				if (thrower.state.readyToThrow()) {
+					if (Robot.vision.autoAim()) {
+						Common.debug("autoRun: AUTO_SHOOT Ball thrown");
+						autoRunState = AUTO_COMPLETE;
+					}
+				}
+				break;
+				
 			//AUTO SHOOT
-			case AUTO_SHOOT_STEP_1:  // Once turn is complete, initiate drive across field to align with center goal
+	/*		case AUTO_SHOOT_STEP_1:  // Once turn is complete, initiate drive across field to align with center goal
 				if (dt.driveComplete()) {
 						Common.debug("autoRun: AUTO_SHOOT First turn complete");
 						xDistanceToCastleCenter = Math.abs(ABSOLUTE_CASTLE_X - xAbs);
@@ -659,7 +722,7 @@ public class Auto {
 				}
 				break;
 				
-			case AUTO_STOP_ACTION:
+		*/	case AUTO_STOP_ACTION:
 				if (dt.driveComplete() && arm.moveCompleted()) {
 					Common.debug("autoRun: AUTO_STOP_ACTION Completed");
 					autoRunState = AUTO_COMPLETE;
