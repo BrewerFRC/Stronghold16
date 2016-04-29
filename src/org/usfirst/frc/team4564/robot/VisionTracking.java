@@ -6,7 +6,7 @@ public class VisionTracking {
 	NetworkTable visionTable;
 	DriveTrain dt;
 	
-	public static final double TARGET_DISTANCE = 38;		// Inches from tower for shot alignment, as measured by utlrasonic
+	public static final double TARGET_DISTANCE = 49-5;		// Inches from tower for shot alignment, as measured by utlrasonic, batter distance - bumper to wheel distance
 	long counter = 0;
 	
 	public VisionTracking(DriveTrain dt) {
@@ -44,10 +44,10 @@ public class VisionTracking {
 		if (Math.abs(diff) < 2) {
 			speed = 0.0;  //Stop driving, we are within shooting range
 		} else {
-			if (Math.abs(diff) < 12) {  //Scale speed of approach when we are close
-				speed = 0.3;
+			if (Math.abs(diff) < 18) {  //Scale speed of approach when we are close
+				speed = 0.4;
 			} else {
-				speed = 0.6;
+				speed = 0.65;
 			}
 			if (diff < 0) {  //Determine what direction to travel, either toward or away from tower
 				speed = speed * -1;  // Negative value drives toward tower

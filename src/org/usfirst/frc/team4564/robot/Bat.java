@@ -15,7 +15,7 @@ public class Bat {
 	private static final double CORRECTION = 1 / 1.04;
 	private static final double VOLTS_PER_INCH = 5.0 / 1024 * 2.54 * CORRECTION; // Volts per inch constant
 	private static final double OFFSET_RIGHT = 4.5;  // Inches defense sensor is in from bumpers edge
-	private static final double OFFSET_BACK = 6;  // Inches shooter sensor is in from bumpers edge
+	private static final double OFFSET_BACK = 5;  // Inches shooter sensor is in from bumpers edge
 	
 	// Distance right side of robot is from defensive wall
 	public double getDistance() {

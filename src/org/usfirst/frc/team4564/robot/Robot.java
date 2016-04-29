@@ -39,6 +39,7 @@ public class Robot extends SampleRobot {
     public void autonomous() {
     	Common.debug("Starting Auto...");
         auto.init();
+        double matchTimer = Common.time();
         while (isAutonomous() && isEnabled()) {
            	//Loop delay timer
         	long time = Common.time();
@@ -47,12 +48,19 @@ public class Robot extends SampleRobot {
     		//Perform autorun
         	auto.autoRun();
 
+        	//If auto runs too long, then stop thrower, unless in middle of a shot
+        	if (Common.time() > matchTimer + 14500 && thrower.state.readyToThrow()) {
+        		Common.debug("AUTO: Shooting failed: Timeout");
+        		thrower.state.init();
+        	}
+        	
         	smartDebug();
     		
     		//Delay timer
     		double wait = (delay-Common.time())/1000.0;
     		if (wait < 0) {
     			wait = 0;
+    		
     		}
     		Timer.delay(wait);
         }

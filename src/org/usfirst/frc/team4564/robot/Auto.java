@@ -584,7 +584,7 @@ public class Auto {
 					} else if (paramStartingPlatform == 3) {
 						heading = 208;
 					} else if (paramStartingPlatform == 4) {
-						heading = 168;
+						heading = 160; //was 168 
 					} else {
 						heading = 120;
 					}
