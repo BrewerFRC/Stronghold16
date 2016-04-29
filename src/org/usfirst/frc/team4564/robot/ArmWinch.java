@@ -14,7 +14,7 @@ public class ArmWinch {
 	private static final boolean HIGH_LIMIT_REACHED = false;
 	private static final double STOP_POWER = -0.13;
 	private static final double ARM_POT_LOW = 1.66; //old 3.58 - Voltage at lowest arm position.
-	private static final double ARM_POT_HIGH = 0.38; //old 2.2 - Voltage at highest arm position.
+	private static final double ARM_POT_HIGH = 0.48; //0.38; //old 2.2 - Voltage at highest arm position.
 	private static final double ARM_ALLOWABLE_ERROR = 0.05;  //Amount of error arm can be off from target before completing move.
 	private static final double ARM_CLIMB_POT = 0.48; //Arm position for climbing.
 	private static boolean slowArm = false;
@@ -36,6 +36,7 @@ public class ArmWinch {
 			position = 6;
 		}
 		target = ARM_POT_LOW + (ARM_POT_HIGH - ARM_POT_LOW) / 6 * position;
+		Common.debug("Arm setArmPosition: Set arm target:" + target);
 	}
 	
 	public void setForClimb() {
@@ -113,6 +114,7 @@ public class ArmWinch {
 	public void update() {
 		if (autoControl) {
 			if ((Math.abs(getPotentiometerVoltage() - target) <= ARM_ALLOWABLE_ERROR)) {
+				Common.debug("Arm update: Stopping Arm at:" + getPotentiometerVoltage());
 				stopArm();
 				return;
 			}

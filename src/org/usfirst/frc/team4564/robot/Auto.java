@@ -472,7 +472,7 @@ public class Auto {
 			case AUTO_SETUP:
 				Common.debug("autoRun: AUTO_SETUP");
 				if (paramStartingPlatform > 0 && paramDefenseType > 0) {
-					Common.debug("autoRun: AUTO_DRIVE - Starting Drive Defense");
+					Common.debug("autoRun: AUTO_DRIVE - Starting Drive Defense" + paramDefenseType);
 					autoRunState = AUTO_DRIVE;
 				}
 				break;

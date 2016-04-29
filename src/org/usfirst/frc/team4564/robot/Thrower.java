@@ -168,7 +168,7 @@ public class Thrower {
 						Common.debug("Thrower: update - started with ball");
 					} else {
 	 					setFlywheelSpeed(0.0);
-						setInternalIntakeSpeed(0.09);
+						setInternalIntakeSpeed(0.05);   //was 0.09
 						setExternalIntakeSpeed(0.09);
 					}
 					break;
@@ -186,7 +186,7 @@ public class Thrower {
 						currentState = READY;
 						break;
 					}
-					setInternalIntakeSpeed(0.18);
+					setInternalIntakeSpeed(0.05);   //was 0.18 - Changed to see if we can avoid misfire in auto.
 					setExternalIntakeSpeed(0);
 					break;
 				case BACK_OUT:
