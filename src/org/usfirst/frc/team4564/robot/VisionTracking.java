@@ -6,7 +6,7 @@ public class VisionTracking {
 	NetworkTable visionTable;
 	DriveTrain dt;
 	
-	public static final double TARGET_DISTANCE = 49-5;		// Inches from tower for shot alignment, as measured by utlrasonic, batter distance - bumper to wheel distance
+	public static final double TARGET_DISTANCE = 49-3;		// Inches from tower for shot alignment, as measured by utlrasonic, batter distance - bumper to wheel distance
 	long counter = 0;
 	
 	public VisionTracking(DriveTrain dt) {
