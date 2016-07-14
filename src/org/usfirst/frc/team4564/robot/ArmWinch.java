@@ -12,7 +12,7 @@ public class ArmWinch {
 	
 	private static final boolean LOW_LIMIT_REACHED = false;
 	private static final boolean HIGH_LIMIT_REACHED = false;
-	private static final double STOP_POWER = -0.16;  //was -0.13
+	private static final double STOP_POWER = -0.20;  //was -0.16
 	private static final double ARM_POT_LOW = 1.66; //old 3.58 - Voltage at lowest arm position.
 	private static final double ARM_POT_HIGH = 0.48; //0.38; //old 2.2 - Voltage at highest arm position.
 	private static final double ARM_ALLOWABLE_ERROR = 0.05;  //Amount of error arm can be off from target before completing move.
@@ -73,10 +73,10 @@ public class ArmWinch {
 	
 	private void calcDown(){
 		if (slowArm) {
-			speed = -0.35;
+			speed = -0.4; // was -.35
 		}
 		else {
-			speed = -0.5;
+			speed = -0.55; // was -.5
 		}
 	}
 	
