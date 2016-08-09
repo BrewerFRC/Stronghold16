@@ -6,8 +6,10 @@ public class VisionTracking {
 	NetworkTable visionTable;
 	DriveTrain dt;
 	
+	public static final double OUTER_TARGET_DISTANCE = 58;
 	public static final double TARGET_DISTANCE = 49-3;		// Inches from tower for shot alignment, as measured by utlrasonic, batter distance - bumper to wheel distance
 	long counter = 0;
+	boolean backward = false;
 	
 	public VisionTracking(DriveTrain dt) {
 		this.dt = dt;
@@ -38,11 +40,17 @@ public class VisionTracking {
 		
 		// Drive forward/backward until proper distance from tower
 		// ***** Insert Ultrasonic logic here
+		if (shoot) {
+			backward = false;
+		}
 		distance = Robot.bat.getShooterDistance();   
-		double diff = TARGET_DISTANCE - distance;
+		double diff = (backward ? OUTER_TARGET_DISTANCE : TARGET_DISTANCE) - distance;
 		// Determine appropriate drive speed based on distance form tower
 		if (Math.abs(diff) < 2) {
 			speed = 0.0;  //Stop driving, we are within shooting range
+			if (!shoot) {
+				backward = !backward;
+			}
 		} else {
 			if (Math.abs(diff) < 18) {  //Scale speed of approach when we are close
 				speed = 0.4;

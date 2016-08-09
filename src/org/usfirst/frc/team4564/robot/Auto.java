@@ -114,6 +114,7 @@ public class Auto {
 	public double xDistanceToCastleCenter;  //Inches to castle center relative to robot center
 	public double distance;                 //Temporary variable for calculating drive distances;
 	public double heading;					//Temporary variable for calculating heading
+	public double stupidChevalTimer;
 	
 	//Auto constructor
 	public Auto(DriveTrain dt, Bat bat, ArmWinch arm, Thrower thrower) {
@@ -328,10 +329,11 @@ public class Auto {
 					case NOT_DRIVING:
 						dt.driveDistance(44);
 						driveState = DRIVING;
+						stupidChevalTimer = Common.time() + 2000;
 						break;
 					
 					case DRIVING:
-						if (dt.driveComplete()) {
+						if (dt.driveComplete() && Common.time() > stupidChevalTimer) {
 							dt.setDriveSpeed(0.0);
 							arm.setArmPosition(0);
 							detectTime = Common.time() + 2500; // was 2750
