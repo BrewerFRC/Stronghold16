@@ -53,9 +53,12 @@ public class VisionTracking {
 			}
 		} else {
 			if (Math.abs(diff) < 18) {  //Scale speed of approach when we are close
-				speed = 0.4;
+				speed = 0.35;
+				if (backward) {
+					speed = 0.5;
+				}
 			} else {
-				speed = 0.65;
+				speed = 0.75;
 			}
 			if (diff < 0) {  //Determine what direction to travel, either toward or away from tower
 				speed = speed * -1;  // Negative value drives toward tower

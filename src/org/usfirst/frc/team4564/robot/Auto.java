@@ -114,7 +114,6 @@ public class Auto {
 	public double xDistanceToCastleCenter;  //Inches to castle center relative to robot center
 	public double distance;                 //Temporary variable for calculating drive distances;
 	public double heading;					//Temporary variable for calculating heading
-	public double stupidChevalTimer;
 	
 	//Auto constructor
 	public Auto(DriveTrain dt, Bat bat, ArmWinch arm, Thrower thrower) {
@@ -327,13 +326,13 @@ public class Auto {
 			case DEFENSE_CHEVAL_DE_FRISE:
 				switch(driveState) {
 					case NOT_DRIVING:
+						Common.debug("driveDefense: NOT_DRIVING - Starting cheval distance drive.");
 						dt.driveDistance(44);
 						driveState = DRIVING;
-						stupidChevalTimer = Common.time() + 2000;
 						break;
 					
 					case DRIVING:
-						if (dt.driveComplete() && Common.time() > stupidChevalTimer) {
+						if (dt.driveComplete()) {
 							dt.setDriveSpeed(0.0);
 							arm.setArmPosition(0);
 							detectTime = Common.time() + 2500; // was 2750
@@ -351,6 +350,7 @@ public class Auto {
 						//Wait for robot to begin crossing the defense before raising arms.
 						if (Common.time() - driveTime >= 500) {
 							arm.setArmPosition(4);
+							dt.setDriveSpeed(0.1);
 							driveState = DRIVE_STEP_TWO;
 							}
 						break;
@@ -459,7 +459,7 @@ public class Auto {
 		return defenseCleared;
 	}
 					
-	//Execute an full auto routine based on the user provided parameters.
+	//Execute a full auto routine based on the user provided parameters.
 	//Call this method from a robot loop, multiple times per second.
 	public void autoRun() {
 		// TESTING ONLY *****************

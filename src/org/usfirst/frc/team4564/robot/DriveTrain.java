@@ -50,6 +50,8 @@ public class DriveTrain extends RobotDrive {
 		distancePID.setMin(-0.60);
 		distancePID.setMax(0.60);
 		actionHandler = new ActionHandler();
+		//setDriveSpeed(0);
+		//baseDrive(0, 0);
 	}
 	
 	// Set a target heading for robot to rotate to.
