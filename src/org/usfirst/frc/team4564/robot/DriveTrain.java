@@ -1,9 +1,9 @@
 package org.usfirst.frc.team4564.robot;
 
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 
 public class DriveTrain extends RobotDrive {
 	
@@ -50,8 +50,8 @@ public class DriveTrain extends RobotDrive {
 		distancePID.setMin(-0.60);
 		distancePID.setMax(0.60);
 		actionHandler = new ActionHandler();
-		//setDriveSpeed(0);
-		//baseDrive(0, 0);
+		setDriveSpeed(0);
+		baseDrive(0, 0);
 	}
 	
 	// Set a target heading for robot to rotate to.

@@ -106,10 +106,10 @@ public class Robot extends SampleRobot {
 	     			dt.baseDrive(.43, 0);
 	     		} else {
 		    		if (driveToggle) { // Drive backwards
-		    			dt.baseDrive(j.leftY(), j.leftX());
+		    			dt.baseDrive(j.leftY(), j.leftX()*0.75);
 		    		}
 		    		else {  //Drive forwards
-		    			dt.baseDrive(-j.leftY(), j.leftX());
+		    			dt.baseDrive(-j.leftY(), j.leftX()*0.75);
 		    		}
 	     		}
     		}

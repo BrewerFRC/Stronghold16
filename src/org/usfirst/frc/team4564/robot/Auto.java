@@ -333,8 +333,8 @@ public class Auto {
 					
 					case DRIVING:
 						if (dt.driveComplete()) {
-							dt.setDriveSpeed(0.0);
 							arm.setArmPosition(0);
+							dt.setDriveSpeed(0.1);
 							detectTime = Common.time() + 2500; // was 2750
 							driveState = LOWER_ARM;
 						}
@@ -350,7 +350,6 @@ public class Auto {
 						//Wait for robot to begin crossing the defense before raising arms.
 						if (Common.time() - driveTime >= 500) {
 							arm.setArmPosition(4);
-							dt.setDriveSpeed(0.1);
 							driveState = DRIVE_STEP_TWO;
 							}
 						break;

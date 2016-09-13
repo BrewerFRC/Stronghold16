@@ -202,16 +202,16 @@ public class Thrower {
 					break;
 				case SPIN_UP:
 					//TODO: Velocity control
-					setFlywheelSpeed(.8);
+					setFlywheelSpeed(.68);
 					if (Common.time() >= spinUpTimer) {
 						Common.debug("Thrower: update - Spun up and ready to fire");
-						setFlywheelSpeed(.8);
+						setFlywheelSpeed(.68); //Was 0.8
 						fireTimer = Common.time() + 1000; //Time that flywheel will run once shot is fired
 						currentState = READY_TO_FIRE;
 					}
 					break;
 				case READY_TO_FIRE:
-					setFlywheelSpeed(.8);
+					setFlywheelSpeed(.68);
 					fireTimer = Common.time() + 1000; //(changed from 1000 4/19/16) 
 					break;
 				case FIRE:
