@@ -44,7 +44,7 @@ public class Constants {
 	public static final double TURN_D = 0;
 	
 	//Gyro constants
-	public static double GYRO_P = 0.08; 
+	public static double GYRO_P = 0.07; 
 	public static double GYRO_I = 0.0001;
 	public static double GYRO_D = 0.003;
 	public static final double GYRO_SENSITIVITY = 0.00669;

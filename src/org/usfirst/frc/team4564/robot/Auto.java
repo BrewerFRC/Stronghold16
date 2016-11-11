@@ -581,7 +581,7 @@ public class Auto {
 					if (paramStartingPlatform == 1) {
 						heading = 240;
 					} else if (paramStartingPlatform == 2) {
-						heading = 240;
+						heading = 240; //240
 					} else if (paramStartingPlatform == 3) {
 						heading = 208;
 					} else if (paramStartingPlatform == 4) {
@@ -598,7 +598,6 @@ public class Auto {
 				
 			case AUTO_AIM_TOWARD_GOAL:
 				if (dt.driveComplete()) {
-					Common.debug("autoRun: Completed turn to goal, starting auto aim");
 					autoRunState = AUTO_DRIVE_BY_SHOOTING;
 				}
 				break;
@@ -606,6 +605,7 @@ public class Auto {
 			case AUTO_DRIVE_BY_SHOOTING:
 				if (thrower.state.readyToThrow()) {
 					if (Robot.vision.autoAim()) {
+						Common.debug("autoRun: Completed turn to goal, starting auto aim");
 						Common.debug("autoRun: AUTO_SHOOT Ball thrown");
 						autoRunState = AUTO_COMPLETE;
 					}
