@@ -22,7 +22,6 @@ public class Robot extends SampleRobot {
     	table = NetworkTable.getTable("dashTable");
     	dt = new DriveTrain();
     	vision = new VisionTracking(dt);
-    	auto = new Auto (dt, bat, arm, thrower);
     	//Enable USB camera
     	CameraServer server = CameraServer.getInstance();
     	server.setQuality(50);
@@ -31,6 +30,7 @@ public class Robot extends SampleRobot {
     
     public void disabled() {
     	while (isDisabled()) {
+    		auto = null;
     		smartDebug();
     		Timer.delay(0.02);
     	}
@@ -38,6 +38,7 @@ public class Robot extends SampleRobot {
     
     public void autonomous() {
     	Common.debug("Starting Auto...");
+    	auto = new Auto(dt, bat, arm, thrower);
         auto.init();
         double matchTimer = Common.time();
         while (isAutonomous() && isEnabled()) {

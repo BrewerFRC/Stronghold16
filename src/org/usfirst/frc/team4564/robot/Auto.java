@@ -504,19 +504,7 @@ public class Auto {
 						arm.setArmPosition(3);
 						thrower.state.prepThrow();
 						thrower.state.overrideFlashlight(true);	
-						/*	Common.debug("autoRun: ACTION_SHOOT: Starting thrower motor");
-						thrower.state.prepThrow();
-						thrower.state.overrideFlashlight(true);						
-						if (paramStartingPlatform == 5) {  			//Approach right-hand goal
-							autoRunState = AUTO_SHOOT_STEP_3_RIGHT;
-						} else if (paramStartingPlatform == 1) {  	//Approach left-hand goal
-							autoRunState = AUTO_SHOOT_STEP_3_LEFT;
-						} else {  									//Approach center goal
-							// Start rotate so we can drive across field
-							dt.rotateTo(absoluteTurnLogic(ABSOLUTE_CASTLE_X, xAbs));
-							autoRunState = AUTO_SHOOT_STEP_1;
-						}
-					*/	break;
+						break;
 					case ACTION_TOWER_ALIGN:
 						Common.debug("autoRun: ACTION_TOWER_ALIGN");
 						dt.rotateTo(absoluteTurnLogic(ABSOLUTE_CASTLE_X, xAbs));
@@ -612,118 +600,7 @@ public class Auto {
 				}
 				break;
 				
-			//AUTO SHOOT
-	/*		case AUTO_SHOOT_STEP_1:  // Once turn is complete, initiate drive across field to align with center goal
-				if (dt.driveComplete()) {
-						Common.debug("autoRun: AUTO_SHOOT First turn complete");
-						xDistanceToCastleCenter = Math.abs(ABSOLUTE_CASTLE_X - xAbs);
-						Common.debug("autoRun: distanceToCastleCenter " + xDistanceToCastleCenter);
-						dt.driveDistance(xDistanceToCastleCenter);
-						autoRunState = AUTO_SHOOT_STEP_2;
-				}
-				break;
-				
-			case AUTO_SHOOT_STEP_2:  // Once on goal centerline, turn shooter to face center goal
-				if (dt.driveComplete()) {
-					Common.debug("autoRun: AUTO_SHOOT Distance drive to centerline complete");
-					arm.setArmPosition(0);
-					dt.rotateTo(180);
-					autoRunState = AUTO_SHOOT_STEP_3_CENTER;
-				}
-				break;
-				
-			case AUTO_SHOOT_STEP_3_CENTER: //Once facing center goal, begin approach
-				if (dt.driveComplete()) {
-					Common.debug("autoRun: AUTO_SHOOT Second turn complete");
-					dt.driveDistance(-(yAbs - BATTER_DEPTH - ROBOT_LENGTH / 2));
-					Common.debug("autoRun: AUTO_SHOOT: yAbs: " + yAbs);
-					Common.debug("autoRun: AUTO_SHOOT Drive towards battery in inches " +  (-(yAbs - BATTER_DEPTH - ROBOT_LENGTH / 2)));
-					// Start shooter spin-up if we are going to shoot
-					if (paramSelectedAction == ACTION_SHOOT) {
-						autoRunState = AUTO_SHOOT_STEP_4;						
-					} else {
-						autoRunState = AUTO_COMPLETE;
-					}
-				}
-				break;
-				
-			case AUTO_SHOOT_STEP_3_RIGHT: // Initiate Drive to right goal line, which is takes us to the batter
-				Common.debug("autoRun: AUTO_SHOOT: yAbs: " + yAbs);
-				Common.debug("autoRun: AUTO_SHOOT Drive towards right goal " +  (yAbs - RIGHT_GOAL_LINE_Y));
-				dt.driveDistance(yAbs - RIGHT_GOAL_LINE_Y - 10);  // We'll go 10 inches short to make turning easier
-				arm.setArmPosition(1);
-				autoRunState = AUTO_SHOOT_STEP_4_RIGHT;
-				break;
-				
-			case AUTO_SHOOT_STEP_3_LEFT:
-				dt.driveDistance(yAbs - LEFT_GOAL_LINE_Y);
-				autoRunState = AUTO_SHOOT_STEP_4_LEFT;
-				break;
-				
-			case AUTO_SHOOT_STEP_4:  //Test for center tower approach to complete and then move on to shoot, if that action is selected
-				if (dt.driveComplete()) {
-					Common.debug("autoRun: AUTO_SHOOT Drive to tower complete");
-					if (paramSelectedAction == ACTION_SHOOT) {
-						Common.debug("autoRun: AUTO_SHOOT_STEP_4 Ready to aim at center for shot");
-						autoRunState = AUTO_SHOOT_STEP_5;
-					} else {
-						autoRunState = AUTO_COMPLETE;
-					}
-				}
-				break;
-				
-			case AUTO_SHOOT_STEP_4_RIGHT:  //Test for goal line approach complete and begin to rotate shooter to goal
-				if (dt.driveComplete()) {
-					Common.debug("autoRun: AUTO_SHOOT_STEP_4_RIGHT Starting rotation to heading of 120");
-					dt.rotateTo(120);
-					autoRunState = AUTO_SHOOT_STEP_4_RIGHT_ROTATE;
-				}
-				break;
-				
-			case AUTO_SHOOT_STEP_4_LEFT:  //Test for goal line approach complete and begin to rotate shooter to goal
-				if (dt.driveComplete()) {
-					Common.debug("autoRun: AUTO_SHOOT_STEP_4_LEFT Starting rotation to heading of 240");
-					dt.rotateTo(240);
-					autoRunState = AUTO_SHOOT_STEP_4_LEFT_ROTATE;
-				}
-				break;
-				
-			case AUTO_SHOOT_STEP_4_LEFT_ROTATE:  //Rotate for rotate to goal to complete and than start to drive backwards toward goal.
-				if (dt.driveComplete()) {
-					Common.debug("autoRun: AUTO_SHOOT_STEP_4_LEFT_ROTATE Rotation done, ready to aim");
-					dt.driveDistance(-104);   // Need distance between point of intersection and center of batter
-					autoRunState = AUTO_SHOOT_STEP_5_LEFT;
-				}
-				break;
-				
-			case AUTO_SHOOT_STEP_4_RIGHT_ROTATE:  //Wait for rotate to goal to finish and then shoot
-				if (dt.driveComplete()) {
-					Common.debug("autoRun: AUTO_SHOOT_STEP_4_RIGHT_ROTATE Rotation done, ready to aim");
-					autoRunState = AUTO_SHOOT_STEP_5;
-				}
-				break;
-				
-			case AUTO_SHOOT_STEP_5: //Wait for flywheel to spin-up and then autoaim to shoot
-				if (thrower.state.readyToThrow()) {
-					if (Robot.vision.autoAim()) {
-						Common.debug("autoRun: AUTO_SHOOT Ball thrown");
-						autoRunState = AUTO_COMPLETE;					
-					}
-				}
-				break;
-				
-			case AUTO_SHOOT_STEP_5_LEFT:
-				if (dt.driveComplete()) {
-					if (thrower.state.readyToThrow()) {
-						if (Robot.vision.autoAim()) {
-							Common.debug("autoRun: AUTO_SHOOT Ball thrown");
-							autoRunState = AUTO_COMPLETE;
-						}
-					}
-				}
-				break;
-				
-		*/	case AUTO_STOP_ACTION:
+			case AUTO_STOP_ACTION:
 				if (dt.driveComplete() && arm.moveCompleted()) {
 					Common.debug("autoRun: AUTO_STOP_ACTION Completed");
 					autoRunState = AUTO_COMPLETE;
