@@ -30,8 +30,8 @@ public class Robot extends SampleRobot {
     
     public void disabled() {
     	while (isDisabled()) {
-    		auto = null;
     		smartDebug();
+    		auto = null;
     		Timer.delay(0.02);
     	}
     }
@@ -192,10 +192,12 @@ public class Robot extends SampleRobot {
     	Common.dashNum("Ultrasonic Shooter distance", bat.getShooterDistance());    	
      	
     	//Autonomous
-    	Common.dashNum("Starting Platform", auto.paramStartingPlatform);
-    	Common.dashNum("Target Platform", auto.paramTargetPlatform);
-    	Common.dashNum("Defense Type", auto.paramDefenseType);
-    	Common.dashNum("Selected Action", auto.paramSelectedAction);
-    	Common.dashNum("Auto Sheild State", auto.shieldState);
+    	if (auto != null) { 
+	    	Common.dashNum("Starting Platform", auto.paramStartingPlatform);
+	    	Common.dashNum("Target Platform", auto.paramTargetPlatform);
+	    	Common.dashNum("Defense Type", auto.paramDefenseType);
+	    	Common.dashNum("Selected Action", auto.paramSelectedAction);
+	    	Common.dashNum("Auto Sheild State", auto.shieldState);
+    	}
     }
 }
